@@ -1,20 +1,21 @@
 /* src/components/layout/MainLayout.module.css */
 
 .container {
-    display: flex; /* Kích hoạt Flexbox để sắp xếp Sidebar và Main Content */
-    min-height: 100vh;
-    background-color: #F8F9FA; /* Nền ứng dụng (xám nhạt) */
+    display: flex; 
+    min-height: 100vh; /* Đảm bảo container chiếm toàn bộ chiều cao màn hình */
+    background-color: #F8F9FA; /* Nền xám nhạt */
 }
 
 .mainContentArea {
-    flex-grow: 1; /* Cho phép khu vực này chiếm hết không gian còn lại */
+    flex-grow: 1; /* Cho phép chiếm hết không gian còn lại */
+    overflow-y: auto; /* Kích hoạt CUỘN DỌC chỉ trong khu vực này */
+    max-height: 100vh; /* Giới hạn chiều cao để kích hoạt cuộn */
     display: flex;
-    flex-direction: column; /* Sắp xếp Header và Content theo chiều dọc */
+    flex-direction: column; /* Đảm bảo Header nằm trên Page Content */
 }
 
+/* Khu vực chứa nội dung của từng trang (Dashboard, Courses, etc.) */
 .pageContent {
-    flex-grow: 1; /* Cho phép content chiếm hết phần còn lại sau Header */
     padding: 20px;
-    /* Có thể giới hạn chiều cao và cho phép cuộn */
-    overflow-y: auto; 
+    flex-grow: 1; /* Quan trọng: Đảm bảo nội dung chính đẩy Header lên trên */
 }

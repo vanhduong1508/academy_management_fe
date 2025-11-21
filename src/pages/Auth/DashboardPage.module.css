@@ -1,0 +1,43 @@
+/* src/pages/Auth/DashboardPage.module.css */
+
+.dashboard {
+    padding: 0; 
+}
+
+/* --- 1. Stats Grid --- */
+.statsGrid {
+    display: grid;
+    /* Chia thành 4 cột bằng nhau */
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+/* --- 2. Main Grid (Layout 2 cột chính) --- */
+.mainGrid {
+    display: flex;
+    gap: 20px;
+}
+
+.leftColumn {
+    /* Cột trái chiếm khoảng 65-70% */
+    flex: 2; 
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.rightColumn {
+    /* Cột phải chiếm khoảng 30-35% */
+    flex: 1; 
+}
+
+.summaryGrid {
+    /* Bố cục 2 cột cho Khóa học và Chứng chỉ */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+/* Các style cho .recentList không cần thiết vì chúng là các block */
+
+/* Các style cũ (chartArea, recentTable) có thể bị xóa nếu không dùng nữa */
