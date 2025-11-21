@@ -1,48 +1,54 @@
 /* src/components/layout/Header.module.css */
 
 .header {
-    height: 60px; 
-    background-color: #FFFFFF;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    padding: 0 20px;
+    height: 100px; 
+    /* ÁP DỤNG GRADIENT MÀU TÍM */
+    background: linear-gradient(to right, #6D28D9, #8B5CF6); 
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    padding: 15px 20px;
     
     display: flex;
-    justify-content: space-between; 
-    align-items: center;
+    justify-content: space-between;
+    align-items: flex-start; /* Căn trên cùng */
+    
+    /* FIX: Cố định Header ở trên cùng của Main Content Area */
     position: sticky; 
     top: 0;
     z-index: 10;
 }
 
-.pageTitle {
-    font-size: 18px;
-    font-weight: 600;
-    color: #1F2937;
+.systemTitle {
+    font-size: 20px;
+    font-weight: 700;
+    color: #FFFFFF;
+    margin-bottom: 5px;
 }
 
-.userSection {
+.subtitle {
+    font-size: 14px;
+    color: #E5E7EB;
+    font-weight: 400;
+}
+
+.actionSection {
     display: flex;
     align-items: center;
-    gap: 15px; /* Khoảng cách giữa các phần tử */
+    gap: 15px;
+    padding-top: 5px; /* Cân bằng vị trí với tiêu đề */
 }
 
-.notificationIcon {
+.bellIcon {
     font-size: 20px;
+    color: #FFFFFF;
     cursor: pointer;
-    color: #4B5563;
-}
-
-.username {
-    font-size: 14px;
-    color: #4B5563;
-    font-weight: 500;
+    opacity: 0.8;
 }
 
 .avatar {
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background-color: #3B82F6; /* Màu nền avatar */
+    background-color: #F59E0B;
     color: white;
     font-weight: bold;
     font-size: 14px;

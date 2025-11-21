@@ -1,47 +1,43 @@
 // src/pages/Auth/LoginPage.tsx
 
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom'; // Thêm useNavigate
+import { Link, useNavigate } from 'react-router-dom';
 import AuthCard from '../../components/Auth/AuthCard';
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
+// Import type mới
+import { LoginPageProps } from '../../types/Auth'; 
+
 
 // Icon giả định
 const UserIcon = () => <span style={{ marginRight: '8px' }}>👤</span>;
 const LoginIcon = () => <span style={{ marginRight: '8px' }}>➡️</span>;
+const mockLogin = async () => new Promise(resolve => setTimeout(resolve, 1000));
 
 
-// Hàm giả lập (Mock) đăng nhập: chỉ đơn giản là đợi 1 giây
-const mockLogin = async () => {
-  return new Promise(resolve => setTimeout(resolve, 1000));
-};
-
-
-const LoginPage: React.FC = () => {
-  const navigate = useNavigate(); // Hook để chuyển hướng
+// SỬA: Nhận props setIsAuthenticated
+const LoginPage: React.FC<LoginPageProps> = ({ setIsAuthenticated }) => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false); // Trạng thái tải
+  const [isLoading, setIsLoading] = useState(false); 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Bắt đầu tải
     setIsLoading(true);
 
     try {
-      // Gọi hàm giả lập
       await mockLogin();
       
-      // Giả lập đăng nhập thành công: Chuyển hướng đến Dashboard
+      // FIX: CẬP NHẬT TRẠNG THÁI XÁC THỰC THÀNH TRUE
+      setIsAuthenticated(true); 
+      
       alert('Đăng nhập thành công (Mock UI)');
-      navigate('/dashboard'); 
+      navigate('/dashboard'); // Chuyển hướng sẽ hoạt động
       
     } catch (error) {
-      // Xử lý lỗi giả lập
       alert('Đăng nhập thất bại (Mock UI)');
     } finally {
-      // Kết thúc tải
       setIsLoading(false);
     }
   };
@@ -57,6 +53,7 @@ const LoginPage: React.FC = () => {
         </p>
       }
     >
+      {/* ... (Phần UI form giữ nguyên) ... */}
       <form onSubmit={handleSubmit}>
         <Input 
           label="Email"
@@ -67,7 +64,7 @@ const LoginPage: React.FC = () => {
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          disabled={isLoading} // Vô hiệu hóa khi đang tải
+          disabled={isLoading}
         />
         
         <Input
@@ -85,7 +82,7 @@ const LoginPage: React.FC = () => {
         <Button 
           type="submit" 
           variant="primary"
-          icon={isLoading ? <span>🔄</span> : <LoginIcon />} // Thay icon khi đang tải
+          icon={isLoading ? <span>🔄</span> : <LoginIcon />}
           disabled={isLoading}
         >
           {isLoading ? 'Đang xử lý...' : 'Đăng nhập'}

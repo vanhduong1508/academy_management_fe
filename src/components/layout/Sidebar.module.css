@@ -1,33 +1,42 @@
 /* src/components/layout/Sidebar.module.css */
 
 .sidebar {
-    width: 250px; 
-    flex-shrink: 0; 
-    background-color: #1F2937; 
+    width: 200px;
+    flex-shrink: 0;
+    background-color: #1F2937; /* Màu nền tối */
     color: #F9FAFB;
-    padding: 20px 0;
+    padding: 10px 0;
     
-    /* Thiết lập cho nút đăng xuất cố định ở dưới */
+    /* FIX: Cố định Sidebar */
+    height: 100vh; 
+    position: sticky; /* Hoặc fixed, nhưng sticky hoạt động tốt hơn trong flex container */
+    top: 0;
+    z-index: 20; 
+    
     display: flex;
     flex-direction: column;
     justify-content: space-between;
 }
 
-/* --- LOGO --- */
+/* --- LOGO/TIÊU ĐỀ --- */
 .logo {
     text-align: center;
-    font-size: 20px;
-    font-weight: 700;
-    padding: 10px 0 30px;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 10px 10px 20px;
+    color: #A78BFA;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 /* --- NAVIGATION --- */
+.nav {
+    flex-grow: 1;
+}
+
 .nav ul {
     list-style: none;
     padding: 0 10px;
-    flex-grow: 1; /* Cho phép nav chiếm phần lớn không gian */
 }
 
 .nav li {
@@ -37,22 +46,25 @@
 .navLink {
     display: flex;
     align-items: center;
-    padding: 10px 15px;
+    padding: 8px 10px;
     text-decoration: none;
-    color: #F9FAFB;
+    color: #E5E7EB;
     border-radius: 5px;
-    transition: background-color 0.2s, color 0.2s;
+    transition: background-color 0.2s;
+    font-size: 14px;
 }
 
 /* Style cho mục đang ACTIVE */
 .active {
-    background-color: #3B82F6; /* Màu xanh nổi bật */
+    background-color: #374151; 
     color: #FFFFFF;
     font-weight: 600;
+    border-left: 3px solid #8B5CF6; /* Viền tím đậm */
+    padding-left: 7px; 
 }
 
 .navLink:not(.active):hover {
-    background-color: #374151; /* Màu hover khi không active */
+    background-color: #37415133;
 }
 
 .icon {
@@ -60,26 +72,27 @@
     font-size: 16px;
 }
 
-/* --- LOGOUT --- */
-.logoutSection {
-    padding: 20px 10px 0;
+/* --- BOTTOM MENU (Cài đặt & Đăng xuất) --- */
+.bottomMenu {
+    padding: 10px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.logoutSection button {
-    width: 100%;
-    background: none;
-    border: none;
-    color: #FF7F7F; /* Màu đỏ cho Đăng xuất */
-    padding: 10px 15px;
-    text-align: left;
+.menuItem {
+    display: flex;
+    align-items: center;
+    padding: 8px 10px;
     cursor: pointer;
-    font-size: 14px;
-    font-weight: 600;
     border-radius: 5px;
-    transition: background-color 0.2s;
+    margin-bottom: 5px;
+    color: #E5E7EB;
+    font-size: 14px;
 }
 
-.logoutSection button:hover {
-    background-color: #374151;
+.menuItem:hover {
+    background-color: #37415133;
+}
+
+.logout {
+    color: #FF7F7F; 
 }

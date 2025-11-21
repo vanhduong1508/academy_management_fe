@@ -1,28 +1,28 @@
 // src/components/layout/MainLayout.tsx
 
 import React from 'react';
-import Sidebar from './Sidebar'; // Sẽ tạo sau
-import Header from './Header';   // Sẽ tạo sau
+import Sidebar from './Sidebar'; 
+import Header from './Header';   
 import styles from './MainLayout.module.css';
 
 interface MainLayoutProps {
-  children: React.ReactNode; // Nội dung của trang hiện tại (Dashboard, Users, v.v.)
+  children: React.ReactNode; 
+  onLogout: () => void; // Thêm prop onLogout
 }
 
-const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
+const MainLayout: React.FC<MainLayoutProps> = ({ children, onLogout }) => {
   return (
     <div className={styles.container}>
       
-      {/* 1. Sidebar */}
-      <Sidebar />
+      {/* Sidebar - TRUYỀN PROP onLogout */}
+      <Sidebar onLogout={onLogout} />
       
-      {/* Khối chứa Header và Nội dung chính */}
       <div className={styles.mainContentArea}>
         
-        {/* 2. Header */}
+        {/* Header (Header lớn màu tím) */}
         <Header />
         
-        {/* 3. Nội dung chính của trang */}
+        {/* Nội dung chính của trang */}
         <main className={styles.pageContent}>
           {children}
         </main>
