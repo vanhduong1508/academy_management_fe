@@ -1,0 +1,53 @@
+/* src/components/layout/Header.module.css */
+
+.header {
+    height: 60px; 
+    background-color: #FFFFFF;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    padding: 0 20px;
+    
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+    position: sticky; 
+    top: 0;
+    z-index: 10;
+}
+
+.pageTitle {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1F2937;
+}
+
+.userSection {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Khoảng cách giữa các phần tử */
+}
+
+.notificationIcon {
+    font-size: 20px;
+    cursor: pointer;
+    color: #4B5563;
+}
+
+.username {
+    font-size: 14px;
+    color: #4B5563;
+    font-weight: 500;
+}
+
+.avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #3B82F6; /* Màu nền avatar */
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}

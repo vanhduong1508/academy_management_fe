@@ -1,0 +1,20 @@
+/* src/components/layout/MainLayout.module.css */
+
+.container {
+    display: flex; /* Kích hoạt Flexbox để sắp xếp Sidebar và Main Content */
+    min-height: 100vh;
+    background-color: #F8F9FA; /* Nền ứng dụng (xám nhạt) */
+}
+
+.mainContentArea {
+    flex-grow: 1; /* Cho phép khu vực này chiếm hết không gian còn lại */
+    display: flex;
+    flex-direction: column; /* Sắp xếp Header và Content theo chiều dọc */
+}
+
+.pageContent {
+    flex-grow: 1; /* Cho phép content chiếm hết phần còn lại sau Header */
+    padding: 20px;
+    /* Có thể giới hạn chiều cao và cho phép cuộn */
+    overflow-y: auto; 
+}
