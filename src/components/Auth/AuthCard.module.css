@@ -1,0 +1,74 @@
+/* src/components/Auth/AuthCard.module.css */
+
+.authContainer {
+    /* Thiết lập nền cho toàn bộ màn hình */
+    min-height: 100vh;
+    width: 100%;
+    
+    /* Màu nền (background) xanh nhạt/tím nhạt giống trong ảnh */
+    background: #f0f4ff; 
+    
+    /* Căn giữa tuyệt đối thẻ AuthCard */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.authCard {
+    /* Khung thẻ trắng */
+    background-color: #FFFFFF;
+    padding: 40px 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+    
+    /* Kích thước thẻ cố định hoặc tối đa (ví dụ 400px) */
+    width: 100%;
+    max-width: 400px; 
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.iconContainer {
+    /* Style cho Icon trên đầu form */
+    display: inline-block;
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #4B5563; /* Màu xám */
+}
+
+.title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1F2937; /* Màu đen */
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    font-size: 14px;
+    color: #9CA3AF; /* Màu xám nhạt */
+    margin-top: 0;
+}
+
+.formContent {
+    /* Khoảng cách giữa header và footer với nội dung form */
+    margin-bottom: 20px;
+}
+
+.footer {
+    text-align: center;
+    font-size: 14px;
+    color: #6B7280;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #E5E7EB; /* Đường kẻ phân cách */
+}
+
+.footer a {
+    color: #1F2937; /* Màu đen cho link Đăng nhập ngay */
+    font-weight: 600;
+    text-decoration: none;
+}
