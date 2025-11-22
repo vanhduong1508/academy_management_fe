@@ -1,0 +1,136 @@
+.loginContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f7f9fc; /* Màu nền nhẹ nhàng */
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.loginCard {
+    background: #ffffff;
+    padding: 30px 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.cardHeader {
+    margin-bottom: 30px;
+}
+
+.icon {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #eeefff; /* Màu nền icon */
+    color: #8B5CF6; /* Màu tím cho icon */
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1F2937;
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    font-size: 14px;
+    color: #6B7280;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 8px;
+    margin-top: 15px;
+}
+
+.input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #D1D5DB;
+    border-radius: 8px;
+    font-size: 16px;
+    background-color: #F9FAFB;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+}
+
+.input:focus {
+    border-color: #8B5CF6;
+    outline: none;
+    box-shadow: 0 0 0 1px #8B5CF6;
+}
+
+.submitButton {
+    background-color: #1F2937; /* Màu nền đen/xám đậm */
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 30px;
+    transition: background-color 0.2s, opacity 0.2s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.submitButton i {
+    margin-right: 8px;
+}
+
+.submitButton:hover:not(:disabled) {
+    background-color: #4B5563;
+}
+
+.submitButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.registerLink {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #6B7280;
+    text-align: center;
+}
+
+.link {
+    color: #8B5CF6;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.link:hover {
+    text-decoration: underline;
+}
+
+.errorMessage {
+    background-color: #FEE2E2;
+    color: #EF4444;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 14px;
+    text-align: center;
+    margin-bottom: 15px;
+    border: 1px solid #FCA5A5;
+}

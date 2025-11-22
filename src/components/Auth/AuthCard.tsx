@@ -17,7 +17,6 @@ const AuthCard: React.FC<AuthCardProps> = ({
   icon 
 }) => {
   return (
-    // auth-container là lớp chứa nền (background) màu xanh nhạt
     <div className={styles.authContainer}> 
       {/* auth-card là khung trắng nổi lên */}
       <div className={styles.authCard}> 

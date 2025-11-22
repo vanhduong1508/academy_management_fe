@@ -1,81 +1,102 @@
 // src/App.tsx
 
-import React, { useState } from 'react'; // <-- Import useState
-import { 
-  BrowserRouter as Router, 
-  Routes, 
-  Route, 
-  Navigate, 
-  Outlet 
-} from 'react-router-dom';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Outlet, Navigate } from 'react-router-dom';
 
-// Trang Auth (Không cần xác thực)
+// --- AUTH COMPONENTS (Public Routes) ---
 import LoginPage from './pages/Auth/LoginPage';
 import RegisterPage from './pages/Auth/RegisterPage';
 
-// Layout chính và các trang Protected (Cần xác thực)
+// --- LAYOUT COMPONENTS ---
 import MainLayout from './components/layout/MainLayout';
-// Import các trang nội dung
-import DashboardPage from './pages/Auth/DashboardPage'; // <-- Đảm bảo đúng đường dẫn
-const UserManagementPage = () => <h1>Quản lý Người dùng</h1>;
-const CourseManagementPage = () => <h1>Quản lý Khóa học</h1>;
-const StudentManagementPage = () => <h1>Quản lý Học viên</h1>;
-const SettingsPage = () => <h1>Cài đặt hệ thống</h1>; 
+
+// --- PROTECTED COMPONENTS (Auth Routes) ---
+// 1. Tổng quan
+import DashboardPage from './pages/Auth/DashboardPage';
+
+// 2. Học viên
+import StudentManagementPage from './pages/Auth/StudentManagementPage'; 
+
+// 3. Khóa học
+import CourseManagementPage from './pages/Auth/CourseManagementPage'; 
+
+// 4. Đăng ký
+import RegistrationManagementPage from './pages/Auth/RegistrationManagementPage'; 
+
+// 5. Chứng chỉ
+import CertificationManagementPage from './pages/Auth/CertificationManagementPage'; 
+
+// 6. Thống kê
+import StatisticsPage from './pages/Auth/StatisticsPage'; 
+
+// --- 404 Component ---
+const NotFoundPage: React.FC = () => (
+    <div style={{ padding: '50px', textAlign: 'center' }}>
+        <h1 style={{ fontSize: '36px', color: '#1F2937' }}>404 - Không tìm thấy trang</h1>
+        <p style={{ marginTop: '10px', color: '#6B7280' }}>Đường dẫn bạn truy cập không tồn tại. Vui lòng kiểm tra lại.</p>
+        <Navigate to="/dashboard" replace />
+    </div>
+);
 
 
 const App: React.FC = () => {
-  // 1. Quản lý trạng thái xác thực (Mặc định là FALSE khi chưa đăng nhập)
-  const [isAuthenticated, setIsAuthenticated] = useState(false); 
+    // State giả định cho trạng thái xác thực (Authentication State)
+    const [isAuthenticated, setIsAuthenticated] = useState(true); // Đặt mặc định là TRUE để dễ dàng phát triển UI
+    
+    // Logic Mock: Đăng nhập thành công
+    const handleLogin = (isSuccess: boolean) => {
+        if (isSuccess) {
+            setIsAuthenticated(true);
+            return true;
+        }
+        return false;
+    };
 
-  // Hàm mock cho việc Đăng xuất
-  const handleLogout = () => {
-      setIsAuthenticated(false);
-      // Có thể thêm navigate('/') ở đây nếu cần
-      console.log('Đã đăng xuất (Mock UI)');
-  };
+    // Logic Mock: Đăng xuất
+    const handleLogout = () => {
+        setIsAuthenticated(false);
+    };
 
+    return (
+        <Router>
+            <Routes>
+                
+                {/* 1. Tuyến đường KHÔNG CẦN XÁC THỰC (Public Routes) */}
+                <Route path="/login" element={
+                    isAuthenticated ? <Navigate to="/dashboard" replace /> : <LoginPage onLogin={handleLogin} />
+                } />
+                <Route path="/register" element={
+                    isAuthenticated ? <Navigate to="/dashboard" replace /> : <RegisterPage />
+                } />
+                
+                {/* Redirect từ root '/' đến '/dashboard' nếu đã đăng nhập, hoặc '/login' nếu chưa */}
+                <Route path="/" element={
+                    isAuthenticated ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />
+                } />
+                
+                {/* 2. Tuyến đường CẦN XÁC THỰC (Protected Routes) */}
+                <Route 
+                    element={isAuthenticated ? <MainLayout onLogout={handleLogout}><Outlet /></MainLayout> : <Navigate to="/login" replace />} 
+                >
+                    {/* Các tuyến đường con sẽ hiển thị trong MainLayout */}
+                    <Route path="dashboard" element={<DashboardPage />} />
+                    <Route path="students" element={<StudentManagementPage />} />
+                    <Route path="courses" element={<CourseManagementPage />} />
+                    
+                    {/* Các path mới theo Sidebar */}
+                    <Route path="register-management" element={<RegistrationManagementPage />} />
+                    <Route path="certificates" element={<CertificationManagementPage />} /> 
+                    <Route path="statistics" element={<StatisticsPage />} />
+                    
+                    {/* <Route path="users" element={<UserManagementPage />} /> */}
+                </Route>
 
-  return (
-    <Router>
-      <Routes>
-        
-        {/* ========================================================= */}
-        {/* 1. Tuyến đường KHÔNG CẦN XÁC THỰC (Auth Routes) */}
-        {/* ========================================================= */}
-        <Route 
-          path="/login" 
-          // Truyền hàm cập nhật trạng thái
-          element={<LoginPage setIsAuthenticated={setIsAuthenticated} />} 
-        />
-        <Route path="/register" element={<RegisterPage />} />
-        
-        {/* Chuyển hướng mặc định: nếu đăng nhập rồi thì vào Dashboard, chưa thì vào Login */}
-        <Route path="/" element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />} />
+                {/* 3. 404 Route */}
+                <Route path="*" element={<NotFoundPage />} />
 
-
-        {/* ========================================================= */}
-        {/* 2. Tuyến đường CẦN XÁC THỰC (Protected Routes) */}
-        {/* ========================================================= */}
-        <Route 
-          // Nếu chưa xác thực, chuyển hướng về /login
-          element={isAuthenticated ? <MainLayout onLogout={handleLogout}><Outlet /></MainLayout> : <Navigate to="/login" replace />} 
-        >
-            {/* Các tuyến đường con sẽ hiển thị trong MainLayout */}
-            <Route path="dashboard" element={<DashboardPage />} />
-            <Route path="students" element={<StudentManagementPage />} />
-            <Route path="courses" element={<CourseManagementPage />} />
-            <Route path="users" element={<UserManagementPage />} />
-            <Route path="settings" element={<SettingsPage />} />
-            
-            {/* Thêm các trang tương ứng với Sidebar khác vào đây */}
-        </Route>
-
-        {/* 3. Tuyến đường 404 */}
-        <Route path="*" element={<h1>404 - Không tìm thấy trang</h1>} />
-        
-      </Routes>
-    </Router>
-  );
+            </Routes>
+        </Router>
+    );
 };
 
 export default App;

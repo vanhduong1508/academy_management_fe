@@ -14,6 +14,7 @@ const navItems = [
   { name: 'Học viên', path: '/students', icon: '🧑‍🎓' },
   { name: 'Khóa học', path: '/courses', icon: '📚' },
   { name: 'Đăng ký', path: '/register-management', icon: '📝' },
+  { name: 'Chứng chỉ', path: '/certificates', icon: '🏅' },
   { name: 'Thống kê', path: '/statistics', icon: '📊' },
 ];
 
