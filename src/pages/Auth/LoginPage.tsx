@@ -1,95 +1,92 @@
-// src/pages/Auth/LoginPage.tsx
-
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import AuthCard from '../../components/Auth/AuthCard';
-import Input from '../../components/common/Input';
-import Button from '../../components/common/Button';
-// Import type mới
-import { LoginPageProps } from '../../types/Auth'; 
+import { Link } from 'react-router-dom';
+// Đã sửa: Sử dụng đường dẫn tương đối trong cùng thư mục (./)
+import styles from './LoginPage.module.css'; 
 
+interface LoginPageProps {
+    onLogin: (isSuccess: boolean) => boolean;
+}
 
-// Icon giả định
-const UserIcon = () => <span style={{ marginRight: '8px' }}>👤</span>;
-const LoginIcon = () => <span style={{ marginRight: '8px' }}>➡️</span>;
-const mockLogin = async () => new Promise(resolve => setTimeout(resolve, 1000));
+const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
-
-// SỬA: Nhận props setIsAuthenticated
-const LoginPage: React.FC<LoginPageProps> = ({ setIsAuthenticated }) => {
-  const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false); 
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      await mockLogin();
-      
-      // FIX: CẬP NHẬT TRẠNG THÁI XÁC THỰC THÀNH TRUE
-      setIsAuthenticated(true); 
-      
-      alert('Đăng nhập thành công (Mock UI)');
-      navigate('/dashboard'); // Chuyển hướng sẽ hoạt động
-      
-    } catch (error) {
-      alert('Đăng nhập thất bại (Mock UI)');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  return (
-    <AuthCard
-      title="Đăng nhập"
-      subtitle="Hệ thống quản lý trung tâm dạy học"
-      icon={<UserIcon />}
-      footerLink={
-        <p>
-          Chưa có tài khoản? <Link to="/register">Đăng ký ngay</Link>
-        </p>
-      }
-    >
-      {/* ... (Phần UI form giữ nguyên) ... */}
-      <form onSubmit={handleSubmit}>
-        <Input 
-          label="Email"
-          id="email"
-          name="email"
-          type="email"
-          placeholder="example@email.com"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          disabled={isLoading}
-        />
+    const handleLoginSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
         
-        <Input
-          label="Mật khẩu"
-          id="password"
-          name="password"
-          type="password"
-          placeholder="••••••••"
-          required
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          disabled={isLoading}
-        />
-        
-        <Button 
-          type="submit" 
-          variant="primary"
-          icon={isLoading ? <span>🔄</span> : <LoginIcon />}
-          disabled={isLoading}
-        >
-          {isLoading ? 'Đang xử lý...' : 'Đăng nhập'}
-        </Button>
-      </form>
-    </AuthCard>
-  );
+        if (!email || !password) {
+            setError('Vui lòng điền đầy đủ Email và Mật khẩu.');
+            return;
+        }
+
+        setIsLoading(true);
+        setError('');
+
+        // --- MOCK LOGIN LOGIC ---
+        setTimeout(() => {
+            setIsLoading(false);
+            
+            if (email === 'admin@example.com' && password === '123456') {
+                onLogin(true);
+            } else {
+                setError('Email hoặc Mật khẩu không đúng.');
+                onLogin(false);
+            }
+        }, 1500);
+    };
+
+    return (
+        <div className={styles.loginContainer}>
+            <div className={styles.loginCard}>
+                <div className={styles.cardHeader}>
+                    <span className={styles.icon}>
+                        <i className="fas fa-user-lock"></i>
+                    </span>
+                    <h2 className={styles.title}>Đăng nhập</h2>
+                    <p className={styles.subtitle}>Hệ thống quản lý trung tâm dạy học</p>
+                </div>
+                
+                <form className={styles.form} onSubmit={handleLoginSubmit}>
+                    
+                    {error && <div className={styles.errorMessage}>{error}</div>}
+                    
+                    <label className={styles.label}>Email</label>
+                    <input
+                        type="email"
+                        placeholder="example@email.com"
+                        className={styles.input}
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                    />
+                    
+                    <label className={styles.label}>Mật Khẩu</label>
+                    <input
+                        type="password"
+                        placeholder="••••••••"
+                        className={styles.input}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                    />
+                    
+                    <button type="submit" className={styles.submitButton} disabled={isLoading}>
+                        {isLoading ? (
+                            <i className="fas fa-spinner fa-spin"></i>
+                        ) : (
+                            <><i className="fas fa-sign-in-alt"></i> Đăng nhập</>
+                        )}
+                    </button>
+                    
+                    <p className={styles.registerLink}>
+                        Chưa có tài khoản? <Link to="/register" className={styles.link}>Đăng ký ngay</Link>
+                    </p>
+                </form>
+            </div>
+        </div>
+    );
 };
 
 export default LoginPage;
