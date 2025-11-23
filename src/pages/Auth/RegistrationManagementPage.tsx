@@ -1,7 +1,5 @@
-// src/pages/Auth/RegistrationManagementPage.tsx
-
 import React, { useEffect, useState } from 'react';
-import styles from './RegistrationManagementPage.module.css';
+import styles from '../../styles/RegistrationManagementPage.module.css';
 import { Enrollment } from '../../types/enrollment';
 import { getAllEnrollments, updateEnrollmentResult } from '../../services/api/enrollmentApi';
 
@@ -35,9 +33,7 @@ const RegistrationManagementPage: React.FC = () => {
   }, []);
 
   const handleStatusChange = async (id: number, newStatus: Enrollment['result']) => {
-    // Mock update hoặc gọi backend update nếu có API
     try {
-      // Ví dụ: update enrollment result nếu trạng thái là "PASSED" hoặc "FAILED"
       if (newStatus === 'PASSED' || newStatus === 'FAILED') {
         await updateEnrollmentResult(id, { passed: newStatus === 'PASSED' });
       }

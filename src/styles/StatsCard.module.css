@@ -1,4 +1,4 @@
-/* src/components/dashboard/StatsCard.module.css */
+
 
 .card {
     display: flex;
@@ -7,7 +7,7 @@
     background-color: #FFFFFF;
     border-radius: 8px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    border-left: 5px solid var(--card-color); /* Sử dụng màu động */
+    border-left: 5px solid var(--card-color); 
 }
 
 .iconContainer {
@@ -15,7 +15,7 @@
     color: var(--card-color);
     margin-right: 15px;
     padding: 10px;
-    background-color: color-mix(in srgb, var(--card-color) 10%, white); /* Màu nền nhạt hơn màu chính */
+    background-color: color-mix(in srgb, var(--card-color) 10%, white); 
     border-radius: 50%;
     height: 50px;
     width: 50px;

@@ -1,17 +1,17 @@
-/* src/components/layout/Sidebar.module.css - Mới theo hình ảnh */
+
 
 .sidebar {
-    width: 240px; /* Tăng chiều rộng để khớp với hình ảnh */
+    width: 240px; 
     flex-shrink: 0;
-    background-color: #FFFFFF; /* Nền trắng */
+    background-color: #FFFFFF; 
     color: #1F2937;
-    padding: 0; /* Loại bỏ padding dọc tổng thể */
+    padding: 0; 
     
     height: 100vh; 
     position: sticky;
     top: 0;
     z-index: 20; 
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05); /* Bóng nhẹ */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05); 
     
     display: flex;
     flex-direction: column;
@@ -19,15 +19,15 @@
 }
 
 .logo {
-    /* Logo: Icon + Text (Quản lý dạy học) */
+    
     display: flex;
     align-items: center;
     justify-content: flex-start;
     font-size: 16px; 
     font-weight: 600;
-    padding: 16px 20px; /* Padding lớn */
-    color: #1F2937; /* Màu đen */
-    border-bottom: 1px solid #E5E7EB; /* Đường kẻ mờ */
+    padding: 16px 20px; 
+    color: #1F2937; 
+    border-bottom: 1px solid #E5E7EB; 
     margin-bottom: 10px; 
 }
 
@@ -54,30 +54,30 @@
 .navLink {
     display: flex;
     align-items: center;
-    padding: 12px 10px; /* Tăng padding dọc */
+    padding: 12px 10px; 
     text-decoration: none;
-    color: #1F2937; /* Màu chữ gần đen */
-    border-radius: 8px; /* Bo tròn nhẹ */
+    color: #1F2937; 
+    border-radius: 8px; 
     transition: background-color 0.2s, color 0.2s;
     font-size: 14px;
 }
 
-/* Style cho trạng thái Active (Nền đen, chữ trắng, không border left) */
+/* Style cho trạng thái Active  */
 .active {
-    background-color: #1F2937; /* Nền đen */
-    color: #FFFFFF; /* Màu chữ trắng */
+    background-color: #1F2937; 
+    color: #FFFFFF; 
     font-weight: 600;
-    border-left: none; /* Loại bỏ border-left */
-    padding-left: 10px; /* Giữ padding nhất quán */
+    border-left: none; 
+    padding-left: 10px; 
 }
 
 .navLink:not(.active):hover {
-    background-color: #F3F4F6; /* Màu xám rất nhạt khi hover */
+    background-color: #F3F4F6; 
     color: #1F2937;
 }
 
 .icon {
-    margin-right: 12px; /* Tăng khoảng cách icon */
+    margin-right: 12px; 
     font-size: 18px; 
     width: 20px; 
     height: 20px;
@@ -86,22 +86,21 @@
     justify-content: center;
 }
 
-/* Icon (ảnh) - Đảm bảo icon hiển thị màu đen */
+/* Icon */
 .navIcon {
     width: 100%;
     height: 100%;
     object-fit: contain;
-    filter: none; /* Icon mặc định là màu đen */
+    filter: none; 
     transition: filter 0.2s;
 }
 
 /* Khi link active, icon phải chuyển sang màu trắng */
 .active .navIcon {
-    /* Chuyển icon sang màu trắng (dùng filter để tô màu cho ảnh đen-trắng) */
     filter: brightness(0) invert(1); 
 }
 
-/* Vùng dưới cùng (User Profile và Đăng xuất) */
+/* User Profile và Đăng xuất */
 .bottomContainer {
     padding: 10px 10px 16px;
     border-top: 1px solid #E5E7EB; 
@@ -111,7 +110,7 @@
     display: flex;
     align-items: center;
     padding: 8px 10px;
-    margin-bottom: 10px; /* Khoảng cách với nút Đăng xuất */
+    margin-bottom: 10px; 
     color: #1F2937;
     font-size: 14px;
     font-weight: 500;
@@ -129,7 +128,7 @@
     padding: 10px;
     cursor: pointer;
     border-radius: 8px; 
-    border: 1px solid #D1D5DB; /* Viền mỏng xám */
+    border: 1px solid #D1D5DB;
     color: #1F2937; 
     font-size: 14px;
     font-weight: 600;
