@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 // Đã sửa: Sử dụng đường dẫn tương đối trong cùng thư mục (./)
-import styles from './LoginPage.module.css'; 
+import styles from '../../styles/LoginPage.module.css'; 
 
 interface LoginPageProps {
     onLogin: (isSuccess: boolean) => boolean;

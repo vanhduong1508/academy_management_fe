@@ -1,7 +1,7 @@
 // src/pages/Auth/CertificationManagementPage.tsx
 
 import React, { useState } from 'react';
-import styles from './CertificationManagementPage.module.css';
+import styles from '../../styles/CertificationManagementPage.module.css';
 
 // Định nghĩa types cho dữ liệu
 interface Certificate {

@@ -1,7 +1,7 @@
 // src/components/dashboard/SummaryWidget.tsx
 
 import React from 'react';
-import styles from './SummaryWidget.module.css';
+import styles from '../../styles/SummaryWidget.module.css';
 
 interface SummaryItem {
   name: string;

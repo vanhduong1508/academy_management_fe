@@ -1,7 +1,7 @@
 // src/pages/Auth/CourseManagementPage.tsx
 
 import React, { useState } from 'react';
-import styles from './CourseManagementPage.module.css';
+import styles from '../../styles/CourseManagementPage.module.css';
 
 // Dữ liệu giả định cho bảng khóa học
 const courseData = [

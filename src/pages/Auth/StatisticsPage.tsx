@@ -1,7 +1,7 @@
 // src/pages/Auth/StatisticsPage.tsx
 
 import React, { useState } from 'react';
-import styles from './StatisticsPage.module.css';
+import styles from '../../styles/StatisticsPage.module.css';
 
 // --- MOCK DATA DÙNG CHUNG ---
 const MOCK_DATA = {
