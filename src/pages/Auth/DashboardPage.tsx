@@ -45,6 +45,7 @@ const topBranchData = [
 const DashboardPage: React.FC = () => {
   return (
     <div className={styles.dashboard}>
+      <h1 className={styles.pageTitle}>Tổng quan</h1>
       
       {/* 1. Vùng Stats Cards */}
       <div className={styles.statsGrid}>
