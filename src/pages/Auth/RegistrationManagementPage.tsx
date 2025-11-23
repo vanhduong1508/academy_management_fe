@@ -1,7 +1,7 @@
 // src/pages/Auth/RegistrationManagementPage.tsx
 
 import React, { useState } from 'react';
-import styles from './RegistrationManagementPage.module.css';
+import styles from '../../styles/RegistrationManagementPage.module.css';
 
 // Định nghĩa types cho dữ liệu và trạng thái
 interface Registration {

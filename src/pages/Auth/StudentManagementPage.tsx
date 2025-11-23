@@ -1,7 +1,7 @@
 // src/pages/Auth/StudentManagementPage.tsx
 
 import React, { useState, useEffect } from 'react';
-import styles from './StudentManagementPage.module.css';
+import styles from '../../styles/StudentManagementPage.module.css';
 
 // 1. IMPORT CÁC THÀNH PHẦN TỪ SERVICE VÀ TYPES
 import { getAllStudents } from '../../services/api/studentApi'; 

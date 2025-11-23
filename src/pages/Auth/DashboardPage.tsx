@@ -4,7 +4,7 @@ import React from 'react';
 import StatsCard from '../../components/dashboard/StatsCard';
 import SummaryWidget from '../../components/dashboard/SummaryWidget'; // Import mới
 import RecentListWidget from '../../components/dashboard/RecentListWidget'; // Import mới
-import styles from './DashboardPage.module.css'; 
+import styles from '../../styles/DashboardPage.module.css'; 
 
 // Dữ liệu giả định (để khớp với hình ảnh)
 const statsData = [

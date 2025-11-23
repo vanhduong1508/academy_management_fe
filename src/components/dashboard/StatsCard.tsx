@@ -1,7 +1,7 @@
 // src/components/dashboard/StatsCard.tsx
 
 import React from 'react';
-import styles from './StatsCard.module.css';
+import styles from '../../styles/StatsCard.module.css';
 
 interface StatsCardProps {
   title: string;

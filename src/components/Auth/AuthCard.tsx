@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './AuthCard.module.css';
+import styles from '../../styles/AuthCard.module.css';
 
 interface AuthCardProps {
   title: string; // Tiêu đề lớn (Đăng nhập / Đăng ký tài khoản)

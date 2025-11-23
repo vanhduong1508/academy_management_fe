@@ -1,7 +1,7 @@
 // src/components/dashboard/RecentListWidget.tsx
 
 import React from 'react';
-import styles from './RecentListWidget.module.css';
+import styles from '../../styles/RecentListWidget.module.css';
 
 interface ListItem {
   id: string | number;

@@ -4,7 +4,7 @@ import React from 'react';
 // Nhập định nghĩa kiểu đã tạo
 import { InputProps } from '../../types/Input'; 
 // Nhập CSS Modules
-import styles from './Input.module.css';
+import styles from '../../styles/Input.module.css';
 
 const Input: React.FC<InputProps> = ({ label, ...props }) => {
   return (
