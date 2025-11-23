@@ -1,7 +1,6 @@
-/* src/pages/Auth/StudentManagementPage.module.css */
+
 
 .container {
-    /* Đảm bảo page content đã có padding từ MainLayout */
     padding: 0; 
 }
 
@@ -12,7 +11,7 @@
     margin-bottom: 20px;
 }
 
-/* --- Header Bar (Tìm kiếm và Thêm mới) --- */
+/* Header Bar */
 .headerBar {
     display: flex;
     justify-content: space-between;
@@ -66,13 +65,13 @@
     background-color: #374151;
 }
 
-/* --- Data Table --- */
+/* Data Table  */
 .tableContainer {
     background-color: #FFFFFF;
     border-radius: 8px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     padding: 20px;
-    overflow-x: auto; /* Cho phép cuộn ngang nếu bảng quá rộng */
+    overflow-x: auto; 
 }
 
 .sectionTitle {
@@ -94,7 +93,7 @@
     color: #6B7280;
     border-bottom: 2px solid #E5E7EB;
     font-weight: 600;
-    white-space: nowrap; /* Ngăn tiêu đề bị xuống dòng */
+    white-space: nowrap; 
 }
 
 .dataTable td {

@@ -1,4 +1,4 @@
-/* src/pages/Auth/StatisticsPage.module.css */
+
 
 .container {
     padding: 0; 
@@ -11,7 +11,7 @@
     margin-bottom: 20px;
 }
 
-/* --- Mini Stat Cards (Dùng chung với Dashboard) --- */
+/* Mini Stat Cards  */
 .miniStatCardsGrid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -46,7 +46,7 @@
     color: #8B5CF6; /* Màu tím chung */
 }
 
-/* --- Tab Navigation --- */
+/*  Tab Navigation  */
 .tabNavigation {
     display: flex;
     background-color: #FFFFFF;
@@ -73,7 +73,7 @@
     border-bottom: 3px solid #1F2937;
 }
 
-/* --- Tab Content --- */
+/* Tab Content  */
 .tabContentContainer {
     background-color: #FFFFFF;
     padding: 20px;
@@ -88,7 +88,7 @@
     margin-bottom: 20px;
 }
 
-/* --- Tab 1: Province Stats (Biểu đồ + Bảng) --- */
+/*  Province Stats  */
 .provinceStatsContainer {
     display: flex;
     gap: 30px;
@@ -115,9 +115,9 @@
 
 .bar {
     width: 100%;
-    background-color: #A78BFA; /* Màu tím nhạt cho cột */
+    background-color: #A78BFA; 
     border-radius: 3px 3px 0 0;
-    height: 100%; /* Chiều cao được đặt inline trong JS */
+    height: 100%; 
 }
 
 .barLabel {
@@ -142,7 +142,7 @@
     font-weight: 600;
 }
 
-/* --- Tab 2: Year Stats (Biểu đồ đường) --- */
+/* Tab 2: Year Stats  */
 .yearStatsHeader {
     display: flex;
     justify-content: space-between;
@@ -190,10 +190,10 @@
 .lineSvg {
     width: 100%;
     height: 100%;
-    /* Thêm các điểm mốc trục Y nếu cần */
+    
 }
 
-/* --- Tab 3: Course Details (Bảng) --- */
+/* Course Details  */
 .dataTable {
     width: 100%;
     border-collapse: collapse;
@@ -219,7 +219,7 @@
     background-color: #F9FAFB;
 }
 
-/* --- Tab 4: Student History (Lịch sử học viên) --- */
+/* Student History  */
 .studentHistoryCard {
     border: 1px solid #E5E7EB;
     border-radius: 8px;
