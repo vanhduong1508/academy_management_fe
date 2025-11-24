@@ -1,149 +1,186 @@
-// src/pages/Auth/CertificationManagementPage.tsx
+import React, { useEffect, useState } from "react";
+import styles from "../../styles/CertificationManagementPage.module.css";
+import {
+  getAllCertificates,
+  createCertificate,
+  revokeCertificate,
+} from "../../services/api/certificateApi";
 
-import React, { useState } from 'react';
-import styles from '../../styles/CertificationManagementPage.module.css';
-
-// Định nghĩa types cho dữ liệu
+// Kiểu dữ liệu FE
 interface Certificate {
-    id: string;
-    student: string;
-    course: string;
-    result: 'Đạt' | 'Không đạt';
-    issueDate: string;
-    note: string;
+  id: number;
+  enrollmentId: number;
+  certificateCode: string;
+  issuedDate: string;
+  status: "Valid" | "Revoked";
 }
 
-// Dữ liệu giả định
-const initialCertificates: Certificate[] = [
-  { id: 'CC001', student: 'Nguyễn Văn An', course: 'Khóa học Lập trình Web Frontend', result: 'Đạt', issueDate: '20/4/2024', note: 'Hoàn thành xuất sắc khóa học' },
-  { id: 'CC002', student: 'Trần Thị Bình', course: 'Khóa học Lập trình Web Frontend', result: 'Không đạt', issueDate: '20/4/2024', note: 'Cần cải thiện kỹ năng JavaScript' },
-];
-
 const CertificationManagementPage: React.FC = () => {
-  const [certificates, setCertificates] = useState(initialCertificates);
-  
-  // Tính toán số liệu thống kê cho Mini-Cards
-  const totalCertificates = certificates.length;
-  const passedCertificates = certificates.filter(c => c.result === 'Đạt').length;
-  const failedCertificates = certificates.filter(c => c.result === 'Không đạt').length;
-  const pendingCertificates = 0; // Giả định không có trạng thái "Chờ xử lý" trong mock data này
+  const [certificates, setCertificates] = useState<Certificate[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [enrollmentId, setEnrollmentId] = useState("");
 
-  const handleResultChange = (id: string, newResult: Certificate['result']) => {
-    setCertificates(prev => 
-      prev.map(cert => (cert.id === id ? { ...cert, result: newResult } : cert))
-    );
-    alert(`Cập nhật kết quả chứng chỉ ${id} thành: ${newResult} (Mock UI)`);
+  // Load danh sách
+  const loadCertificates = async () => {
+    try {
+      const data = await getAllCertificates();
+      setCertificates(data);
+    } catch (err) {
+      console.error("Lỗi load chứng chỉ:", err);
+    } finally {
+      setLoading(false);
+    }
   };
-  
-  const handleIssueCertificate = () => {
-    alert('Chức năng Cấp chứng chỉ mới đang được phát triển...');
+
+  useEffect(() => {
+    loadCertificates();
+  }, []);
+
+  // Tạo chứng chỉ mới
+  const handleCreate = async () => {
+    if (!enrollmentId) {
+      alert("Vui lòng nhập enrollmentId!");
+      return;
+    }
+
+    try {
+      await createCertificate({
+        enrollmentId: Number(enrollmentId),
+        status: "Valid",
+      });
+
+      alert("Cấp chứng chỉ thành công!");
+      setShowForm(false);
+      setEnrollmentId("");
+      loadCertificates();
+    } catch (err) {
+      alert("Không thể cấp chứng chỉ!");
+    }
   };
-  
-  const handleDownload = (id: string) => {
-    alert(`Đã tải xuống chứng chỉ: ${id} (Mock UI)`);
+
+  // Thu hồi
+  const handleRevoke = async (id: number) => {
+    if (!window.confirm("Thu hồi chứng chỉ này?")) return;
+
+    try {
+      await revokeCertificate(id);
+      loadCertificates();
+    } catch (err) {
+      alert("Lỗi revoke!");
+    }
   };
+
+  if (loading) return <p>Đang tải...</p>;
+
+  const total = certificates.length;
+  const valid = certificates.filter((c) => c.status === "Valid").length;
+  const revoked = certificates.filter((c) => c.status === "Revoked").length;
 
   return (
     <div className={styles.container}>
-      
-      {/* Tiêu đề trang */}
       <h1 className={styles.pageTitle}>Chứng chỉ</h1>
-      
-      {/* --- Mini Stat Cards --- */}
+
+      {/* MINI STATS */}
       <div className={styles.statsGrid}>
-        <div className={styles.statCard} data-type="total">
+        <div className={styles.statCard}>
           <p className={styles.statLabel}>Tổng chứng chỉ</p>
-          <div className={styles.statValue}>
-            <span className={styles.icon}>📄</span>
-            {totalCertificates}
-          </div>
+          <div className={styles.statValue}>📄 {total}</div>
         </div>
-        <div className={styles.statCard} data-type="passed">
-          <p className={styles.statLabel}>Đạt</p>
-          <div className={styles.statValue}>
-            <span className={styles.icon}>🧑‍🎓</span>
-            {passedCertificates}
-          </div>
+
+        <div className={styles.statCard}>
+          <p className={styles.statLabel}>Hợp lệ</p>
+          <div className={styles.statValue}>🧑‍🎓 {valid}</div>
         </div>
-        <div className={styles.statCard} data-type="failed">
-          <p className={styles.statLabel}>Không đạt</p>
-          <div className={styles.statValue}>
-            <span className={styles.icon}>❗</span>
-            {failedCertificates}
-          </div>
-        </div>
-        <div className={styles.statCard} data-type="pending">
-          <p className={styles.statLabel}>Chờ xử lý</p>
-          <div className={styles.statValue}>
-            <span className={styles.icon}>🕒</span>
-            {pendingCertificates}
-          </div>
+
+        <div className={styles.statCard}>
+          <p className={styles.statLabel}>Đã thu hồi</p>
+          <div className={styles.statValue}>❗ {revoked}</div>
         </div>
       </div>
 
-      {/* --- Bảng Quản lý Chứng chỉ --- */}
+      {/* FORM CẤP CHỨNG CHỈ */}
+      {showForm && (
+        <div className={styles.formModal}>
+          <div className={styles.formBox}>
+            <h3>Cấp chứng chỉ</h3>
+
+            <label>Enrollment ID</label>
+            <input
+              type="number"
+              value={enrollmentId}
+              onChange={(e) => setEnrollmentId(e.target.value)}
+              placeholder="Nhập ID enrollment..."
+            />
+
+            <div className={styles.formActions}>
+              <button onClick={handleCreate} className={styles.submitBtn}>
+                Cấp chứng chỉ
+              </button>
+              <button
+                className={styles.cancelBtn}
+                onClick={() => setShowForm(false)}
+              >
+                Hủy
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TABLE */}
       <div className={styles.tableContainer}>
         <div className={styles.tableHeader}>
-            <h2 className={styles.sectionTitle}>Quản lý chứng chỉ</h2>
-            {/* Nút Cấp chứng chỉ */}
-            <button className={styles.issueButton} onClick={handleIssueCertificate}>
-                + Cấp chứng chỉ
-            </button>
+          <h2>Quản lý chứng chỉ</h2>
+          <button className={styles.issueButton} onClick={() => setShowForm(true)}>
+            + Cấp chứng chỉ
+          </button>
         </div>
-        
+
         <table className={styles.dataTable}>
           <thead>
             <tr>
+              <th>ID</th>
               <th>Mã chứng chỉ</th>
-              <th>Học viên</th>
-              <th>Khóa học</th>
-              <th>Kết quả</th>
+              <th>Enrollment</th>
               <th>Ngày cấp</th>
-              <th>Ghi chú</th>
-              <th>Thao tác</th>
+              <th>Trạng thái</th>
+              <th>Hành động</th>
             </tr>
           </thead>
+
           <tbody>
             {certificates.map((cert) => (
               <tr key={cert.id}>
                 <td>{cert.id}</td>
-                <td><span className={styles.studentIcon}>👤</span> {cert.student}</td>
-                <td><span className={styles.courseIcon}>📚</span> {cert.course}</td>
-                
-                {/* Cột Kết quả (Dropdown) */}
-                <td className={styles.resultCell}>
-                    <span 
-                        className={styles.resultBadge} 
-                        data-result={cert.result === 'Đạt' ? 'passed' : 'failed'}
-                    >
-                        {cert.result}
-                    </span>
-                    <select 
-                        value={cert.result} 
-                        onChange={(e) => handleResultChange(cert.id, e.target.value as Certificate['result'])}
-                        className={styles.resultSelect}
-                    >
-                        <option value="Đạt">Đạt</option>
-                        <option value="Không đạt">Không đạt</option>
-                    </select>
-                </td>
-                
-                <td>📅 {cert.issueDate}</td>
-                <td className={styles.noteCell}>{cert.note}</td>
-                <td className={styles.actions}>
-                  <span 
-                    className={styles.actionIcon} 
-                    onClick={() => handleDownload(cert.id)}
+                <td>{cert.certificateCode}</td>
+                <td>{cert.enrollmentId}</td>
+                <td>📅 {cert.issuedDate}</td>
+
+                <td>
+                  <span
+                    className={styles.resultBadge}
+                    data-result={cert.status === "Valid" ? "passed" : "failed"}
                   >
-                    ⬇️
+                    {cert.status}
                   </span>
+                </td>
+
+                <td>
+                  {cert.status === "Valid" && (
+                    <button
+                      className={styles.revokeBtn}
+                      onClick={() => handleRevoke(cert.id)}
+                    >
+                      Thu hồi
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-      
     </div>
   );
 };
