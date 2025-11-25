@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styles from "../../styles/CourseManagementPage.module.css";
 import { courseApi } from "../../services/api/courseApi";
 import { Course, CourseCreateRequest, CourseUpdateRequest } from "../../types/course";
-
+import { AiTwotoneDelete } from "react-icons/ai";
 // Convert status từ backend -> UI theo ngày
 const calculateStatus = (startDate: string, endDate: string): string => {
   const now = new Date().getTime();
