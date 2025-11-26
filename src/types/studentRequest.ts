@@ -1,17 +1,13 @@
 export interface StudentCreateRequest {
-  code: string;
   fullName: string;
-  dob: string;
-  hometown: string;
-  province: string;
-  status: string;
+  dob: string; // yyyy-MM-dd
+  hometown?: string;
+  province?: string;
 }
-
 
 export interface StudentUpdateRequest {
   fullName: string;
-  dob: string;
-  hometown: string;
-  province: string;
-  status: string;
+  dob: string; // yyyy-MM-dd
+  hometown?: string;
+  province?: string;
 }

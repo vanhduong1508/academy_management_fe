@@ -1,14 +1,16 @@
 /* src/pages/Auth/CertificationManagementPage.module.css */
 
 .container {
-    padding: 0; 
+    padding: 20px; /* Thêm padding cho toàn bộ trang */
+    background-color: #F9FAFB; /* Nền nhẹ nhàng cho trang */
+    min-height: 100vh;
 }
 
 .pageTitle {
-    font-size: 24px;
+    font-size: 28px; /* Tăng cỡ chữ Title */
     font-weight: 700;
     color: #1F2937;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
 }
 
 /* --- Stats Grid (Mini Cards) --- */
@@ -22,13 +24,20 @@
 .statCard {
     background-color: #FFFFFF;
     padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    border-radius: 12px; /* Góc bo tròn hơn */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06); /* Shadow nổi bật hơn */
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     min-height: 100px;
+    border-left: 5px solid transparent; /* Chuẩn bị cho border màu */
 }
+
+.statCard[data-type="total"] { border-left-color: #8B5CF6; }
+.statCard[data-type="passed"] { border-left-color: #10B981; }
+.statCard[data-type="failed"] { border-left-color: #EF4444; }
+.statCard[data-type="pending"] { border-left-color: #F59E0B; }
+
 
 .statLabel {
     font-size: 14px;
@@ -37,25 +46,19 @@
 }
 
 .statValue {
-    font-size: 28px;
-    font-weight: 700;
+    font-size: 32px; /* Lớn hơn */
+    font-weight: 800; /* Đậm hơn */
     color: #1F2937;
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
-/* Custom colors based on data-type */
-.statCard[data-type="total"] .icon { color: #8B5CF6; }
-.statCard[data-type="passed"] .icon { color: #10B981; }
-.statCard[data-type="failed"] .icon { color: #EF4444; }
-.statCard[data-type="pending"] .icon { color: #F59E0B; }
-
 /* --- Table Container --- */
 .tableContainer {
     background-color: #FFFFFF;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
     padding: 20px;
     overflow-x: auto; 
 }
@@ -64,12 +67,12 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 .sectionTitle {
-    font-size: 18px;
-    font-weight: 600;
+    font-size: 20px;
+    font-weight: 700;
     color: #1F2937;
 }
 
@@ -83,6 +86,9 @@
     font-size: 14px;
     font-weight: 600;
     transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Khoảng cách giữa icon và chữ */
 }
 
 .issueButton:hover {
@@ -98,15 +104,16 @@
 
 .dataTable th {
     text-align: left;
-    padding: 12px 15px;
+    padding: 15px 15px; /* Tăng padding */
     color: #6B7280;
     border-bottom: 2px solid #E5E7EB;
     font-weight: 600;
     white-space: nowrap;
+    text-transform: uppercase; /* Uppercase cho Header */
 }
 
 .dataTable td {
-    padding: 12px 15px;
+    padding: 15px; /* Tăng padding */
     color: #1F2937;
     border-bottom: 1px solid #F3F4F6;
     vertical-align: middle;
@@ -116,64 +123,166 @@
     background-color: #F9FAFB;
 }
 
-.studentIcon, .courseIcon {
-    margin-right: 5px;
-    color: #8B5CF6;
-}
-
 .noteCell {
     font-style: italic;
     color: #4B5563;
-    max-width: 300px;
+    max-width: 250px; /* Giới hạn chiều rộng cột Ghi chú */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-/* --- Result Select/Badge --- */
-.resultCell {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
+/* --- Result Badge --- */
 .resultBadge {
-    padding: 4px 8px;
-    border-radius: 4px;
+    padding: 6px 10px;
+    border-radius: 20px; /* Bo tròn hoàn toàn */
     font-size: 12px;
-    font-weight: 600;
-    min-width: 60px;
+    font-weight: 700;
+    min-width: 80px;
     text-align: center;
+    display: inline-block;
 }
 
 .resultBadge[data-result="passed"] {
-    background-color: #D1FAE5; /* Xanh lá nhạt */
-    color: #10B981;
+    background-color: #D1FAE5;
+    color: #065F46; /* Màu đậm hơn cho chữ */
 }
 
 .resultBadge[data-result="failed"] {
-    background-color: #FEE2E2; /* Đỏ nhạt */
-    color: #EF4444;
+    background-color: #FEE2E2;
+    color: #991B1B; /* Màu đậm hơn cho chữ */
 }
 
-.resultSelect {
-    padding: 6px 10px;
-    border-radius: 6px;
-    border: 1px solid #D1D5DB;
-    font-size: 13px;
-    cursor: pointer;
-    outline: none;
-    appearance: none;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'%3e%3cpath d='M7 7l3-3 3 3m0 6l-3 3-3-3' stroke='%236B7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 8px center;
-    background-size: 12px;
+.resultBadge[data-result="pending"] {
+    background-color: #FFFBEB;
+    color: #B45309; /* Màu đậm hơn cho chữ */
 }
 
+/* --- Action Buttons --- */
 .actions {
-    cursor: pointer;
-    font-size: 18px;
-    opacity: 0.7;
-    transition: opacity 0.2s;
+    display: flex;
+    gap: 5px;
+    align-items: center;
 }
 
-.actions:hover {
-    opacity: 1;
+.downloadBtn, .revokeBtn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 5px;
+    transition: color 0.2s, transform 0.2s;
+}
+
+.downloadBtn {
+    color: #3B82F6; /* Xanh dương */
+}
+.revokeBtn {
+    color: #F87171; /* Đỏ nhạt */
+}
+
+.downloadBtn:hover, .revokeBtn:hover {
+    transform: scale(1.1);
+}
+
+/* ======================================================= */
+/* --- FORM MODAL (Cấp chứng chỉ) --- */
+/* ======================================================= */
+
+.formModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4); /* Màu nền tối hơn 1 chút */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.formBox {
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 480px; /* Chiều rộng form */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.3s ease-out;
+}
+
+.formTitle {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 25px;
+    color: #1F2937;
+    border-bottom: 1px solid #E5E7EB;
+    padding-bottom: 15px;
+}
+
+.formBox label {
+    display: block;
+    margin-bottom: 8px;
+    margin-top: 15px;
+    font-weight: 600;
+    color: #4B5563;
+    font-size: 14px;
+}
+
+.formBox select,
+.formBox textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #D1D5DB;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-size: 15px;
+    color: #1F2937;
+}
+
+.formBox textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.formActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 30px;
+}
+
+.submitBtn, .cancelBtn {
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 15px;
+    transition: background-color 0.2s;
+}
+
+.submitBtn {
+    background-color: #10B981; /* Xanh lá */
+    color: white;
+}
+
+.submitBtn:hover {
+    background-color: #059669;
+}
+
+.cancelBtn {
+    background-color: #6B7280; /* Xám */
+    color: white;
+}
+
+.cancelBtn:hover {
+    background-color: #4B5563;
+}
+
+/* Animation cho modal */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
 }

@@ -1,19 +1,23 @@
-import React, { useState, useEffect } from "react";
+// src/pages/StudentManagementPage.tsx
+import React, { useEffect, useState } from "react";
 import styles from "../../styles/StudentManagementPage.module.css";
 import {
-  getAllStudents,
+  getStudentsPage,
   deleteStudent,
   updateStudent,
   createStudent,
+  PageResponse,
 } from "../../services/api/studentApi";
 import { Student } from "../../types/student";
+import { StudentCreateRequest, StudentUpdateRequest } from "../../types/studentRequest";
+import { AiOutlineEdit, AiOutlineDelete } from "react-icons/ai";
+import { CiSearch } from "react-icons/ci";
 
 interface FormData {
   fullName: string;
-  dob: string;
-  hometown: string;
-  province: string;
-  status: string;
+  dob: string; // yyyy-MM-dd
+  hometown?: string;
+  province?: string;
 }
 
 const StudentManagementPage: React.FC = () => {
@@ -21,6 +25,11 @@ const StudentManagementPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Pagination
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const pageSize = 5;
 
   // Modal state
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
@@ -30,7 +39,6 @@ const StudentManagementPage: React.FC = () => {
     dob: "",
     hometown: "",
     province: "",
-    status: "ACTIVE",
   });
 
   // Fetch students
@@ -38,8 +46,9 @@ const StudentManagementPage: React.FC = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const data = await getAllStudents();
-      setStudents(data);
+      const data: PageResponse<Student> = await getStudentsPage(page, pageSize);
+      setStudents(data.content);
+      setTotalPages(data.totalPages);
     } catch (err: any) {
       setError(err.message || "Đã xảy ra lỗi khi tải dữ liệu.");
     } finally {
@@ -49,19 +58,17 @@ const StudentManagementPage: React.FC = () => {
 
   useEffect(() => {
     fetchStudents();
-  }, []);
+  }, [page]);
 
-  // Format date
-  const formatDate = (dateStr: string) => {
-    if (!dateStr) return "";
-    return dateStr.split("T")[0];
-  };
+  // Format date (dob is yyyy-MM-dd already)
+  const formatDate = (dateStr?: string | null) => dateStr || "";
 
-  // Filter students by search
-  const filteredStudents = students.filter(
-    (student) =>
-      student.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      student.fullName.toLowerCase().includes(searchTerm.toLowerCase())
+  // Filter students by search (search by studentCode or fullName)
+  const filteredStudents = students.filter((student) =>
+    (student.studentCode || "")
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase()) ||
+    (student.fullName || "").toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -76,7 +83,6 @@ const StudentManagementPage: React.FC = () => {
       dob: "",
       hometown: "",
       province: "",
-      status: "ACTIVE",
     });
   };
 
@@ -86,16 +92,15 @@ const StudentManagementPage: React.FC = () => {
     setIsAddMode(false);
     setFormData({
       fullName: student.fullName,
-      dob: student.dob.split("T")[0],
-      hometown: student.hometown,
-      province: student.province,
-      status: student.status,
+      dob: student.dob,
+      hometown: student.hometown || "",
+      province: student.province || "",
     });
   };
 
   // Save student (create/update)
   const handleSaveStudent = async (e: React.FormEvent) => {
-    e.preventDefault(); // prevent form submit default
+    e.preventDefault();
     if (!formData.fullName || !formData.dob) {
       alert("Vui lòng nhập đầy đủ thông tin bắt buộc!");
       return;
@@ -103,50 +108,37 @@ const StudentManagementPage: React.FC = () => {
 
     try {
       if (isAddMode) {
-        await createStudent(formData as any);
+        const payload: StudentCreateRequest = { ...formData };
+        await createStudent(payload);
         alert("Thêm học viên thành công!");
       } else if (editingStudent) {
-        await updateStudent(editingStudent.id, formData as any);
+        const payload: StudentUpdateRequest = { ...formData };
+        await updateStudent(editingStudent.id, payload);
         alert("Cập nhật học viên thành công!");
       }
-      await fetchStudents();
       setEditingStudent(null);
       setIsAddMode(false);
+      fetchStudents();
     } catch (err: any) {
-      alert("Lỗi khi lưu học viên: " + err.message);
+      alert("Lỗi khi lưu học viên: " + (err.message || err));
     }
   };
 
   // Delete student
   const handleDelete = async (e: React.MouseEvent, id: number) => {
-    e.preventDefault(); // prevent default behavior
+    e.preventDefault();
     if (!window.confirm(`Bạn có chắc muốn xóa học viên ID ${id}?`)) return;
     try {
       await deleteStudent(id);
       alert("Xóa học viên thành công!");
-      await fetchStudents();
+      fetchStudents();
     } catch (err: any) {
-      alert("Lỗi khi xóa học viên: " + err.message);
+      alert("Lỗi khi xóa học viên: " + (err.message || err));
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className={styles.container}>
-        <h1 className={styles.pageTitle}>Học viên</h1>
-        <p>Đang tải dữ liệu học viên...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className={styles.container}>
-        <h1 className={styles.pageTitle}>Học viên</h1>
-        <p className={styles.error}>Lỗi: {error}</p>
-      </div>
-    );
-  }
+  if (isLoading) return <p>Đang tải dữ liệu...</p>;
+  if (error) return <p>Lỗi: {error}</p>;
 
   return (
     <div className={styles.container}>
@@ -155,7 +147,7 @@ const StudentManagementPage: React.FC = () => {
       {/* Header */}
       <div className={styles.headerBar}>
         <div className={styles.searchContainer}>
-          <span className={styles.searchIcon}>🔍</span>
+          <CiSearch className={styles.searchIcon} />
           <input
             type="text"
             placeholder="Tìm kiếm theo mã hoặc tên học viên..."
@@ -171,7 +163,6 @@ const StudentManagementPage: React.FC = () => {
 
       {/* Table */}
       <div className={styles.tableContainer}>
-        <h2 className={styles.sectionTitle}>Danh sách học viên</h2>
         <table className={styles.dataTable}>
           <thead>
             <tr>
@@ -188,37 +179,36 @@ const StudentManagementPage: React.FC = () => {
             {filteredStudents.length > 0 ? (
               filteredStudents.map((student) => (
                 <tr key={student.id}>
-                  <td>{student.code}</td>
+                  <td>{student.studentCode}</td>
                   <td>{student.fullName}</td>
                   <td>{formatDate(student.dob)}</td>
                   <td>{student.hometown}</td>
                   <td>{student.province}</td>
                   <td>{student.status}</td>
                   <td className={styles.actions}>
-                    <button
-                      className={styles.actionButton}
-                      onClick={() => handleEdit(student)}
-                    >
-                      ✏️
+                    <button onClick={() => handleEdit(student)} title="Chỉnh sửa">
+                      <AiOutlineEdit />
                     </button>
-                    <button
-                      className={styles.actionButton}
-                      onClick={(e) => handleDelete(e, student.id)}
-                    >
-                      🗑️
+                    <button onClick={(e) => handleDelete(e, student.id)} title="Xóa">
+                      <AiOutlineDelete />
                     </button>
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan={7} className={styles.noData}>
-                  Không tìm thấy học viên phù hợp.
-                </td>
+                <td colSpan={7}>Không tìm thấy học viên phù hợp.</td>
               </tr>
             )}
           </tbody>
         </table>
+
+        {/* Pagination */}
+        <div className={styles.pagination}>
+          <button disabled={page === 0} onClick={() => setPage(page - 1)}>Prev</button>
+          <span>Page {page + 1} / {totalPages}</span>
+          <button disabled={page + 1 >= totalPages} onClick={() => setPage(page + 1)}>Next</button>
+        </div>
       </div>
 
       {/* Modal */}
@@ -231,55 +221,30 @@ const StudentManagementPage: React.FC = () => {
               <input
                 type="text"
                 value={formData.fullName}
-                onChange={(e) =>
-                  setFormData({ ...formData, fullName: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                required
               />
-
               <label>Ngày sinh</label>
               <input
                 type="date"
                 value={formData.dob}
-                onChange={(e) =>
-                  setFormData({ ...formData, dob: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
+                required
               />
-
               <label>Quê quán</label>
               <input
                 type="text"
                 value={formData.hometown}
-                onChange={(e) =>
-                  setFormData({ ...formData, hometown: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, hometown: e.target.value })}
               />
-
               <label>Tỉnh thường trú</label>
               <input
                 type="text"
                 value={formData.province}
-                onChange={(e) =>
-                  setFormData({ ...formData, province: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, province: e.target.value })}
               />
-
-              <label>Trạng thái</label>
-              <input
-                type="text"
-                value={formData.status}
-                onChange={(e) =>
-                  setFormData({ ...formData, status: e.target.value })
-                }
-              />
-
               <div className={styles.modalActions}>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEditingStudent(null);
-                    setIsAddMode(false);
-                  }}
-                >
+                <button type="button" onClick={() => { setEditingStudent(null); setIsAddMode(false); }}>
                   Hủy
                 </button>
                 <button type="submit">Lưu</button>
