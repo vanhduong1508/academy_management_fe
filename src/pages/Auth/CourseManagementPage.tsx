@@ -2,17 +2,8 @@ import React, { useEffect, useState } from "react";
 import styles from "../../styles/CourseManagementPage.module.css";
 import { courseApi } from "../../services/api/courseApi";
 import { Course, CourseCreateRequest, CourseUpdateRequest } from "../../types/course";
-import { AiTwotoneDelete } from "react-icons/ai";
-// Convert status từ backend -> UI theo ngày
-const calculateStatus = (startDate: string, endDate: string): string => {
-  const now = new Date().getTime();
-  const start = new Date(startDate).getTime();
-  const end = new Date(endDate).getTime();
-
-  if (now < start) return "Sắp diễn ra";
-  if (now >= start && now <= end) return "Đang diễn ra";
-  return "Đã kết thúc";
-};
+import { AiOutlineEdit, AiOutlineDelete } from "react-icons/ai";
+import { CiSearch } from "react-icons/ci";
 
 const CourseManagementPage: React.FC = () => {
   const [courses, setCourses] = useState<Course[]>([]);
@@ -29,43 +20,40 @@ const CourseManagementPage: React.FC = () => {
     content: "",
   });
 
-  // Fetch all courses
+  // Pagination
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const pageSize = 5;
+
+  // Load courses từ BE
   const loadCourses = async () => {
     try {
-      const data = await courseApi.getAll();
-      // Gán trạng thái động
-      setCourses(
-        data.map((c) => ({
-          ...c,
-          status: calculateStatus(c.startDate, c.endDate),
-        }))
+      const res = await courseApi.getAll(
+        page,
+        pageSize,
+        searchTerm,
+        activeStatus === "Tất cả" ? "" : activeStatus
       );
+      setCourses(res.courses);
+      setTotalPages(res.totalPages);
+
+      // Nếu page hiện tại vượt quá tổng số trang, reset về page 0
+      if (page >= res.totalPages && res.totalPages > 0) {
+        setPage(0);
+      }
     } catch (err) {
       console.error("Lỗi tải danh sách khóa học", err);
     }
   };
 
+  // Reset page về 0 khi search hoặc status thay đổi
+  useEffect(() => {
+    setPage(0);
+  }, [searchTerm, activeStatus]);
+
   useEffect(() => {
     loadCourses();
-  }, []);
-
-  // Tính statusCounts động
-  const statusCounts: { [key: string]: number } = {
-    "Tất cả": courses.length,
-    "Sắp diễn ra": courses.filter((c) => c.status === "Sắp diễn ra").length,
-    "Đang diễn ra": courses.filter((c) => c.status === "Đang diễn ra").length,
-    "Đã kết thúc": courses.filter((c) => c.status === "Đã kết thúc").length,
-  };
-
-  // Filter courses
-  const filteredCourses = courses
-    .filter((c) => activeStatus === "Tất cả" || c.status === activeStatus)
-    .filter(
-      (c) =>
-        c.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        c.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        c.content.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+  }, [page, searchTerm, activeStatus]);
 
   // Modal handlers
   const openCreateModal = () => {
@@ -101,11 +89,12 @@ const CourseManagementPage: React.FC = () => {
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id?: number) => {
+    if (!id) return;
     if (!window.confirm("Bạn có chắc chắn muốn xóa khóa học này?")) return;
     try {
       await courseApi.delete(id);
-      alert("Xóa thành công!");
+      alert("Khóa học đã được đánh dấu INACTIVE!");
       loadCourses();
     } catch (err) {
       alert("Xóa thất bại!");
@@ -119,7 +108,7 @@ const CourseManagementPage: React.FC = () => {
       {/* SEARCH + ADD */}
       <div className={styles.topBar}>
         <div className={styles.searchContainer}>
-          <span className={styles.searchIcon}>🔍</span>
+          <span className={styles.searchIcon}><CiSearch /></span>
           <input
             type="text"
             placeholder="Tìm kiếm theo mã, tên hoặc nội dung..."
@@ -137,15 +126,13 @@ const CourseManagementPage: React.FC = () => {
       <div className={styles.statusFilter}>
         <h3 className={styles.filterTitle}>Lọc theo trạng thái:</h3>
         <div className={styles.statusButtons}>
-          {Object.keys(statusCounts).map((status) => (
+          {["Tất cả", "ACTIVE", "INACTIVE"].map((status) => (
             <button
               key={status}
-              className={`${styles.statusButton} ${
-                activeStatus === status ? styles.activeStatus : ""
-              }`}
+              className={`${styles.statusButton} ${activeStatus === status ? styles.activeStatus : ""}`}
               onClick={() => setActiveStatus(status)}
             >
-              {status} <span>{statusCounts[status]}</span>
+              {status}
             </button>
           ))}
         </div>
@@ -166,29 +153,24 @@ const CourseManagementPage: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredCourses.map((c) => (
+            {courses.length > 0 ? courses.map((c) => (
               <tr key={c.id}>
                 <td>{c.code}</td>
                 <td>{c.title}</td>
                 <td>{c.startDate}</td>
                 <td>{c.endDate}</td>
-                <td>
-                  <span className={styles.statusBadge} data-status={c.status}>
-                    {c.status}
-                  </span>
-                </td>
+                <td>{c.status}</td>
                 <td>{c.content}</td>
                 <td className={styles.actions}>
                   <span className={styles.actionIcon} onClick={() => openEditModal(c)}>
-                    ✏️
+                    <AiOutlineEdit size={20} />
                   </span>
-                  <span className={styles.actionIcon} onClick={() => handleDelete(c.id!)}>
-                    🗑️
+                  <span className={styles.actionIcon} onClick={() => handleDelete(c.id)}>
+                    <AiOutlineDelete size={20} />
                   </span>
                 </td>
               </tr>
-            ))}
-            {filteredCourses.length === 0 && (
+            )) : (
               <tr>
                 <td colSpan={7} className={styles.noData}>
                   Không có khóa học nào.
@@ -198,6 +180,21 @@ const CourseManagementPage: React.FC = () => {
           </tbody>
         </table>
       </div>
+
+      {/* PAGINATION */}
+      {totalPages > 1 && (
+        <div className={styles.pagination}>
+          {Array.from({ length: totalPages }).map((_, idx) => (
+            <button
+              key={idx}
+              className={idx === page ? styles.activePage : ""}
+              onClick={() => setPage(idx)}
+            >
+              {idx + 1}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* MODAL */}
       {showModal && (
@@ -216,9 +213,7 @@ const CourseManagementPage: React.FC = () => {
             <input
               type="date"
               value={formData.startDate}
-              onChange={(e) =>
-                setFormData({ ...formData, startDate: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
             />
 
             <label>Ngày kết thúc</label>

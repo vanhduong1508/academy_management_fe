@@ -1,14 +1,22 @@
 import axios from "axios";
 
-// Lấy baseURL từ biến môi trường REACT_APP_API_URL, fallback về localhost
-const baseURL = process.env.REACT_APP_API_URL || "http://localhost:7880";
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:7880/api";
 
 const axiosClient = axios.create({
-  baseURL,
+  baseURL: API_URL,
   headers: {
-    "Content-Type": "application/json"
+    "Content-Type": "application/json",
   },
-  withCredentials: true // Nếu Spring Security cần cookie/auth
+  timeout: 10000,
 });
+
+// Optional: error interceptor to normalize errors
+axiosClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // You can customize error handling here
+    return Promise.reject(error);
+  }
+);
 
 export default axiosClient;

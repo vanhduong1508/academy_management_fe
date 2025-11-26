@@ -1,17 +1,23 @@
 import axios from "axios";
-import {
-  Course,
-  CourseCreateRequest,
-  CourseUpdateRequest,
-} from "../../types/course";
+import { Course, CourseCreateRequest, CourseUpdateRequest } from "../../types/course";
 
 const API_URL = "http://localhost:7880/api/courses";
 
 export const courseApi = {
-  // GET all
-  getAll: async (): Promise<Course[]> => {
-    const res = await axios.get(API_URL);
-    return res.data;
+  // GET all with pagination, search, status filter
+  getAll: async (
+    page: number = 0,
+    size: number = 5,
+    search: string = "",
+    status: string = ""
+  ): Promise<{ courses: Course[]; totalPages: number }> => {
+    const res = await axios.get(API_URL, {
+      params: { page, size, search, status }
+    });
+    return {
+      courses: res.data.content,
+      totalPages: res.data.totalPages
+    };
   },
 
   // GET by id
@@ -30,7 +36,7 @@ export const courseApi = {
     await axios.put(`${API_URL}/${id}`, data);
   },
 
-  // DELETE
+  // DELETE (soft delete)
   delete: async (id: number): Promise<void> => {
     await axios.delete(`${API_URL}/${id}`);
   },

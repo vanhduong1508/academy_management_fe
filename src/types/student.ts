@@ -1,11 +1,11 @@
-
 export interface Student {
-  id: number; 
-  code: string;
+  id: number;
+  studentCode: string;
   fullName: string;
-  dob: string; 
-  hometown: string; 
-  province: string; 
-  status: string;
-  createdAt: string;
+  dob: string; // yyyy-MM-dd
+  hometown?: string | null;
+  province?: string | null;
+  status?: string | null;
+  createdAt?: string | null;
+  updatedAt?: string | null;
 }
