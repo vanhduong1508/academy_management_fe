@@ -1,65 +1,54 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Outlet, Navigate } from 'react-router-dom';
-import LoginPage from './pages/Auth/LoginPage';
-import RegisterPage from './pages/Auth/RegisterPage';
-import MainLayout from './components/layout/MainLayout';
-import DashboardPage from './pages/Auth/DashboardPage';
-import StudentManagementPage from './pages/Auth/StudentManagementPage'; 
-import CourseManagementPage from './pages/Auth/CourseManagementPage'; 
-import RegistrationManagementPage from './pages/Auth/RegistrationManagementPage'; 
-import CertificationManagementPage from './pages/Auth/CertificationManagementPage'; 
-import StatisticsPage from './pages/Auth/StatisticsPage'; 
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
 
-const NotFoundPage: React.FC = () => (
-    <div style={{ padding: '50px', textAlign: 'center' }}>
-        <h1 style={{ fontSize: '36px', color: '#1F2937' }}>404 - Không tìm thấy trang</h1>
-        <p style={{ marginTop: '10px', color: '#6B7280' }}>Đường dẫn bạn truy cập không tồn tại. Vui lòng kiểm tra lại.</p>
-        <Navigate to="/dashboard" replace />
-    </div>
-);
+// Import các component layout và page
+import AdminLayout from './components/layout/AdminLayout'; 
+import DashboardPage from './pages/admin/DashboardPage';
+import OrderApprovalPage from './pages/admin/OrderApproval';
+import MyEnrollmentsPage from './pages/student/MyEnrollmentsPage';
+import CourseListPage from './pages/student/CourseListPage';
+import CourseManagement from './pages/admin/CourseManagement';
+import CourseContentManagementPage from './pages/admin/CourseContentManagementPage';
+import EnrollmentAdminPage from './pages/admin/EnrollmentAdminPage';
+import ProfilePage from './pages/account/ProfilePage';
+import AdminUsersPage from './pages/admin/AdminUsersPage';
+import HomePage from './pages/public/HomePage'; 
+import LoginPage from './pages/auth/LoginPage';
+import RegisterPage from './pages/auth/RegisterPage';
+import NotFoundPage from './pages/public/NotFoundPage'; 
 
 const App: React.FC = () => {
-    const [isAuthenticated, setIsAuthenticated] = useState(true);
-    
-    const handleLogin = (isSuccess: boolean) => {
-        if (isSuccess) {
-            setIsAuthenticated(true);
-            return true;
-        }
-        return false;
-    };
-
-    const handleLogout = () => {
-        setIsAuthenticated(false);
-    };
-
     return (
-        <Router>
-            <Routes>
-                <Route path="/login" element={
-                    isAuthenticated ? <Navigate to="/dashboard" replace /> : <LoginPage onLogin={handleLogin} />
-                } />
-                <Route path="/register" element={
-                    isAuthenticated ? <Navigate to="/dashboard" replace /> : <RegisterPage />
-                } />
-                <Route path="/" element={
-                    isAuthenticated ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />
-                } />
-                <Route 
-                    element={isAuthenticated ? <MainLayout onLogout={handleLogout}><Outlet /></MainLayout> : <Navigate to="/login" replace />} 
-                >
-                    <Route path="dashboard" element={<DashboardPage />} />
-                    <Route path="students" element={<StudentManagementPage />} />
-                    <Route path="courses" element={<CourseManagementPage />} />
-                    <Route path="register-management" element={<RegistrationManagementPage />} />
-                    <Route path="certificates" element={<CertificationManagementPage />} /> 
-                    <Route path="statistics" element={<StatisticsPage />} />
-                  
-                </Route>
-                <Route path="*" element={<NotFoundPage />} />
+        // Router đã được bọc ở index.tsx
+        <Routes>
+            
+            {/* 1. FIX: ROUTE GỐC (PATH="/") */}
+            <Route path="/" element={<HomePage />} /> 
+            
+            {/* 2. CÁC PUBLIC ROUTE KHÁC */}
+            <Route path="/login" element={<LoginPage />} />
 
-            </Routes>
-        </Router>
+            <Route path="/register" element={<RegisterPage />} />
+            
+            {/* 3. ADMIN ROUTES */}
+            <Route path="/admin" element={<AdminLayout />}>
+                <Route path="profile" element={<ProfilePage />} />
+                <Route path="/admin/users" element={<AdminUsersPage />} />           
+                <Route index element={<DashboardPage />} />
+                <Route path="courses" element={<CourseManagement />} />
+                <Route path="courses/:id/content" element={<CourseContentManagementPage />} />
+                <Route path="/admin/enrollments" element={<EnrollmentAdminPage />} />
+                <Route path="/admin/orders/approval" element={<OrderApprovalPage />} /> 
+            </Route>
+         
+            {/* 4. STUDENT ROUTES */}
+            <Route path="/student" element={<MyEnrollmentsPage />} />
+            <Route path="/student/courses" element={<CourseListPage />} />
+
+
+            {/* 4. ROUTE FALLBACK */}
+            <Route path="*" element={<NotFoundPage />} />
+        </Routes>
     );
 };
 

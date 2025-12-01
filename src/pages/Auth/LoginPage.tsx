@@ -1,92 +1,109 @@
+// src/pages/auth/LoginPage.tsx
+
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-// Đã sửa: Sử dụng đường dẫn tương đối trong cùng thư mục (./)
-import styles from '../../styles/LoginPage.module.css'; 
+import { useNavigate } from 'react-router-dom';
+import { useAppDispatch } from '../../redux/hooks';
+import { setCredentials } from '../../redux/slices/auth.slice';
+import { login } from '../../api/auth.api';
+import Button from '../../components/common/Button/Button';
+import Input from '../../components/common/Input/Input';
 
-interface LoginPageProps {
-    onLogin: (isSuccess: boolean) => boolean;
-}
+const LoginPage: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
-const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
-    const handleLoginSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        
-        if (!email || !password) {
-            setError('Vui lòng điền đầy đủ Email và Mật khẩu.');
-            return;
-        }
+// src/pages/auth/LoginPage.tsx
 
-        setIsLoading(true);
-        setError('');
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setError('');
+  setIsLoading(true);
 
-        // --- MOCK LOGIN LOGIC ---
-        setTimeout(() => {
-            setIsLoading(false);
-            
-            if (email === 'admin@example.com' && password === '123456') {
-                onLogin(true);
-            } else {
-                setError('Email hoặc Mật khẩu không đúng.');
-                onLogin(false);
-            }
-        }, 1500);
-    };
+  try {
+    const response = await login({ username, password });
+    const backendUser = response.data; // { id, username, có thể chưa có role }
 
-    return (
-        <div className={styles.loginContainer}>
-            <div className={styles.loginCard}>
-                <div className={styles.cardHeader}>
-                    <span className={styles.icon}>
-                        <i className="fas fa-user-lock"></i>
-                    </span>
-                    <h2 className={styles.title}>Đăng nhập</h2>
-                    <p className={styles.subtitle}>Hệ thống quản lý trung tâm dạy học</p>
-                </div>
-                
-                <form className={styles.form} onSubmit={handleLoginSubmit}>
-                    
-                    {error && <div className={styles.errorMessage}>{error}</div>}
-                    
-                    <label className={styles.label}>Email</label>
-                    <input
-                        type="email"
-                        placeholder="example@email.com"
-                        className={styles.input}
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                    />
-                    
-                    <label className={styles.label}>Mật Khẩu</label>
-                    <input
-                        type="password"
-                        placeholder="••••••••"
-                        className={styles.input}
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
-                    
-                    <button type="submit" className={styles.submitButton} disabled={isLoading}>
-                        {isLoading ? (
-                            <i className="fas fa-spinner fa-spin"></i>
-                        ) : (
-                            <><i className="fas fa-sign-in-alt"></i> Đăng nhập</>
-                        )}
-                    </button>
-                    
-                    <p className={styles.registerLink}>
-                        Chưa có tài khoản? <Link to="/register" className={styles.link}>Đăng ký ngay</Link>
-                    </p>
-                </form>
-            </div>
-        </div>
-    );
+    console.log('Login response FE:', backendUser);
+
+    // Lưu thẳng vào Redux theo kiểu cũ
+    dispatch(setCredentials(backendUser));
+
+    // Nếu BE chưa trả role -> mặc định student
+    const roleLower = backendUser.role?.toLowerCase?.() ?? 'student';
+
+    if (roleLower === 'admin') {
+      navigate('/admin', { replace: true });
+    } else {
+      navigate('/student', { replace: true });
+    }
+  } catch (err: any) {
+    console.log('Login error:', err);
+    console.log('Login error response:', err?.response?.data);
+
+    const errorMessage =
+      err?.response?.data?.message ||
+      'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.';
+    setError(errorMessage);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+
+  return (
+    <div
+      style={{
+        maxWidth: '400px',
+        margin: '100px auto',
+        padding: '20px',
+        border: '1px solid #ccc',
+      }}
+    >
+      <h2>Đăng nhập</h2>
+      <form onSubmit={handleSubmit}>
+        <Input
+          label="Tên đăng nhập"
+          id="username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          required
+        />
+        <Input
+          label="Mật khẩu"
+          id="password"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          style={{ marginTop: '15px' }}
+        />
+
+        {error && (
+          <p style={{ color: 'red', marginTop: '10px' }}>
+            {error}
+          </p>
+        )}
+
+        <Button
+          type="submit"
+          variant="primary"
+          isLoading={isLoading}
+          disabled={!username || !password}
+          style={{ width: '100%', marginTop: '20px' }}
+        >
+          Đăng nhập
+        </Button>
+      </form>
+      <p style={{ textAlign: 'center', marginTop: '15px' }}>
+        Chưa có tài khoản? <a href="/register">Đăng ký ngay</a>
+      </p>
+    </div>
+  );
 };
 
 export default LoginPage;
