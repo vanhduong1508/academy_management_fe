@@ -14,7 +14,7 @@ export const getEnrollmentsPageApi = async (
   page = 0,
   size = 10
 ): Promise<PageResponse<Enrollment>> => {
-  const res = await axiosInstance.get<PageResponse<Enrollment>>('/api/enrollments', {
+  const res = await axiosInstance.get<PageResponse<Enrollment>>('/enrollments', {
     params: { page, size },
   });
   return res.data;
@@ -24,13 +24,13 @@ export const getEnrollmentsPageApi = async (
 export const getEnrollmentsByStudentApi = async (
   studentId: number
 ): Promise<Enrollment[]> => {
-  const res = await axiosInstance.get<Enrollment[]>(`/api/enrollments/by-student/${studentId}`);
+  const res = await axiosInstance.get<Enrollment[]>(`/enrollments/by-student/${studentId}`);
   return res.data;
 };
 
 // Admin: students chưa từng đăng ký
 export const getUnregisteredStudentsApi = async (): Promise<any[]> => {
-  const res = await axiosInstance.get<any[]>('/api/enrollments/unregistered-students');
+  const res = await axiosInstance.get<any[]>('/enrollments/unregistered-students');
   return res.data;
 };
 
@@ -48,7 +48,7 @@ export const updateCompletionStatusApi = async (
   enrollmentId: number,
   payload: UpdateCompletionStatusPayload
 ): Promise<void> => {
-  await axiosInstance.put(`/api/enrollments/${enrollmentId}/completion-status`, payload);
+  await axiosInstance.put(`/enrollments/${enrollmentId}/completion-status`, payload);
 };
 
 // Cấp chứng chỉ + cập nhật result

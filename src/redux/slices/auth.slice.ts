@@ -22,16 +22,24 @@ const authSlice = createSlice({
         setCredentials: (state, action: PayloadAction<UserSimpleResponse>) => {
             const backendUser = action.payload;
 
+            // BE hiện CHƯA trả role → fallback "STUDENT"
+            const role: UserRole =
+                backendUser.role?.toLowerCase?.() === 'admin'
+                    ? 'admin'
+                    : 'student';
+
             const user: AuthUser = {
                 id: backendUser.id,
                 username: backendUser.username,
-                role: backendUser.role.toLowerCase() as UserRole,
+                role,
             };
 
             state.user = user;
             state.isAuthenticated = true;
+
             localStorage.setItem('authUser', JSON.stringify(user));
         },
+
         logout: (state) => {
             state.user = null;
             state.isAuthenticated = false;

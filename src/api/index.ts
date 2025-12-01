@@ -6,7 +6,7 @@ type AppStore = {
     dispatch: (action: any) => any; // Chỉ cần biết hàm dispatch tồn tại
 };
 
-const API_BASE_URL = 'http://localhost:8080';
+const API_BASE_URL = 'http://localhost:8080/api';
 
 export const axiosInstance: AxiosInstance = axios.create({
     baseURL: API_BASE_URL,

@@ -4,7 +4,7 @@ import type { Course, PageResponse } from "../types/models/course.types";
 
 export const getAllCoursesApi = async (): Promise<Course[]> => {
   // BE của bạn: @RequestMapping("/api/courses")
-  const res = await axiosInstance.get<Course[]>("/api/courses");
+  const res = await axiosInstance.get<Course[]>("/courses");
   return res.data;
 };
 // GET /api/courses?page=&size=
@@ -12,7 +12,7 @@ export const getCoursesPageApi = async (
   page = 0,
   size = 10
 ): Promise<PageResponse<Course>> => {
-  const res = await axiosInstance.get<PageResponse<Course>>("/api/courses", {
+  const res = await axiosInstance.get<PageResponse<Course>>("/courses", {
     params: { page, size },
   });
   return res.data;

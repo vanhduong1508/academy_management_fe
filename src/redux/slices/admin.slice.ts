@@ -21,20 +21,29 @@ const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        // Nhận data raw từ BE (UserSimpleResponse)
         setCredentials: (state, action: PayloadAction<UserSimpleResponse>) => {
             const backendUser = action.payload;
+
+            // an toàn với cả 2 trường hợp:
+            // 1) BE chưa trả role
+            // 2) BE có trả role (ADMIN / STUDENT)
+            const normalizedRole =
+                backendUser.role?.toLowerCase() === 'admin'
+                    ? 'admin'
+                    : 'student';
 
             const user: AuthUser = {
                 id: backendUser.id,
                 username: backendUser.username,
-                role: backendUser.role.toLowerCase() as UserRole, // "ADMIN" -> "admin"
+                role: normalizedRole as UserRole,
             };
 
             state.user = user;
             state.isAuthenticated = true;
+
             localStorage.setItem('authUser', JSON.stringify(user));
         },
+
         logout: (state) => {
             state.user = null;
             state.isAuthenticated = false;
