@@ -1,133 +1,145 @@
-// src/pages/Auth/RegisterPage.tsx
+// src/pages/auth/RegisterPage.tsx
 
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import AuthCard from '../../components/Auth/AuthCard';
-import Input from '../../components/common/Input';
-import Button from '../../components/common/Button';
-
-// Icon giả định
-const RegisterIcon = () => <span style={{ marginRight: '8px' }}>📝</span>;
-const SubmitIcon = () => <span style={{ marginRight: '8px' }}>✅</span>;
-
-
-// Hàm giả lập (Mock) đăng ký
-const mockRegister = async () => {
-  return new Promise(resolve => setTimeout(resolve, 1500));
-};
-
+import { useNavigate } from 'react-router-dom';
+import { registerStudent } from '../../api/auth.api';
+import Button from '../../components/common/Button/Button';
+import Input from '../../components/common/Input/Input';
 
 const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
+
+  const [formState, setFormState] = useState({
+    fullName: '',
+    username: '',
+    email: '',
+    password: '',
+    phone: ''
+  });
+
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormState({ ...formState, [e.target.id]: e.target.value });
+    setError('');
+    setSuccess('');
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-
-    if (password !== confirmPassword) {
-      setError('Mật khẩu và Xác nhận mật khẩu không khớp.');
-      return;
-    }
-
     setIsLoading(true);
 
     try {
-      await mockRegister();
-      
-      // Giả lập đăng ký thành công: Chuyển hướng đến trang Đăng nhập
-      alert('Đăng ký thành công! Vui lòng đăng nhập.');
-      navigate('/login');
-      
-    } catch (error) {
-      alert('Đăng ký thất bại (Mock UI)');
+      const payload = {
+        fullName: formState.fullName,
+        username: formState.username,
+        password: formState.password,
+        email: formState.email,
+        phone: formState.phone
+      };
+
+      await registerStudent(payload);
+
+      setSuccess('Đăng ký thành công! Đang chuyển đến trang đăng nhập…');
+      setTimeout(() => navigate('/login'), 1500);
+    } catch (err: any) {
+      const errorMsg =
+        err.response?.data?.message ||
+        'Đăng ký thất bại. Vui lòng kiểm tra lại thông tin!';
+      setError(errorMsg);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <AuthCard
-      title="Đăng ký tài khoản"
-      subtitle="Tạo tài khoản để quản lý trung tâm dạy học"
-      icon={<RegisterIcon />}
-      footerLink={
-        <p>
-          Đã có tài khoản? <Link to="/login">Đăng nhập ngay</Link>
-        </p>
-      }
+    <div
+      style={{
+        maxWidth: '420px',
+        margin: '50px auto',
+        padding: '20px',
+        border: '1px solid #ccc',
+        borderRadius: 8
+      }}
     >
+      <h2>Đăng ký Tài khoản Học viên</h2>
+
       <form onSubmit={handleSubmit}>
-        
-        <Input 
-          label="Họ và tên"
-          id="name"
-          name="name"
-          type="text"
-          placeholder="Nguyễn Văn A"
+        <Input
+          label="Họ và Tên"
+          id="fullName"
+          value={formState.fullName}
+          onChange={handleChange}
           required
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          disabled={isLoading}
         />
-        
-        <Input 
+
+        <Input
+          label="Tên đăng nhập"
+          id="username"
+          value={formState.username}
+          onChange={handleChange}
+          required
+          style={{ marginTop: 15 }}
+        />
+
+        <Input
           label="Email"
           id="email"
-          name="email"
           type="email"
-          placeholder="example@email.com"
+          value={formState.email}
+          onChange={handleChange}
           required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          disabled={isLoading}
+          style={{ marginTop: 15 }}
         />
-        
+
+        <Input
+          label="Số điện thoại"
+          id="phone"
+          value={formState.phone}
+          onChange={handleChange}
+          required
+          style={{ marginTop: 15 }}
+        />
+
         <Input
           label="Mật khẩu"
           id="password"
-          name="password"
           type="password"
-          placeholder="••••••••"
+          value={formState.password}
+          onChange={handleChange}
           required
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          disabled={isLoading}
+          style={{ marginTop: 15 }}
         />
-        
-        <Input
-          label="Xác nhận mật khẩu"
-          id="confirmPassword"
-          name="confirmPassword"
-          type="password"
-          placeholder="••••••••"
-          required
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          disabled={isLoading}
-        />
-        
+
         {error && (
-          <p style={{ color: 'red', fontSize: '14px', marginTop: '-10px', marginBottom: '10px' }}>
+          <p style={{ color: 'red', marginTop: 10 }}>
             {error}
           </p>
         )}
-        
-        <Button 
-          type="submit" 
+
+        {success && (
+          <p style={{ color: 'green', marginTop: 10 }}>
+            {success}
+          </p>
+        )}
+
+        <Button
+          type="submit"
           variant="primary"
-          icon={isLoading ? <span>🔄</span> : <SubmitIcon />}
-          disabled={isLoading}
+          isLoading={isLoading}
+          style={{ width: '100%', marginTop: 20 }}
         >
-          {isLoading ? 'Đang xử lý...' : 'Đăng ký'}
+          Đăng ký
         </Button>
       </form>
-    </AuthCard>
+
+      <p style={{ marginTop: 15, textAlign: 'center' }}>
+        Đã có tài khoản? <a href="/login">Đăng nhập</a>
+      </p>
+    </div>
   );
 };
 

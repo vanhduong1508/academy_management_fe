@@ -1,0 +1,46 @@
+/* /src/components/common/Input/Input.module.css */
+
+.inputGroup {
+    /* Khung chứa Label, Input và Error Message */
+    margin-bottom: 15px;
+    display: block;
+    width: 100%;
+}
+
+.label {
+    /* Style cho nhãn */
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+}
+
+.input {
+    /* Style cơ bản cho trường input */
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; /* Quan trọng để padding không làm tăng chiều rộng */
+    font-size: 16px;
+    transition: border-color 0.2s;
+}
+
+.input:focus {
+    /* Hiệu ứng khi focus */
+    outline: none;
+    border-color: #007bff; /* Màu xanh nổi bật */
+}
+
+/* Style cho trạng thái lỗi */
+.error {
+    border-color: #dc3545; /* Màu đỏ */
+}
+
+.errorMessage {
+    /* Style cho thông báo lỗi */
+    margin-top: 5px;
+    font-size: 12px;
+    color: #dc3545;
+}
