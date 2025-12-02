@@ -13,7 +13,6 @@ import CourseManagement from './pages/admin/CourseManagement';
 import CourseContentManagementPage from './pages/admin/CourseContentManagementPage';
 import EnrollmentAdminPage from './pages/admin/EnrollmentAdminPage';
 import ProfilePage from './pages/account/ProfilePage';
-import AdminUsersPage from './pages/admin/AdminUsersPage';
 import HomePage from './pages/public/HomePage'; 
 import NotFoundPage from './pages/public/NotFoundPage'; 
 
@@ -35,8 +34,7 @@ const App: React.FC = () => {
             
             {/* 3. ADMIN ROUTES */}
             <Route path="/admin" element={<AdminLayout />}>
-                <Route path="profile" element={<ProfilePage />} />
-                <Route path="users" element={<AdminUsersPage />} />           
+                <Route path="profile" element={<ProfilePage />} />       
                 <Route index element={<DashboardPage />} />
                 <Route path="courses" element={<CourseManagement />} />
                 <Route path="courses/:id/content" element={<CourseContentManagementPage />} />
