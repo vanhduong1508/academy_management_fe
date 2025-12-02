@@ -18,7 +18,7 @@ import Button from '../../components/common/Button/Button';
 
 const CourseManagement: React.FC = () => {
   // Chỉ cho admin
-  const allowed = useAuthGuard('admin');
+  const allowed = useAuthGuard('ADMIN');
 
   const [pageData, setPageData] = useState<PageResponse<Course> | null>(null);
   const [page, setPage] = useState(0);

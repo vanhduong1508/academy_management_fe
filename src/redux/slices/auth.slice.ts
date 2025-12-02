@@ -1,5 +1,6 @@
+// src/redux/slices/auth.slice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { AuthUser, UserSimpleResponse } from '../../types';
+import { AuthUser, AuthResponse } from '../../types';
 
 interface AuthState {
   user: AuthUser | null;
@@ -15,22 +16,24 @@ const initialState: AuthState = {
   status: 'idle',
 };
 
-// BE: chỉ có 1 admin cố định với username = "admin"
-const mapToAuthUser = (user: UserSimpleResponse): AuthUser => ({
-  id: user.id,
-  username: user.username,
-  role: user.username === 'admin' ? 'admin' : 'student',
-});
-
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    setCredentials: (state, action: PayloadAction<UserSimpleResponse>) => {
-      const mapped = mapToAuthUser(action.payload);
+    // Nhận đúng AuthResponse từ BE
+    setCredentials: (state, action: PayloadAction<AuthResponse>) => {
+      const { token, user } = action.payload;
+
+      const mapped: AuthUser = {
+        id: user.id,
+        username: user.username,
+        role: user.role, // 'ADMIN' | 'STUDENT'
+        token,
+      };
 
       state.user = mapped;
       state.isAuthenticated = true;
+      state.status = 'idle';
 
       localStorage.setItem('authUser', JSON.stringify(mapped));
     },
@@ -38,6 +41,7 @@ const authSlice = createSlice({
     logout: (state) => {
       state.user = null;
       state.isAuthenticated = false;
+      state.status = 'idle';
       localStorage.removeItem('authUser');
     },
   },
