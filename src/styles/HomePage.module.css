@@ -1,130 +1,127 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --primary-black: #111827;
+  --text-main: #1f2937;
+  --text-secondary: #6b7280;
+  --white: #ffffff;
+
+  --shadow-card: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+                 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
 .pageWrapper {
   min-height: 100vh;
-  padding: 40px 16px;
+  background: #f3f4f6;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle at top, #e0f2fe 0, #eef2ff 35%, #f9fafb 100%);
+  padding: 40px 20px;
+  font-family: "Montserrat", sans-serif;
 }
 
+/* ==== Hero Card ==== */
 .heroCard {
-  max-width: 720px;
-  width: 100%;
-  background: #ffffff;
-  border-radius: 24px;
-  padding: 32px 28px;
-  box-shadow:
-    0 18px 45px rgba(15, 23, 42, 0.12),
-    0 0 0 1px rgba(148, 163, 184, 0.15);
+  width: 900px;
+  max-width: 95%;
+  background: var(--white);
+  border-radius: 18px;
+  box-shadow: var(--shadow-card);
+  padding: 60px 50px;
   text-align: center;
+  animation: fadeIn 0.7s ease;
 }
 
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Badge */
 .badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 6px 14px;
-  font-size: 12px;
-  border-radius: 999px;
-  background: rgba(37, 99, 235, 0.06);
-  color: #1d4ed8;
-  font-weight: 600;
-  margin-bottom: 16px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+  display: inline-block;
+  background: #111827;
+  color: var(--white);
+  padding: 8px 18px;
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 25px;
+  letter-spacing: 0.5px;
 }
 
+/* Title */
 .title {
-  font-size: 28px;
-  line-height: 1.25;
-  margin-bottom: 12px;
-  color: #0f172a;
-  font-weight: 700;
+  font-size: 40px;
+  font-weight: 800;
+  color: var(--primary-black);
+  margin-bottom: 15px;
 }
 
 .title span {
-  color: #2563eb;
+  color: #000;
 }
 
+/* Subtitle */
 .subtitle {
-  font-size: 15px;
-  color: #64748b;
-  margin-bottom: 24px;
+  color: var(--text-secondary);
+  font-size: 16px;
+  line-height: 1.7;
+  max-width: 600px;
+  margin: 0 auto 35px;
 }
 
+/* CTA Buttons */
 .ctaGroup {
+  margin: 25px 0 35px;
   display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
+  gap: 20px;
   justify-content: center;
-  margin-bottom: 18px;
 }
 
 .primaryBtn,
 .secondaryBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 150px;
-  padding: 10px 18px;
-  border-radius: 999px;
+  padding: 14px 38px;
+  border-radius: 50px;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   text-decoration: none;
-  border: 1px solid transparent;
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease,
-    background-color 0.15s ease,
-    color 0.15s ease,
-    border-color 0.15s ease;
+  letter-spacing: 0.5px;
+  transition: all 0.35s ease;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
+/* Primary Button */
 .primaryBtn {
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
-  color: #ffffff;
-  box-shadow: 0 12px 30px rgba(37, 99, 235, 0.35);
+  background: var(--primary-black);
+  color: var(--white);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
 .primaryBtn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 16px 40px rgba(37, 99, 235, 0.45);
+  background: #000;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 18px rgba(0,0,0,0.25);
 }
 
+/* Secondary Button */
 .secondaryBtn {
-  background: #f9fafb;
-  color: #0f172a;
-  border-color: #e2e8f0;
+  background: var(--white);
+  color: var(--primary-black);
+  border: 2px solid var(--primary-black);
 }
 
 .secondaryBtn:hover {
-  background: #e5edff;
-  color: #1d4ed8;
-  border-color: #bfdbfe;
+  background: var(--primary-black);
+  color: var(--white);
+  transform: translateY(-2px);
 }
 
+/* Helper */
 .helperText {
-  font-size: 13px;
-  color: #94a3b8;
-  margin-top: 8px;
-}
-
-/* Mobile tweak */
-@media (max-width: 640px) {
-  .heroCard {
-    padding: 24px 18px;
-  }
-
-  .title {
-    font-size: 22px;
-  }
-
-  .subtitle {
-    font-size: 14px;
-  }
-
-  .primaryBtn,
-  .secondaryBtn {
-    width: 100%;
-  }
+  margin-top: 10px;
+  font-size: 14px;
+  color: var(--text-secondary);
 }

@@ -10,9 +10,16 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     isLoading?: boolean;
 }
 
-const Button: React.FC<ButtonProps> = ({ variant = 'primary', size = 'medium', children, className, ...props }) => {
+const Button: React.FC<ButtonProps> = ({ 
+    variant = 'primary', 
+    size = 'medium', 
+    children, 
+    className, 
+    isLoading = false,
+    disabled,  
+    ...props           
+}) => {
     
-    // Ghép các class lại:
     const classNames = [
         'btn',
         `btn-${variant}`,
@@ -23,9 +30,16 @@ const Button: React.FC<ButtonProps> = ({ variant = 'primary', size = 'medium', c
     return (
         <button
             className={classNames}
+            disabled={disabled || isLoading}
             {...props}
         >
-            {children}
+            {isLoading ? (
+                <>
+                    <span className="spinner"></span> Đang xử lý...
+                </>
+            ) : (
+                children
+            )}
         </button>
     );
 };
