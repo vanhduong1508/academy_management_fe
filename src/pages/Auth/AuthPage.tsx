@@ -6,7 +6,7 @@ import { setCredentials } from '../../redux/slices/auth.slice';
 import { login, registerStudent } from '../../api/auth.api';
 import Button from '../../components/common/Button/Button';
 import Input from '../../components/common/Input/Input';
-import styles from '../../styles/AuthStyle.module.css'; // ⬅ dùng CSS Module :contentReference[oaicite:0]{index=0}
+import styles from '../../styles/AuthStyle.module.css';
 
 const AuthPage: React.FC = () => {
   const navigate = useNavigate();
@@ -29,12 +29,20 @@ const AuthPage: React.FC = () => {
     setLoginLoading(true);
 
     try {
-      const response = await login({ username: loginUsername, password: loginPassword });
-      const backendUser = response.data;
+      // BE trả AuthResponse: { token, user }
+      const response = await login({
+        username: loginUsername,
+        password: loginPassword,
+      });
+      const authResponse = response.data; // AuthResponse
 
-      dispatch(setCredentials(backendUser));
+      // setCredentials bây giờ nhận AuthResponse
+      dispatch(setCredentials(authResponse));
 
-      const redirectPath = backendUser.username === 'admin' ? '/admin' : '/student';
+      const { user } = authResponse;
+
+      // Phân quyền theo role từ BE: 'ADMIN' | 'STUDENT'
+      const redirectPath = user.role === 'ADMIN' ? '/admin' : '/student';
       navigate(redirectPath, { replace: true });
     } catch (err: any) {
       const errorMessage =
@@ -51,7 +59,7 @@ const AuthPage: React.FC = () => {
     username: '',
     email: '',
     password: '',
-    phone: ''
+    phone: '',
   });
   const [regLoading, setRegLoading] = useState(false);
   const [regError, setRegError] = useState('');
@@ -59,7 +67,7 @@ const AuthPage: React.FC = () => {
 
   const handleRegisterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setRegisterForm({ ...registerForm, [name]: value });
+    setRegisterForm((prev) => ({ ...prev, [name]: value }));
     setRegError('');
   };
 
@@ -69,15 +77,23 @@ const AuthPage: React.FC = () => {
     setRegLoading(true);
 
     try {
-      const { username, email, password, phone } = registerForm;
-      await registerStudent({ username, email, password, phone });
+      const { username, email, password, fullName } = registerForm;
+
+      // FE chỉ gửi đúng các field BE đang dùng: username, email, password, fullName
+      await registerStudent({ username, email, password, fullName });
 
       setRegSuccess('Đăng ký thành công! Vui lòng đăng nhập.');
 
       setTimeout(() => {
         setIsRightPanelActive(false);
         setRegSuccess('');
-        setRegisterForm({ fullName: '', username: '', email: '', password: '', phone: '' });
+        setRegisterForm({
+          fullName: '',
+          username: '',
+          email: '',
+          password: '',
+          phone: '',
+        });
       }, 1500);
     } catch (err: any) {
       const errorMsg =

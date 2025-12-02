@@ -19,7 +19,7 @@ import LessonFormModal from '../../components/admin/LessonFormModal';
 import Button from '../../components/common/Button/Button';
 
 const CourseContentManagementPage: React.FC = () => {
-  const allowed = useAuthGuard('admin');
+  const allowed = useAuthGuard('ADMIN');
   const { id } = useParams<{ id: string }>();
   const courseId = Number(id);
 
