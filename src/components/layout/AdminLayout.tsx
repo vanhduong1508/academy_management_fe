@@ -35,7 +35,10 @@ const AdminLayout: React.FC = () => {
         { name: 'Dashboard', path: '/admin' },
         { name: 'Quản lý Khóa học', path: '/admin/courses' },
         { name: 'Quản lý Người dùng', path: '/admin/users' },
-        { name: 'Quản lý Đơn hàng', path: '/admin/orders' },
+        { name: 'Quản lý Đơn hàng', path: '/admin/enrollments' },
+        { name: 'Duyệt Đơn hàng', path: '/admin/orders/approval' },
+        { name: 'Cấp Chứng chỉ', path: '/admin/certificates/eligible' },
+        { name: 'Hồ sơ cá nhân', path: '/admin/profile' },
     ];
 
     return (
@@ -52,7 +55,6 @@ const AdminLayout: React.FC = () => {
                             key={item.name} 
                             to={item.path} 
                             style={linkStyle}
-                            // Thêm logic active link nếu cần
                             onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#495057'}
                             onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                         >
@@ -64,9 +66,6 @@ const AdminLayout: React.FC = () => {
 
             {/* 2. MAIN CONTENT */}
             <div style={contentStyle}>
-                {/* Outlet sẽ render nội dung của Route con khớp với đường dẫn hiện tại.
-                  Ví dụ: Khi truy cập /admin/courses, Outlet sẽ render CourseManagement.
-                */}
                 <Outlet /> 
             </div>
         </div>

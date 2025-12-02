@@ -6,10 +6,11 @@ import App from './App';
 import { Provider } from 'react-redux';
 import { store } from './redux/store'; 
 import { setupInterceptors } from './api'; 
+import { ToastContainer } from 'react-toastify';
 
-// Thiết lập Interceptor sau khi Store đã được tạo
-// Đây là bước quan trọng để phá vỡ Phụ thuộc Vòng tròn
 setupInterceptors(store); 
+
+<ToastContainer position="top-right" autoClose={2000} />
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
