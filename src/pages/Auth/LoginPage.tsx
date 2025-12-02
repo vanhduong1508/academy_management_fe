@@ -17,43 +17,40 @@ const LoginPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-// src/pages/auth/LoginPage.tsx
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setIsLoading(true);
 
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setError('');
-  setIsLoading(true);
+    try {
+      const response = await login({ username, password });
+      const backendUser = response.data; // { id, username, role: "ADMIN" | "STUDENT" }
 
-  try {
-    const response = await login({ username, password });
-    const backendUser = response.data; // { id, username, có thể chưa có role }
+      console.log('Login response:', backendUser);
 
-    console.log('Login response FE:', backendUser);
+      // Lưu vào Redux
+      dispatch(setCredentials(backendUser));
 
-    // Lưu thẳng vào Redux theo kiểu cũ
-    dispatch(setCredentials(backendUser));
+      // Dùng role backend để điều hướng
+      const roleLower = backendUser.role?.toLowerCase?.() ?? 'student';
 
-    // Nếu BE chưa trả role -> mặc định student
-    const roleLower = backendUser.role?.toLowerCase?.() ?? 'student';
+      if (roleLower === 'admin') {
+        navigate('/admin', { replace: true });
+      } else {
+        navigate('/student', { replace: true });
+      }
+    } catch (err: any) {
+      console.log('Login error:', err);
+      console.log('Login error response:', err?.response?.data);
 
-    if (roleLower === 'admin') {
-      navigate('/admin', { replace: true });
-    } else {
-      navigate('/student', { replace: true });
+      const errorMessage =
+        err?.response?.data?.message ||
+        'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.';
+      setError(errorMessage);
+    } finally {
+      setIsLoading(false);
     }
-  } catch (err: any) {
-    console.log('Login error:', err);
-    console.log('Login error response:', err?.response?.data);
-
-    const errorMessage =
-      err?.response?.data?.message ||
-      'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.';
-    setError(errorMessage);
-  } finally {
-    setIsLoading(false);
-  }
-};
-
+  };
 
   return (
     <div
