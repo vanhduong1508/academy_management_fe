@@ -1,26 +1,68 @@
 // src/pages/student/CourseListPage.tsx
-import { useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { fetchCourses } from '../../redux/slices/course.slice';
-import CourseCard from '../../components/student/CourseCard';
+import React, { useEffect, useState } from "react";
+import { getStudentCoursesPageApi } from "../../api/student/student.courses.api";
+import type { Course, PageResponse } from "../../types/models/course.types";
+import { useAppSelector } from "../../redux/hooks";
+import { createOrderApi } from "../../api/student/student-orders.api";
 
-const CourseListPage = () => {
-  const dispatch = useAppDispatch();
-  const { items: courses, loading, error } = useAppSelector((s) => s.courses);
+const CourseListPage: React.FC = () => {
+  const [pageData, setPageData] = useState<PageResponse<Course> | null>(null);
+  const [loading, setLoading] = useState(false);
+  const { user } = useAppSelector((state) => state.auth);
+
+  const fetchCourses = async (page = 0) => {
+    setLoading(true);
+    try {
+      const data = await getStudentCoursesPageApi(page, 8);
+      setPageData(data);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    dispatch(fetchCourses({ page: 0, size: 12 }));
-  }, [dispatch]);
+    fetchCourses(0);
+  }, []);
+
+  const handleEnroll = async (course: Course) => {
+    if (!user?.studentId) {
+      alert("Bạn chưa có thông tin học viên.");
+      return;
+    }
+    try {
+      await createOrderApi({
+        studentId: user.studentId,
+        courseId: course.id,
+        paymentMethod: "BANKING",
+        amount: 0
+      });
+      alert("Đã tạo đơn đăng ký khóa học. Vui lòng chờ admin duyệt!");
+    } catch (e: any) {
+      alert(
+        e?.response?.data?.message ||
+          "Tạo đơn hàng thất bại. Vui lòng thử lại sau."
+      );
+    }
+  };
+
+  if (loading && !pageData) return <div>Đang tải khóa học...</div>;
 
   return (
     <div>
-      <h1>Danh sách khoá học</h1>
-      {loading && <p>Đang tải...</p>}
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-
-      {courses.map((c) => (
-        <CourseCard key={c.id} course={c} />
-      ))}
+      <h2>Danh sách khóa học</h2>
+      <div style={{ display: "grid", gap: 16, gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", marginTop: 24 }}>
+        {pageData?.content.map((course) => (
+          <div
+            key={course.id}
+            style={{ border: "1px solid #eee", padding: 16, borderRadius: 8 }}
+          >
+            <h3>{course.title}</h3>
+            <p>Mã khóa học: {course.code}</p>
+            <p>Giá: {course.price} VND</p>
+            <button onClick={() => handleEnroll(course)}>Đăng ký khóa học</button>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

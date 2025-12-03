@@ -1,6 +1,7 @@
 // src/components/student/CourseCard.tsx
-import type { Course } from '../../types/models/course.types';
-import CourseEnrollButton from './CourseEnrollButton';
+import React from "react";
+import type { Course } from "../../types/models/course.types";
+import CourseEnrollButton from "./CourseEnrollButton";
 
 type Props = {
   course: Course;
@@ -10,13 +11,13 @@ const CourseCard: React.FC<Props> = ({ course }) => {
   return (
     <div className="course-card">
       <h3>{course.title}</h3>
-      <p>{course.content}</p>
+      {course.description && <p>{course.description}</p>}
       <p>
-        Thời gian: {course.startDate} - {course.endDate}
+        <strong>Giá:</strong>{" "}
+        {course.price != null ? `${course.price.toLocaleString()} VND` : "Miễn phí"}
       </p>
-      <p>Trạng thái: {course.status}</p>
-
-      <CourseEnrollButton courseId={course.id} courseTitle={course.title} />
+      {/* nút mua / đăng ký */}
+      <CourseEnrollButton courseId={course.id} />
     </div>
   );
 };

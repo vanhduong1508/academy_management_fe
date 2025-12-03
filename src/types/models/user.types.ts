@@ -1,33 +1,71 @@
+// src/types/models/user.types.ts
 
-// Role phải KHỚP với enum Role ở BE: ADMIN / STUDENT
-export type UserRole = 'ADMIN' | 'STUDENT';
+export type Role = "ADMIN" | "STUDENT";
 
-// DTO đơn giản BE trả về trong AuthResponse.user
-export interface UserSimpleResponse {
-  id: number;
-  username: string;
-  role: UserRole;
-}
-
-// User đã đăng nhập mà FE sẽ lưu trong Redux + localStorage
 export interface AuthUser {
   id: number;
   username: string;
-  role: UserRole;
-  token: string; // Lưu luôn token để interceptor dùng
+  fullName: string;
+  role: Role;
+  studentId?: number | null;
+  studentCode?: string | null;
 }
 
-// DTO dùng cho /users/... (me, admin list user)
-export interface UserResponse {
-  id: number;
-  username: string;
-  fullName?: string;
-  isActive: boolean;
-  createdAt?: string;
-}
-
-// AuthResponse – đúng 1:1 với BE (xem AuthServiceImpl + AuthController)
+// BE trả phẳng, KHÔNG có field "user"
 export interface AuthResponse {
   token: string;
-  user: UserSimpleResponse;
+  user: AuthUser;
+  userId: number;
+  username: string;
+  fullName: string;
+  role: Role;
+  studentId?: number | null;
+  studentCode?: string | null;
+
+}
+
+// ========== phần còn lại giữ như trước ==========
+
+export interface User {
+  id: number;
+  username: string;
+  email: string;
+  fullName: string;
+  role: Role;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Student {
+  id: number;
+  studentCode: string;
+  fullName: string;
+  dob: string;
+  hometown?: string | null;
+  province?: string | null;
+  status: "ACTIVE" | "INACTIVE";
+}
+
+export interface StudentUpdatePayload {
+  fullName: string;
+  dob: string;
+  hometown?: string | null;
+  province?: string | null;
+}
+
+export interface RegisterStudentPayload {
+  username: string;
+  password: string;
+  email: string;
+  phone: string;
+  fullName: string;
+  dob: string;
+  hometown?: string;
+  province?: string;
+}
+
+export interface LoginPayload {
+  username: string;
+  password: string;
 }
