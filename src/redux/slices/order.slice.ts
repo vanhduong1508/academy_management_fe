@@ -3,12 +3,14 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { Order, OrderCreatePayload } from '../../types/models/order.types';
 import type { Enrollment } from '../../types/models/enrollment.types';
 import {
-  getPendingOrdersApi,
   approveOrderApi,
+  getPendingOrdersApi,
   rejectOrderApi,
+} from "../../api/admin/admin-orders.api";
+import {
   createOrderApi,
   getMyEnrollmentsApi,
-} from '../../api/order.api';
+} from "../../api/student/student-orders.api";
 
 interface OrderState {
   pendingOrders: Order[];

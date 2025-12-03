@@ -1,5 +1,4 @@
 // src/hooks/useAuthGuard.ts
-
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../redux/hooks";
@@ -7,27 +6,22 @@ import { UserRole } from "../types";
 
 const useAuthGuard = (requiredRole?: UserRole) => {
   const navigate = useNavigate();
-  const { isAuthenticated, user } = useAppSelector((state) => state.auth);
+  const { user, token } = useAppSelector((state) => state.auth);
+
+  const isAuthenticated = !!token;
 
   useEffect(() => {
     // Chưa đăng nhập → đá về /login
-    if (!isAuthenticated || !user) {
+    if (!isAuthenticated) {
       navigate("/login", { replace: true });
       return;
     }
 
-    // Có yêu cầu role mà user không khớp → chuyển về đúng khu
-    if (requiredRole && user.role !== requiredRole) {
-      const redirectPath = user.role === "ADMIN" ? "/admin" : "/student";
-      console.error("Access Denied: Incorrect Role.");
-      navigate(redirectPath, { replace: true });
+    // Nếu có yêu cầu role nhưng user.role không khớp → về home
+    if (requiredRole && user && user.role !== requiredRole) {
+      navigate("/", { replace: true });
     }
-  }, [isAuthenticated, user, requiredRole, navigate]);
-
-  // Hook trả về true nếu đang login & đúng role (nếu có yêu cầu)
-  return (
-    isAuthenticated && !!user && (!requiredRole || user.role === requiredRole)
-  );
+  }, [isAuthenticated, requiredRole, user, navigate]);
 };
 
 export default useAuthGuard;

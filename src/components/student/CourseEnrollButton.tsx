@@ -1,59 +1,56 @@
 // src/components/student/CourseEnrollButton.tsx
-import { useState } from 'react';
-import { useAppSelector } from '../../redux/hooks';
-import { createOrderApi } from '../../api/order.api';
-import type { OrderCreatePayload } from '../../types/models/order.types';
+import React, { useState } from "react";
+import { useAppSelector } from "../../redux/hooks";
+import { createOrderApi } from "../../api/student/student-orders.api";
+import type { OrderCreatePayload } from "../../types/models/order.types";
 
 type Props = {
   courseId: number;
-  courseTitle: string;
 };
 
-const DEFAULT_AMOUNT = 100000; // tạm, sau sync với course.price nếu bạn thêm
-
-const CourseEnrollButton: React.FC<Props> = ({ courseId, courseTitle }) => {
+const CourseEnrollButton: React.FC<Props> = ({ courseId }) => {
+  const { user } = useAppSelector((state) => state.auth);
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
 
-  const studentId = useAppSelector((state) => state.auth.user?.id);
-
-  const handleClick = async () => {
-    if (!studentId) {
-      setMessage('Bạn cần đăng nhập với tài khoản học viên để đăng ký khoá học.');
+  const handleEnroll = async () => {
+    if (!user) {
+      alert("Bạn cần đăng nhập trước.");
+      return;
+    }
+    if (user.role !== "STUDENT") {
+      alert("Chỉ tài khoản học viên mới đăng ký khóa học.");
+      return;
+    }
+    if (!user.studentId) {
+      alert("Không tìm thấy studentId trong tài khoản. Kiểm tra lại BE.");
       return;
     }
 
     const payload: OrderCreatePayload = {
-      studentId,
+      studentId: user.studentId,
       courseId,
-      amount: DEFAULT_AMOUNT,
-      paymentMethod: 'CASH',
+      amount: 0
     };
 
-    setLoading(true);
-    setMessage(null);
-
     try {
+      setLoading(true);
       await createOrderApi(payload);
-      setMessage(`Đã tạo đơn đăng ký cho khoá "${courseTitle}". Vui lòng chờ Admin duyệt.`);
-    } catch (error: any) {
-      setMessage(error.response?.data?.message || 'Không thể tạo đơn đăng ký. Thử lại sau.');
+      alert("Đã tạo đơn hàng. Vui lòng chờ admin duyệt.");
+    } catch (err: any) {
+      console.error(err);
+      alert(
+        err?.response?.data?.message ||
+          "Tạo đơn hàng thất bại. Thử lại sau nhé."
+      );
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{ marginTop: 8 }}>
-      <button
-        disabled={loading}
-        onClick={handleClick}
-        style={{ padding: '6px 12px', borderRadius: 4 }}
-      >
-        {loading ? 'Đang xử lý...' : 'Đăng ký / Thanh toán'}
-      </button>
-      {message && <p style={{ marginTop: 4, fontSize: 12 }}>{message}</p>}
-    </div>
+    <button onClick={handleEnroll} disabled={loading}>
+      {loading ? "Đang xử lý..." : "Đăng ký / Mua khóa học"}
+    </button>
   );
 };
 

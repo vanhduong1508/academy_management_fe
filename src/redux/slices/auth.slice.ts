@@ -1,48 +1,48 @@
-// src/redux/slices/auth.slice.ts
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { AuthUser, AuthResponse } from '../../types';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { AuthUser, AuthResponse } from "../../types";
 
 interface AuthState {
   user: AuthUser | null;
-  isAuthenticated: boolean;
-  status: 'idle' | 'loading' | 'failed';
+  token: string | null;
 }
 
-const storedUser = localStorage.getItem('authUser');
-
 const initialState: AuthState = {
-  user: storedUser ? JSON.parse(storedUser) : null,
-  isAuthenticated: !!storedUser,
-  status: 'idle',
+  user: null,
+  token: localStorage.getItem("token"),
 };
 
 const authSlice = createSlice({
-  name: 'auth',
+  name: "auth",
   initialState,
   reducers: {
-    // Nhận đúng AuthResponse từ BE
     setCredentials: (state, action: PayloadAction<AuthResponse>) => {
-      const { token, user } = action.payload;
+      const {
+        token,
+        userId,
+        username,
+        fullName,
+        role,
+        studentId,
+        studentCode,
+      } = action.payload;
 
       const mapped: AuthUser = {
-        id: user.id,
-        username: user.username,
-        role: user.role, // 'ADMIN' | 'STUDENT'
-        token,
+        id: userId,
+        username,
+        fullName,
+        role,
+        studentId,
+        studentCode,
       };
 
       state.user = mapped;
-      state.isAuthenticated = true;
-      state.status = 'idle';
-
-      localStorage.setItem('authUser', JSON.stringify(mapped));
+      state.token = token;
+      localStorage.setItem("token", token);
     },
-
     logout: (state) => {
       state.user = null;
-      state.isAuthenticated = false;
-      state.status = 'idle';
-      localStorage.removeItem('authUser');
+      state.token = null;
+      localStorage.removeItem("token");
     },
   },
 });
