@@ -1,12 +1,12 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useAppDispatch } from '../../redux/hooks';
-import { setCredentials } from '../../redux/slices/auth.slice';
-import { login, registerStudent } from '../../api/auth.api';
-import Button from '../../components/common/Button/Button';
-import Input from '../../components/common/Input/Input';
-import styles from '../../styles/AuthStyle.module.css';
+import React, { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useAppDispatch } from "../../redux/hooks";
+import { setCredentials } from "../../redux/slices/auth.slice";
+import { loginApi, registerStudentApi } from "../../api/auth/auth.api";
+import Button from "../../components/common/Button/Button";
+import Input from "../../components/common/Input/Input";
+import styles from "../../styles/AuthStyle.module.css";
 
 const AuthPage: React.FC = () => {
   const navigate = useNavigate();
@@ -14,90 +14,97 @@ const AuthPage: React.FC = () => {
   const dispatch = useAppDispatch();
 
   const [isRightPanelActive, setIsRightPanelActive] = useState(
-    location.pathname === '/register'
+    location.pathname === "/register"
   );
 
-  // --- đăng nhập ---
-  const [loginUsername, setLoginUsername] = useState('');
-  const [loginPassword, setLoginPassword] = useState('');
+  // --- LOGIN ---
+  const [loginUsername, setLoginUsername] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
   const [loginLoading, setLoginLoading] = useState(false);
-  const [loginError, setLoginError] = useState('');
+  const [loginError, setLoginError] = useState("");
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoginError('');
+    setLoginError("");
     setLoginLoading(true);
 
     try {
-      // BE trả AuthResponse: { token, user }
-      const response = await login({
+      // Gửi username + password cho cả admin & student
+      const authResponse = await loginApi({
         username: loginUsername,
         password: loginPassword,
       });
-      const authResponse = response.data; // AuthResponse
 
-      // setCredentials bây giờ nhận AuthResponse
+      // Lưu token + user vào redux
       dispatch(setCredentials(authResponse));
 
+      // LẤY ROLE TỪ authResponse.user.role
       const { user } = authResponse;
-
-      // Phân quyền theo role từ BE: 'ADMIN' | 'STUDENT'
-      const redirectPath = user.role === 'ADMIN' ? '/admin' : '/student';
+      const redirectPath = user.role === "ADMIN" ? "/admin" : "/student";
       navigate(redirectPath, { replace: true });
     } catch (err: any) {
       const errorMessage =
-        err?.response?.data?.message || 'Thông tin đăng nhập không chính xác.';
+        err?.response?.data?.message || "Thông tin đăng nhập không chính xác.";
       setLoginError(errorMessage);
     } finally {
       setLoginLoading(false);
     }
   };
 
-  // --- đăng ký ---
+  // --- REGISTER STUDENT ---
   const [registerForm, setRegisterForm] = useState({
-    fullName: '',
-    username: '',
-    email: '',
-    password: '',
-    phone: '',
+    fullName: "",
+    username: "",
+    email: "",
+    password: "",
+    phone: "",
+    dob: "",
   });
   const [regLoading, setRegLoading] = useState(false);
-  const [regError, setRegError] = useState('');
-  const [regSuccess, setRegSuccess] = useState('');
+  const [regError, setRegError] = useState("");
+  const [regSuccess, setRegSuccess] = useState("");
 
   const handleRegisterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setRegisterForm((prev) => ({ ...prev, [name]: value }));
-    setRegError('');
+    setRegError("");
   };
 
   const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setRegError('');
+    setRegError("");
     setRegLoading(true);
 
     try {
-      const { username, email, password, fullName } = registerForm;
+      const { username, email, password, fullName, phone } = registerForm;
 
-      // FE chỉ gửi đúng các field BE đang dùng: username, email, password, fullName
-      await registerStudent({ username, email, password, fullName });
+      // Gọi API REGISTER STUDENT – BE luôn tạo role = STUDENT
+      await registerStudentApi({
+        username,
+        email,
+        password,
+        fullName,
+        phone,
+        dob: registerForm.dob,
+      });
 
-      setRegSuccess('Đăng ký thành công! Vui lòng đăng nhập.');
+      setRegSuccess("Đăng ký thành công! Vui lòng đăng nhập.");
 
       setTimeout(() => {
         setIsRightPanelActive(false);
-        setRegSuccess('');
+        setRegSuccess("");
         setRegisterForm({
-          fullName: '',
-          username: '',
-          email: '',
-          password: '',
-          phone: '',
+          fullName: "",
+          username: "",
+          email: "",
+          password: "",
+          phone: "",
+          dob: "",
         });
       }, 1500);
     } catch (err: any) {
       const errorMsg =
-        err.response?.data?.message || 'Đăng ký thất bại. Vui lòng thử lại!';
+        err?.response?.data?.message || "Đăng ký thất bại. Vui lòng thử lại!";
       setRegError(errorMsg);
     } finally {
       setRegLoading(false);
@@ -105,21 +112,24 @@ const AuthPage: React.FC = () => {
   };
 
   return (
-    <div className={styles['auth-wrapper']}>
+    <div className={styles["auth-wrapper"]}>
       <div
-        className={`${styles['auth-container']} ${
-          isRightPanelActive ? styles['right-panel-active'] : ''
+        className={`${styles["auth-container"]} ${
+          isRightPanelActive ? styles["right-panel-active"] : ""
         }`}
       >
-        {/* --- form đăng ký --- */}
+        {/* --- REGISTER STUDENT --- */}
         <div
-          className={`${styles['form-container']} ${styles['sign-up-container']}`}
+          className={`${styles["form-container"]} ${styles["sign-up-container"]}`}
         >
-          <form className={styles['form-content']} onSubmit={handleRegisterSubmit}>
-            <h1>Tạo Tài Khoản</h1>
-            <span>Điền thông tin để bắt đầu hành trình</span>
+          <form
+            className={styles["form-content"]}
+            onSubmit={handleRegisterSubmit}
+          >
+            <h1>Tạo Tài Khoản Học Viên</h1>
+            <span>Đây là tài khoản STUDENT, admin không đăng ký ở đây.</span>
 
-            <div className={styles['input-group']}>
+            <div className={styles["input-group"]}>
               <Input
                 placeholder="Họ và Tên"
                 name="fullName"
@@ -130,7 +140,7 @@ const AuthPage: React.FC = () => {
               />
             </div>
 
-            <div className={styles['input-group']}>
+            <div className={styles["input-group"]}>
               <Input
                 placeholder="Tên đăng nhập"
                 name="username"
@@ -141,7 +151,7 @@ const AuthPage: React.FC = () => {
               />
             </div>
 
-            <div className={styles['input-group']}>
+            <div className={styles["input-group"]}>
               <Input
                 placeholder="Email"
                 name="email"
@@ -153,7 +163,7 @@ const AuthPage: React.FC = () => {
               />
             </div>
 
-            <div className={styles['input-group']}>
+            <div className={styles["input-group"]}>
               <Input
                 placeholder="Số điện thoại"
                 name="phone"
@@ -164,7 +174,19 @@ const AuthPage: React.FC = () => {
               />
             </div>
 
-            <div className={styles['input-group']}>
+            <div className={styles["input-group"]}>
+              <Input
+                placeholder="Ngày sinh"
+                name="dob"
+                id="reg_dob"
+                type="date"
+                value={registerForm.dob}
+                onChange={handleRegisterChange}
+                required
+              />
+            </div>
+
+            <div className={styles["input-group"]}>
               <Input
                 placeholder="Mật khẩu"
                 name="password"
@@ -176,11 +198,9 @@ const AuthPage: React.FC = () => {
               />
             </div>
 
-            {regError && (
-              <div className={styles['msg-error']}>{regError}</div>
-            )}
+            {regError && <div className={styles["msg-error"]}>{regError}</div>}
             {regSuccess && (
-              <div className={styles['msg-success']}>{regSuccess}</div>
+              <div className={styles["msg-success"]}>{regSuccess}</div>
             )}
 
             <Button type="submit" variant="primary" isLoading={regLoading}>
@@ -189,15 +209,17 @@ const AuthPage: React.FC = () => {
           </form>
         </div>
 
-        {/* --- form đăng nhập --- */}
+        {/* --- LOGIN (ADMIN + STUDENT) --- */}
         <div
-          className={`${styles['form-container']} ${styles['sign-in-container']}`}
+          className={`${styles["form-container"]} ${styles["sign-in-container"]}`}
         >
-          <form className={styles['form-content']} onSubmit={handleLoginSubmit}>
+          <form className={styles["form-content"]} onSubmit={handleLoginSubmit}>
             <h1>Đăng Nhập</h1>
-            <span>Chào mừng bạn quay trở lại</span>
+            <span>
+              Admin dùng tài khoản cố định, học viên dùng tài khoản đã đăng ký.
+            </span>
 
-            <div className={styles['input-group']} style={{ marginTop: 30 }}>
+            <div className={styles["input-group"]} style={{ marginTop: 30 }}>
               <Input
                 placeholder="Tên đăng nhập"
                 id="login_username"
@@ -207,7 +229,7 @@ const AuthPage: React.FC = () => {
               />
             </div>
 
-            <div className={styles['input-group']}>
+            <div className={styles["input-group"]}>
               <Input
                 placeholder="Mật khẩu"
                 id="login_password"
@@ -223,7 +245,7 @@ const AuthPage: React.FC = () => {
             </a>
 
             {loginError && (
-              <div className={styles['msg-error']}>{loginError}</div>
+              <div className={styles["msg-error"]}>{loginError}</div>
             )}
 
             <Button
@@ -238,16 +260,13 @@ const AuthPage: React.FC = () => {
         </div>
 
         {/* --- overlay --- */}
-        <div className={styles['overlay-container']}>
+        <div className={styles["overlay-container"]}>
           <div className={styles.overlay}>
             <div
-              className={`${styles['overlay-panel']} ${styles['overlay-left']}`}
+              className={`${styles["overlay-panel"]} ${styles["overlay-left"]}`}
             >
               <h1>Đã có tài khoản?</h1>
-              <p>
-                Hãy đăng nhập để tiếp tục việc học và quản lý khóa học của bạn một
-                cách dễ dàng.
-              </p>
+              <p>Đăng nhập để tiếp tục học hoặc quản lý hệ thống.</p>
               <button
                 className={styles.ghost}
                 onClick={() => setIsRightPanelActive(false)}
@@ -257,12 +276,12 @@ const AuthPage: React.FC = () => {
             </div>
 
             <div
-              className={`${styles['overlay-panel']} ${styles['overlay-right']}`}
+              className={`${styles["overlay-panel"]} ${styles["overlay-right"]}`}
             >
-              <h1>Bạn mới đến đây?</h1>
+              <h1>Học viên mới?</h1>
               <p>
-                Nhập thông tin cá nhân của bạn và bắt đầu hành trình kiến tạo
-                tương lai ngay hôm nay.
+                Tạo tài khoản STUDENT, sau đó sử dụng form Đăng nhập để vào hệ
+                thống.
               </p>
               <button
                 className={styles.ghost}

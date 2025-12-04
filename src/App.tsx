@@ -1,55 +1,64 @@
 // src/App.tsx
 
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import React from "react";
+import { Routes, Route } from "react-router-dom";
 
-// Import các component layout và page
-import AdminLayout from './components/layout/AdminLayout'; 
-import DashboardPage from './pages/admin/DashboardPage';
-import OrderApprovalPage from './pages/admin/OrderApproval';
-import MyEnrollmentsPage from './pages/student/MyEnrollmentsPage';
-import CourseListPage from './pages/student/CourseListPage';
-import CourseManagement from './pages/admin/CourseManagement';
-import CourseContentManagementPage from './pages/admin/CourseContentManagementPage';
-import EnrollmentAdminPage from './pages/admin/EnrollmentAdminPage';
-import ProfilePage from './pages/account/ProfilePage';
-import HomePage from './pages/public/HomePage'; 
-import NotFoundPage from './pages/public/NotFoundPage'; 
+// Layouts
+import AdminLayout from "./components/layout/AdminLayout";
+import StudentLayout from "./components/layout/StudentLayout";
 
-// 1. IMPORT COMPONENT AUTHPAGE MỚI
-import AuthPage from './pages/Auth/AuthPage';
+// Admin Pages
+import DashboardPage from "./pages/admin/DashboardPage";
+import OrderApprovalPage from "./pages/admin/OrderManagementPage";
+import CourseManagementPage from "./pages/admin/CourseManagementPage";
+import EnrollmentAdminPage from "./pages/admin/EnrollmentAdminPage";
+import CertificateManagementPage from "./pages/admin/CertificateManagementPage";
+import StudentManagementPage from "./pages/admin/StudentManagementPage";
+
+// Student Pages
+import StudentDashboardPage from "./pages/student/StudentDashboardPage";
+import CourseListPage from "./pages/student/CourseListPage";
+import MyEnrollmentsPage from "./pages/student/MyEnrollmentsPage";
+import MyCertificatesPage from "./pages/student/MyCertificatesPage";
+
+
+// Public pages
+import HomePage from "./pages/public/HomePage";
+import NotFoundPage from "./pages/public/NotFoundPage";
+
+// Auth
+import AuthPage from "./pages/Auth/AuthPage";
 
 const App: React.FC = () => {
-    return (
-        // Router đã được bọc ở index.tsx
-        <Routes>
-            
-            {/* 1. ROUTE GỐC (PATH="/") */}
-            <Route path="/" element={<HomePage />} /> 
-            
-            {/* 2. CÁC PUBLIC ROUTE KHÁC (AUTH) */}
-            {/* Cả /login và /register đều trỏ về AuthPage vì giờ nó là 1 trang gộp */}
-            <Route path="/login" element={<AuthPage />} />
-            <Route path="/register" element={<AuthPage />} />
-            
-            {/* 3. ADMIN ROUTES */}
-            <Route path="/admin" element={<AdminLayout />}>
-                <Route path="profile" element={<ProfilePage />} />       
-                <Route index element={<DashboardPage />} />
-                <Route path="courses" element={<CourseManagement />} />
-                <Route path="courses/:id/content" element={<CourseContentManagementPage />} />
-                <Route path="enrollments" element={<EnrollmentAdminPage />} />
-                <Route path="orders/approval" element={<OrderApprovalPage />} /> 
-            </Route>
-         
-            {/* 4. STUDENT ROUTES */}
-            <Route path="/student" element={<MyEnrollmentsPage />} />
-            <Route path="/student/courses" element={<CourseListPage />} />
+  return (
+    <Routes>
+      {/* PUBLIC */}
+      <Route path="/" element={<HomePage />} />
+      <Route path="/login" element={<AuthPage />} />
+      <Route path="/register" element={<AuthPage />} />
 
-            {/* 5. ROUTE FALLBACK */}
-            <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-    );
+      {/* ====================== ADMIN ROUTES ====================== */}
+      <Route path="/admin" element={<AdminLayout />}>
+        <Route index element={<DashboardPage />} />
+        <Route path="courses" element={<CourseManagementPage />} />
+        <Route path="enrollments" element={<EnrollmentAdminPage />} />
+        <Route path="orders/approval" element={<OrderApprovalPage />} />
+        <Route path="certificates/eligible" element={<CertificateManagementPage />} />
+        <Route path="users" element={<StudentManagementPage />} />
+      </Route>
+
+      {/* ====================== STUDENT ROUTES ====================== */}
+      <Route path="/student" element={<StudentLayout />}>
+        <Route index element={<StudentDashboardPage />} />
+        <Route path="courses" element={<CourseListPage />} />
+        <Route path="my-courses" element={<MyEnrollmentsPage />} />
+        <Route path="certificates" element={<MyCertificatesPage />} />
+      </Route>
+
+      {/* FALLBACK */}
+      <Route path="*" element={<NotFoundPage />} />
+    </Routes>
+  );
 };
 
 export default App;

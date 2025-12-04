@@ -1,0 +1,291 @@
+/* src/styles/AdminStudentsPage.module.css */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.subtitle {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+.refreshButton {
+  padding: 6px 12px;
+  font-size: 13px;
+  border-radius: 9999px;
+  border: 1px solid #374151;
+  background: #020617;
+  color: #e5e7eb;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease,
+    transform 0.06s ease;
+}
+
+.refreshButton:hover:not(:disabled) {
+  background: #111827;
+  border-color: #4b5563;
+  transform: translateY(-0.5px);
+}
+
+.refreshButton:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.error {
+  margin: 0;
+  font-size: 13px;
+  color: #fecaca;
+  background: rgba(127, 29, 29, 0.4);
+  border: 1px solid rgba(239, 68, 68, 0.5);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.layout {
+  display: flex;
+  gap: 16px;
+}
+
+/* LEFT: TABLE */
+
+.tableWrapper {
+  flex: 2;
+  border-radius: 12px;
+  border: 1px solid #111827;
+  overflow: hidden;
+  background: #020617;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.th {
+  text-align: left;
+  padding: 8px 10px;
+  background: #020617;
+  border-bottom: 1px solid #111827;
+  font-weight: 500;
+  color: #9ca3af;
+}
+
+.thRight {
+  text-align: right;
+  padding: 8px 10px;
+  background: #020617;
+  border-bottom: 1px solid #111827;
+  font-weight: 500;
+  color: #9ca3af;
+}
+
+.tr:hover {
+  background: #0b1120;
+}
+
+.td {
+  padding: 8px 10px;
+  border-top: 1px solid #020617;
+  vertical-align: middle;
+}
+
+.tdRight {
+  padding: 8px 10px;
+  border-top: 1px solid #020617;
+  vertical-align: middle;
+  text-align: right;
+}
+
+.cellMain {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cellTitle {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.cellSub {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+/* STATUS BADGE */
+
+.badgeActive {
+  display: inline-flex;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 500;
+  background: rgba(22, 163, 74, 0.15);
+  color: #bbf7d0;
+  border: 1px solid rgba(34, 197, 94, 0.5);
+}
+
+.badgeInactive {
+  display: inline-flex;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 500;
+  background: rgba(148, 163, 184, 0.15);
+  color: #e5e7eb;
+  border: 1px solid rgba(148, 163, 184, 0.5);
+}
+
+/* BUTTON */
+
+.viewButton {
+  padding: 4px 10px;
+  font-size: 12px;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: #f9fafb;
+  transition: background-color 0.15s ease, transform 0.06s ease,
+    box-shadow 0.06s ease;
+}
+
+.viewButton:hover {
+  transform: translateY(-0.5px);
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.6);
+}
+
+/* PAGINATION */
+
+.pagination {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-top: 1px solid #111827;
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.pageButton {
+  padding: 4px 8px;
+  border-radius: 9999px;
+  border: 1px solid #374151;
+  background: #020617;
+  color: #e5e7eb;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.pageButton:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* RIGHT: DETAIL PANEL */
+
+.detailPanel {
+  flex: 1.3;
+  border-radius: 12px;
+  border: 1px solid #111827;
+  background: #020617;
+  padding: 12px 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.detailTitle {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.detailEmpty {
+  font-size: 13px;
+  color: #9ca3af;
+  margin: 0;
+}
+
+.detailSectionTitle {
+  margin: 8px 0 4px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.detailField {
+  font-size: 13px;
+  margin: 0;
+}
+
+.detailFieldLabel {
+  color: #9ca3af;
+}
+
+.detailEnrollList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.enrollCard {
+  border-radius: 10px;
+  border: 1px solid #111827;
+  padding: 8px;
+  background: #020617;
+}
+
+.enrollTitle {
+  font-size: 13px;
+  font-weight: 500;
+  margin: 0 0 2px;
+}
+
+.enrollSub {
+  font-size: 11px;
+  color: #9ca3af;
+  margin: 0 0 4px;
+}
+
+.enrollMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+}
+
+.enrollProgressBar {
+  width: 100%;
+  height: 6px;
+  border-radius: 9999px;
+  background: #020617;
+  overflow: hidden;
+  border: 1px solid #111827;
+  margin-top: 2px;
+}
+
+.enrollProgressInner {
+  height: 100%;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #22c55e, #3b82f6);
+}

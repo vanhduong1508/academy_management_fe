@@ -1,140 +1,164 @@
-import { useEffect, useState } from 'react';
-import {
-  getEnrollmentsPageApi,
-  getCompletionStatusApi,
-  updateCompletionStatusApi,
-  issueCertificateApi,
-} from '../../api/enrollment.api';
+// src/pages/admin/EnrollmentAdminPage.tsx
+import { useEffect, useState } from "react";
+import { getAllEnrollmentsProgressApi } from "../../api/admin/admin-enrollments.api";
+import type { EnrollmentCompletion } from "../../types/models/enrollment.types";
+import styles from "../../styles/AdminProgressPage.module.css";
 
-import type { Enrollment } from '../../types/models/enrollment.types';
-import styles from '../../styles/layout.module.css';
-import componentStyles from '../../styles/components.module.css';
-
-const EnrollmentAdminPage = () => {
-  const [data, setData] = useState<Enrollment[]>([]);
-  const [page, setPage] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
+export default function EnrollmentAdminPage() {
+  const [items, setItems] = useState<EnrollmentCompletion[]>([]);
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  // ===== LOAD PAGE =====
-  const load = async (p = 0) => {
-    setLoading(true);
+  const fetchData = async () => {
     try {
-      const res = await getEnrollmentsPageApi(p, 10);
-      setData(res.content);
-      setPage(res.number);
-      setTotalPages(res.totalPages);
-    } catch (e: any) {
-      setMessage(e.response?.data?.message || 'Lỗi tải enrollments');
+      setLoading(true);
+      setError(null);
+      const data = await getAllEnrollmentsProgressApi();
+      setItems(data);
+    } catch (err: any) {
+      console.error(err);
+      setError(
+        err?.response?.data?.message ||
+          "Không tải được dữ liệu tiến độ học tập."
+      );
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    load(0);
+    fetchData();
   }, []);
 
-  // ===== ĐÁNH DẤU HOÀN THÀNH =====
-  const handleCompletion = async (enrollmentId: number) => {
-    try {
-      await updateCompletionStatusApi(enrollmentId, { completed: true });
-      setMessage('Đã đánh dấu hoàn thành, chờ cấp chứng chỉ.');
-      load(page);
-    } catch (err: any) {
-      setMessage(err.response?.data?.message || 'Không thể cập nhật hoàn thành.');
+  const renderStatusBadge = (status: EnrollmentCompletion["status"]) => {
+    const base = styles.badge;
+    if (status === "COMPLETED") {
+      return (
+        <span className={`${base} ${styles.badgeStatusCompleted}`}>
+          Đã hoàn thành
+        </span>
+      );
     }
+    if (status === "NOT_COMPLETED") {
+      return (
+        <span className={`${base} ${styles.badgeStatusNotCompleted}`}>
+          Không hoàn thành
+        </span>
+      );
+    }
+    return (
+      <span className={`${base} ${styles.badgeStatus}`}>
+        Đang học
+      </span>
+    );
   };
 
-  // ===== CẤP CHỨNG CHỈ =====
-  const handleCert = async (enrollmentId: number, passed: boolean) => {
-    try {
-      await issueCertificateApi(enrollmentId, { passed });
-      setMessage('Đã chấm kết quả và cấp chứng chỉ');
-      load(page);
-    } catch (err: any) {
-      setMessage(err.response?.data?.message || 'Cấp chứng chỉ thất bại.');
+  const renderCertBadge = (item: EnrollmentCompletion) => {
+    const base = styles.badge;
+    if (item.hasCertificate) {
+      return (
+        <span className={`${base} ${styles.badgeCertHas}`}>
+          Đã cấp chứng chỉ
+        </span>
+      );
     }
+    if (item.canIssueCertificate) {
+      return (
+        <span className={`${base} ${styles.badgeCertReady}`}>
+          Đủ điều kiện cấp
+        </span>
+      );
+    }
+    return (
+      <span className={`${base} ${styles.badgeCert}`}>
+        Chưa đủ điều kiện
+      </span>
+    );
   };
 
   return (
-    <div className={styles.pageContainer}>
-      <h1 className={styles.pageTitle}>Quản lý Enrollment & Chứng chỉ</h1>
-
-      {loading && <p>Đang tải...</p>}
-      {message && <p style={{ color: 'green' }}>{message}</p>}
-
-      <table className={styles.table}>
-        <thead>
-          <tr>
-            <th>Học viên</th>
-            <th>Khoá học</th>
-            <th>Ngày ghi danh</th>
-            <th>Trạng thái</th>
-            <th>Kết quả</th>
-            <th>Chứng chỉ</th>
-            <th>Hành động</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {data.map((e) => (
-            <tr key={e.id}>
-              <td>{e.studentName}</td>
-              <td>{e.courseTitle}</td>
-              <td>{new Date(e.enrolledAt).toLocaleDateString()}</td>
-              <td>{e.status || '—'}</td>
-              <td>{e.result || 'Chưa có'}</td>
-              <td>{e.certificateNo || '—'}</td>
-
-              <td>
-                {/* BUTTON: Đánh dấu hoàn thành */}
-                <button
-                  className={componentStyles.primaryButton}
-                  onClick={() => handleCompletion(e.id)}
-                >
-                  Hoàn thành 100%
-                </button>
-
-                {/* BUTTON: Cấp chứng chỉ */}
-                <button
-                  className={componentStyles.primaryButton}
-                  style={{ marginLeft: 4 }}
-                  onClick={() => handleCert(e.id, true)}
-                >
-                  Đạt + Cấp chứng chỉ
-                </button>
-
-                <button
-                  className={componentStyles.dangerButton}
-                  style={{ marginLeft: 4 }}
-                  onClick={() => handleCert(e.id, false)}
-                >
-                  Không đạt
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      {/* PHÂN TRANG */}
-      <div style={{ marginTop: 12 }}>
-        <button disabled={page === 0} onClick={() => load(page - 1)}>
-          Trang trước
-        </button>
-
-        <span style={{ margin: '0 10px' }}>
-          {page + 1} / {totalPages}
-        </span>
-
-        <button disabled={page + 1 >= totalPages} onClick={() => load(page + 1)}>
-          Trang sau
+    <div className={styles.page}>
+      <div className={styles.headerRow}>
+        <div>
+          <h2 className={styles.title}>Quản lý quá trình học</h2>
+          <p className={styles.subtitle}>
+            Theo dõi tiến độ học tập của tất cả học viên. Tab này chỉ hiển thị
+            &quot;ai đang học tới đâu&quot;, không thao tác cấp chứng chỉ.
+          </p>
+        </div>
+        <button
+          onClick={fetchData}
+          className={styles.refreshButton}
+          disabled={loading}
+        >
+          {loading ? "Đang tải..." : "Tải lại"}
         </button>
       </div>
+
+      {error && <p className={styles.error}>{error}</p>}
+
+      {loading && items.length === 0 ? (
+        <p className={styles.infoText}>Đang tải dữ liệu...</p>
+      ) : items.length === 0 ? (
+        <p className={styles.infoText}>
+          Chưa có dữ liệu enrollments nào.
+        </p>
+      ) : (
+        <div className={styles.tableWrapper}>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th className={styles.th}>Học viên</th>
+                <th className={styles.th}>Khóa học</th>
+                <th className={styles.th}>Tiến độ</th>
+                <th className={styles.th}>Trạng thái</th>
+                <th className={styles.th}>Chứng chỉ</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((item) => (
+                <tr key={item.enrollmentId} className={styles.tr}>
+                  <td className={styles.td}>
+                    <div className={styles.cellMain}>
+                      <span className={styles.cellTitle}>
+                        {item.studentName}
+                      </span>
+                      <span className={styles.cellSub}>
+                        ID: {item.studentId} – Enrollment #{item.enrollmentId}
+                      </span>
+                    </div>
+                  </td>
+                  <td className={styles.td}>
+                    <div className={styles.cellMain}>
+                      <span className={styles.cellTitle}>
+                        {item.courseTitle}
+                      </span>
+                      <span className={styles.cellSub}>
+                        Course ID: {item.courseId}
+                      </span>
+                    </div>
+                  </td>
+                  <td className={styles.td}>
+                    <div className={styles.progressWrapper}>
+                      <div className={styles.progressBar}>
+                        <div
+                          className={styles.progressInner}
+                          style={{ width: `${item.progressPercent}%` }}
+                        />
+                      </div>
+                      <span className={styles.progressText}>
+                        {item.progressPercent.toFixed(1)}%
+                      </span>
+                    </div>
+                  </td>
+                  <td className={styles.td}>{renderStatusBadge(item.status)}</td>
+                  <td className={styles.td}>{renderCertBadge(item)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
-};
-
-export default EnrollmentAdminPage;
+}

@@ -2,13 +2,13 @@
 
 :root {
   --primary-black: #111827;       
+  --primary-dark: #000000;
   --text-main: #1f2937;           
   --text-secondary: #6b7280;      
-  --bg-input: #f9fafb;            
-  --border-input: #e5e7eb;        
+  --bg-input: #f3f4f6;            
   --white: #ffffff;
-  
-  --shadow-card: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-card: 0 14px 28px rgba(0,0,0,0.15), 0 10px 10px rgba(0,0,0,0.12);
+  --shadow-input-focus: 0 0 0 3px rgba(17, 24, 39, 0.1);
   --transition-speed: 0.6s;
 }
 
@@ -20,12 +20,11 @@ body {
   margin: 0;
   font-family: 'Montserrat', sans-serif;
   -webkit-font-smoothing: antialiased; 
-  -moz-osx-font-smoothing: grayscale;
 }
 
 /* --- background --- */
 .auth-wrapper {
-  background-color: #f3f4f6; 
+  background: #e5e7eb; 
   display: flex;
   justify-content: center;
   align-items: center;
@@ -36,16 +35,16 @@ body {
 
 .auth-container {
   background-color: var(--white);
-  border-radius: 16px;
+  border-radius: 20px; 
   box-shadow: var(--shadow-card);
   position: relative;
   overflow: hidden;
   width: 900px;
   max-width: 95%;
-  min-height: 620px;
+  min-height: 650px;
 }
 
-/* --- form layout --- */
+/* ---form layout --- */
 .form-container {
   position: absolute;
   top: 0;
@@ -59,70 +58,82 @@ body {
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  padding: 0 50px;
+  padding: 0 40px;
   height: 100%;
   text-align: center;
+  overflow-y: auto; 
+  scrollbar-width: thin;
+  scrollbar-color: #d1d5db transparent;
 }
 
-/* --- typography --- */
+.form-content::-webkit-scrollbar {
+  width: 4px;
+}
+.form-content::-webkit-scrollbar-thumb {
+  background-color: #d1d5db;
+  border-radius: 4px;
+}
+
+
 .form-content h1 {
   font-weight: 800;
-  margin: 0;
-  margin-bottom: 10px;
+  margin: 0 0 10px 0;
   color: var(--primary-black);
-  font-size: 32px; 
-  letter-spacing: -0.5px;
+  font-size: 28px; 
 }
 
 .form-content span {
-  font-size: 15px;
+  font-size: 13px;
   color: var(--text-secondary);
-  margin-bottom: 25px;
+  margin-bottom: 20px;
   font-weight: 500; 
-  line-height: 1.5;
+  line-height: 1.4;
+  display: inline-block;
+  max-width: 90%;
 }
 
 /* --- input --- */
 .input-group {
   width: 100%;
-  margin-bottom: 16px;
+  margin-bottom: 12px; 
   text-align: left;
 }
 
 .form-content input {
   background-color: var(--bg-input);
-  border: 1px solid var(--border-input); 
-  padding: 14px 18px;
+  border: 1px solid transparent; 
+  padding: 12px 15px;
   margin: 0;
   width: 100%;
   border-radius: 8px;
   
-  /* Style chữ trong input */
-  font-size: 15px; 
+  font-size: 14px; 
   color: var(--text-main); 
   font-weight: 500;
   font-family: 'Montserrat', sans-serif;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
 }
 
+/* Hiệu ứng khi click vào input */
 .form-content input:focus {
   background-color: var(--white);
-  border-color: var(--primary-black);
+  border-color: #d1d5db;
   outline: none;
-  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.05); 
+  box-shadow: var(--shadow-input-focus);
+  transform: translateY(-1px);
 }
 
 .form-content input::placeholder {
   color: #9ca3af; 
   font-weight: 400;
+  font-size: 13px;
 }
 
-/* --- link --- */
 .form-content a {
   color: var(--primary-black);
-  font-size: 14px;
+  font-size: 13px;
   text-decoration: none;
-  margin: 15px 0;
+  margin: 10px 0 20px;
   font-weight: 600; 
   border-bottom: 1px solid transparent;
   transition: 0.3s;
@@ -135,30 +146,29 @@ body {
 button[type="submit"] {
   background-color: var(--primary-black);
   color: var(--white);
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 700;
-  padding: 15px 45px;
-  letter-spacing: 1px;
+  padding: 14px 45px;
+  letter-spacing: 1.5px; 
   text-transform: uppercase;
   border: none;
   border-radius: 50px;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin-top: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-top: 5px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 button[type="submit"]:hover {
-  background-color: #000000;
+  background-color: var(--primary-dark);
   transform: translateY(-2px);
-  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
 }
 
 button[type="submit"]:active {
   transform: scale(0.98);
 }
 
-/* Thêm style disabled cho button */
 button[type="submit"]:disabled {
   background-color: #9ca3af;
   cursor: not-allowed;
@@ -166,6 +176,7 @@ button[type="submit"]:disabled {
   box-shadow: none;
 }
 
+/* --- animation --- */
 .sign-in-container {
   left: 0;
   width: 50%;
@@ -195,6 +206,7 @@ button[type="submit"]:disabled {
   50%, 100% { opacity: 1; z-index: 5; }
 }
 
+/* --- overlay) --- */
 .overlay-container {
   position: absolute;
   top: 0;
@@ -204,6 +216,7 @@ button[type="submit"]:disabled {
   overflow: hidden;
   transition: transform var(--transition-speed) ease-in-out;
   z-index: 100;
+  border-radius: 0 0 0 0; 
 }
 
 .auth-container.right-panel-active .overlay-container {
@@ -212,7 +225,7 @@ button[type="submit"]:disabled {
 
 .overlay {
   background: #111827;
-  background: linear-gradient(135deg, #1f2937 0%, #000000 100%);
+  background: linear-gradient(135deg, #2d3748 0%, #111827 100%);
   color: var(--white);
   position: relative;
   left: -100%;
@@ -258,30 +271,30 @@ button[type="submit"]:disabled {
   transform: translateX(20%);
 }
 
-/* Typography bên phần Overlay */
+/* Typography Overlay */
 .overlay-panel h1 {
-  font-size: 36px; 
+  font-size: 32px; 
   font-weight: 800;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
 }
 
 .overlay-panel p {
-  font-size: 16px; 
+  font-size: 14px; 
   font-weight: 400;
   line-height: 1.6;
-  margin: 20px 0 35px;
-  opacity: 0.9;
+  margin: 20px 0 30px;
+  opacity: 0.8;
+  max-width: 80%;
 }
 
-/* ---Nút trên nền đen --- */
+/* Nút Ghost  */
 button.ghost {
   background-color: transparent;
-  border-color: var(--white);
-  border: 2px solid var(--white); 
+  border: 1px solid var(--white); 
   color: var(--white);
   border-radius: 50px;
-  padding: 14px 50px;
-  font-size: 13px;
+  padding: 12px 45px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 1px;
   text-transform: uppercase;
@@ -293,31 +306,35 @@ button.ghost:hover {
   background-color: var(--white);
   color: var(--primary-black);
   transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
 }
 
-/* --- MESSAGES --- */
-.msg-error {
-  color: #ef4444; 
-  background-color: #fef2f2;
-  border: 1px solid #fecaca;
-  padding: 10px;
-  border-radius: 6px;
-  font-size: 13px;
-  margin-top: 10px;
+/* --- Thông báo lỗi/thành công --- */
+.msg-error, .msg-success {
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-size: 12px;
+  margin: 10px 0;
   width: 100%;
   font-weight: 600;
   text-align: center;
+  animation: fadeIn 0.3s ease-in;
+}
+
+.msg-error {
+  color: #b91c1c; 
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
 }
 
 .msg-success {
-  color: #10b981; 
+  color: #047857; 
   background-color: #ecfdf5;
   border: 1px solid #a7f3d0;
-  padding: 10px;
-  border-radius: 6px;
-  font-size: 13px;
-  margin-top: 10px;
-  width: 100%;
-  font-weight: 600;
-  text-align: center;
 }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+

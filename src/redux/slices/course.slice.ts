@@ -1,7 +1,7 @@
 // src/redux/slices/course.slice.ts
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { Course, PageResponse } from '../../types/models/course.types';
-import { getCoursesPageApi } from '../../api/course.api';
+import { getCoursesPageApi } from '../../api/admin/admin-courses.api';
 
 interface CourseState {
   items: Course[];
