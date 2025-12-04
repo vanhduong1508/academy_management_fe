@@ -7,15 +7,19 @@ export interface PageResponse<T> {
   size: number;
 }
 
-// CourseResponse
+// Khớp CourseResponse.java
 export interface Course {
+  price: number | null;
   id: number;
   code: string;
   title: string;
-  price: number | null;     // ✅ số hoặc null
-  description?: string;     // ✅ để CourseCard dùng
-  startDate?: string;
-  endDate?: string;
+  description?: string | null;
+  startDate: string | null; // ISO: "2025-12-04"
+  endDate: string | null;
+  content: string | null;
+  status: "ACTIVE" | "INACTIVE" | string;
+  createdAt: string | null;
+  updatedAt: string | null;
 }
 
 // LessonResponse
@@ -33,11 +37,22 @@ export interface Chapter {
 }
 
 // CourseStructureResponse
-export interface CourseStructure {
+export interface CourseStructureResponse {
   id: number;
   title: string;
-  description?: string | null;
+  description: string | null;
   chapters: Chapter[];
+}
+
+// Payload khớp ChapterCreateRequest.java
+export interface ChapterCreatePayload {
+  title: string;
+}
+
+// Payload suy ra từ LessonCreateRequest (BE dùng title + type)
+export interface LessonCreatePayload {
+  title: string;
+  type?: string | null; // optional, BE cho phép null
 }
 
 // Payloads khớp CourseCreateRequest / CourseUpdateRequest
@@ -48,9 +63,12 @@ export interface CourseCreatePayload {
   content?: string | null;
 }
 
+// CourseUpdateRequest.java:
+//  title (NotBlank), startDate (NotNull), endDate (NotNull), content?
 export interface CourseUpdatePayload {
   title: string;
-  startDate: string; // bắt buộc
+  startDate: string; // yyyy-MM-dd
   endDate: string;
   content?: string | null;
 }
+

@@ -1,0 +1,108 @@
+.coursePageContainer {
+  padding: 28px 30px;
+  background: #ffffff;
+  min-height: 100vh;
+  font-family: "Segoe UI", sans-serif;
+  color: #111827;
+}
+
+.coursePageTitle {
+  margin-bottom: 22px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.loading {
+  padding: 20px;
+  font-size: 18px;
+  color: #111827;
+}
+
+.courseGrid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+.courseCard {
+  border: 1px solid #e5e7eb;
+  padding: 22px;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+  transition: 0.25s ease;
+}
+
+.courseCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.courseTitle {
+  margin-bottom: 12px;
+  font-size: 21px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.courseInfo {
+  margin: 6px 0;
+  font-size: 15px;
+  color: #374151;
+}
+
+.courseInfo span {
+  color: #6b7280;
+}
+
+.enrollBtn {
+  margin-top: 16px;
+  padding: 10px 14px;
+  background: #111827;
+  color: #ffffff;
+  font-weight: 600;
+  border: none;
+  width: 100%;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.enrollBtn:hover {
+  background: #000000;
+}
+
+.paginationContainer {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  font-size: 16px;
+}
+
+.paginationBtn {
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  cursor: pointer;
+  transition: 0.25s ease;
+  font-weight: 500;
+}
+
+.paginationBtn:hover:not(:disabled) {
+  background: #f3f4f6;
+}
+
+.paginationBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.pageNumber {
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  color: #111827;
+}

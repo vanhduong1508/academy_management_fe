@@ -6,10 +6,10 @@ import type {
   IssueCertificatePayload,
 } from "../../types/models/certificate.types";
 
-// re-export để chỗ khác có thể import type CertificateResult từ file này
+
 export type { CertificateResult };
 
-// POST /api/certificates/enrollment/{enrollmentId}
+// BE: POST /api/certificates/enrollment/{enrollmentId}
 export const issueCertificateApi = async (
   enrollmentId: number,
   payload: IssueCertificatePayload

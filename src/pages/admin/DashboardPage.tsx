@@ -1,6 +1,6 @@
 // src/pages/admin/DashboardPage.tsx
 import { useEffect, useState } from "react";
-import { getStudentsPageApi } from "../../api/admin/admin-users.api";
+import { getStudentsPageApi } from "../../api/admin/admin-students.api";
 import { getAdminCoursesPageApi } from "../../api/admin/admin-courses.api";
 import { getAllEnrollmentsProgressApi } from "../../api/admin/admin-enrollments.api";
 import { getPendingOrdersApi } from "../../api/admin/admin-orders.api";
@@ -47,20 +47,18 @@ export default function DashboardPage() {
       setError(null);
 
       // Lấy tổng students & courses bằng PageResponse.totalElements
-      const [
-        studentsPage,
-        coursesPage,
-        enrollmentsProgress,
-        pendingOrders,
-      ] = await Promise.all([
-        getStudentsPageApi(0, 1) as Promise<PageResponse<Student>>,
-        getAdminCoursesPageApi(0, 1) as Promise<PageResponse<Course>>,
-        getAllEnrollmentsProgressApi() as Promise<EnrollmentCompletion[]>,
-        getPendingOrdersApi() as Promise<Order[]>,
-      ]);
+      const [studentsPage, coursesPage, enrollmentsProgress, pendingOrders] =
+        await Promise.all([
+          getStudentsPageApi(0, 1) as Promise<PageResponse<Student>>,
+          getAdminCoursesPageApi(0, 1) as Promise<PageResponse<Course>>,
+          getAllEnrollmentsProgressApi() as Promise<EnrollmentCompletion[]>,
+          getPendingOrdersApi() as Promise<Order[]>,
+        ]);
 
-      const totalStudents = studentsPage.totalElements ?? studentsPage.content.length;
-      const totalCourses = coursesPage.totalElements ?? coursesPage.content.length;
+      const totalStudents =
+        studentsPage.totalElements ?? studentsPage.content.length;
+      const totalCourses =
+        coursesPage.totalElements ?? coursesPage.content.length;
 
       const totalEnrollments = enrollmentsProgress.length;
       const completed = enrollmentsProgress.filter(
@@ -167,7 +165,8 @@ export default function DashboardPage() {
         <div className={styles.sectionCard}>
           <h3 className={styles.sectionTitle}>Tiến độ học tập</h3>
           <p className={styles.sectionSub}>
-            Phân bố trạng thái các enrollment: đang học, đã hoàn thành, không hoàn thành.
+            Phân bố trạng thái các enrollment: đang học, đã hoàn thành, không
+            hoàn thành.
           </p>
 
           <div className={styles.progressList}>
@@ -175,8 +174,8 @@ export default function DashboardPage() {
               <div className={styles.progressLabelRow}>
                 <span className={styles.progressLabel}>Đã hoàn thành</span>
                 <span className={styles.progressCount}>
-                  {completedCount} ({percent(completedCount, totalForProgress).toFixed(1)}
-                  %)
+                  {completedCount} (
+                  {percent(completedCount, totalForProgress).toFixed(1)}%)
                 </span>
               </div>
               <div className={styles.progressBar}>
@@ -193,8 +192,8 @@ export default function DashboardPage() {
               <div className={styles.progressLabelRow}>
                 <span className={styles.progressLabel}>Đang học</span>
                 <span className={styles.progressCount}>
-                  {inProgressCount} ({percent(inProgressCount, totalForProgress).toFixed(1)}
-                  %)
+                  {inProgressCount} (
+                  {percent(inProgressCount, totalForProgress).toFixed(1)}%)
                 </span>
               </div>
               <div className={styles.progressBar}>
@@ -211,8 +210,8 @@ export default function DashboardPage() {
               <div className={styles.progressLabelRow}>
                 <span className={styles.progressLabel}>Không hoàn thành</span>
                 <span className={styles.progressCount}>
-                  {notCompletedCount} ({percent(notCompletedCount, totalForProgress).toFixed(1)}
-                  %)
+                  {notCompletedCount} (
+                  {percent(notCompletedCount, totalForProgress).toFixed(1)}%)
                 </span>
               </div>
               <div className={styles.progressBar}>
@@ -231,7 +230,8 @@ export default function DashboardPage() {
         <div className={styles.sectionCard}>
           <h3 className={styles.sectionTitle}>Tình hình đơn hàng</h3>
           <p className={styles.sectionSub}>
-            Số đơn đang chờ admin duyệt. Chi tiết xử lý ở tab &quot;Quản lý thanh toán&quot;.
+            Số đơn đang chờ admin duyệt. Chi tiết xử lý ở tab &quot;Quản lý thanh
+            toán&quot;.
           </p>
 
           <div className={styles.ordersSummary}>

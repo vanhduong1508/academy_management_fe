@@ -1,25 +1,28 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import React from "react";
+import { Routes, Route } from "react-router-dom";
 
-// Import các Layout và Pages cần thiết
-import AdminLayout from '../../components/layout/AdminLayout'; 
-import OrderApproval from './OrderManagementPage';
-// Giả định bạn có component DashboardPage
-import DashboardPage from './DashboardPage'; 
-import CourseManagement from './CourseManagementPage';
+import AdminLayout from "../../components/layout/AdminLayout";
 
+import DashboardPage from "./DashboardPage";
+import CourseManagementPage from "./CourseManagementPage";
+import StudentManagementPage from "./StudentManagementPage";
+import EnrollmentAdminPage from "./EnrollmentAdminPage";
+import OrderManagementPage from "./OrderManagementPage";
+import CertificateManagementPage from "./CertificateManagementPage";
 
 const AdminRoutes = () => {
-    return (
-        <Routes>
-            <Route path="/" element={<AdminLayout />}>
-                <Route index element={<DashboardPage />} /> 
-                <Route path="orders/pending" element={<OrderApproval />} />
-                <Route path="courses" element={<CourseManagement />} />
-                <Route path="users" element={<h2>Quản lý Người dùng</h2>} />
-            </Route>
-        </Routes>
-    );
+  return (
+    <Routes>
+      <Route path="/admin" element={<AdminLayout />}>
+        <Route index element={<DashboardPage />} />
+        <Route path="courses" element={<CourseManagementPage />} />
+        <Route path="students" element={<StudentManagementPage />} />
+        <Route path="enrollments" element={<EnrollmentAdminPage />} />
+        <Route path="orders" element={<OrderManagementPage />} />
+        <Route path="certificates" element={<CertificateManagementPage />} />
+      </Route>
+    </Routes>
+  );
 };
 
 export default AdminRoutes;

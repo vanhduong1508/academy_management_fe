@@ -1,0 +1,63 @@
+.studentContainer {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  background: #f5f7fa;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.studentSidebar {
+  width: 250px;
+  background: #ffffff;
+  border-right: 1px solid #e5e7eb;
+  padding: 25px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sidebarTitle {
+  font-size: 22px;
+  font-weight: 700;
+  color: #111827;
+  text-align: center;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.sidebarMenu {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sidebarLink {
+  text-decoration: none;
+  color: #374151;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  transition: all 0.25s ease;
+}
+
+.sidebarLink:hover {
+  background: #f3f4f6;
+  color: #000;
+}
+
+.active {
+  background: #111827;
+  color: #ffffff !important;
+  font-weight: 600;
+}
+
+.active:hover {
+  background: #111827 !important;
+  color: #ffffff !important;
+}
+
+.studentContent {
+  flex: 1;
+  padding: 30px;
+}

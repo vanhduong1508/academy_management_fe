@@ -1,8 +1,12 @@
 // src/api/student/student-courses.api.ts
 import { axiosInstance } from "../index";
-import type { Course, PageResponse } from "../../types/models/course.types";
+import type {
+  Course,
+  PageResponse,
+  CourseStructureResponse,
+} from "../../types/models/course.types";
 
-// List khóa học phân trang cho student – dùng CourseController (GET /api/courses)
+// 📌 1. Lấy danh sách khóa học (phân trang)
 export const getStudentCoursesPageApi = async (
   page = 0,
   size = 10
@@ -13,8 +17,20 @@ export const getStudentCoursesPageApi = async (
   return res.data;
 };
 
-// Nếu bạn muốn list tất cả không phân trang (tùy dùng hay không)
-export const getAllStudentCoursesApi = async (): Promise<Course[]> => {
-  const res = await axiosInstance.get<Course[]>("/courses/all");
+// 📌 2. Lấy chi tiết 1 khóa học theo id
+export const getStudentCourseDetailApi = async (
+  id: number
+): Promise<Course> => {
+  const res = await axiosInstance.get<Course>(`/courses/${id}`);
+  return res.data;
+};
+
+// 📌 3. Lấy structure (chapters → lessons) của khóa học
+export const getStudentCourseStructureApi = async (
+  id: number
+): Promise<CourseStructureResponse> => {
+  const res = await axiosInstance.get<CourseStructureResponse>(
+    `/courses/${id}/structure`
+  );
   return res.data;
 };

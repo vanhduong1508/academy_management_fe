@@ -50,7 +50,10 @@ export default function CertificateManagementPage() {
     fetchData();
   }, []);
 
-  const handleChangeResult = (enrollmentId: number, result: CertificateResult) => {
+  const handleChangeResult = (
+    enrollmentId: number,
+    result: CertificateResult
+  ) => {
     setItems((prev) =>
       prev.map((item) =>
         item.enrollmentId === enrollmentId
@@ -110,8 +113,9 @@ export default function CertificateManagementPage() {
         <div>
           <h2 className={styles.title}>Quản lý chứng chỉ</h2>
           <p className={styles.subtitle}>
-            Danh sách học viên đã hoàn thành 100% khóa học và đủ điều kiện để cấp
-            chứng chỉ. Bạn có thể chọn kết quả (Đạt / Không đạt) trước khi cấp.
+            Danh sách học viên đã hoàn thành 100% khóa học và đủ điều kiện để
+            cấp chứng chỉ. Bạn có thể chọn kết quả (Đạt / Không đạt) trước khi
+            cấp.
           </p>
         </div>
         <button
@@ -181,7 +185,9 @@ export default function CertificateManagementPage() {
                         </span>
                       </div>
                     </td>
-                    <td className={styles.td}>{renderEligibilityBadge(item)}</td>
+                    <td className={styles.td}>
+                      {renderEligibilityBadge(item)}
+                    </td>
                     <td className={styles.tdRight}>
                       <select
                         value={item.selectedResult}
