@@ -1,32 +1,18 @@
+// src/api/admin/admin-courses.api.ts
 import { axiosInstance } from "../index";
 import type {
   Course,
-  CourseStructure,
   PageResponse,
+  CourseCreatePayload,
+  CourseUpdatePayload,
 } from "../../types/models/course.types";
 
-export interface CourseCreatePayload {
-  title: string;
-  description?: string;
-  price?: number;
-  startDate?: string | null;
-  endDate?: string | null;
-  content?: string | null;
-}
-
-export interface CourseUpdatePayload {
-  title: string;
-  description?: string;
-  price?: number;
-  startDate?: string | null;
-  endDate?: string | null;
-  content?: string | null;
-}
-
-// LIST
-export const getCoursesPageApi = async (
+// ======================= LIST COURSES (PAGE) =======================
+// BE: @RequestMapping("/api/courses") trong CourseController
+// GET /api/courses?page=&size=
+export const getAdminCoursesPageApi = async (
   page = 0,
-  size = 10
+  size = 5
 ): Promise<PageResponse<Course>> => {
   const res = await axiosInstance.get<PageResponse<Course>>("/courses", {
     params: { page, size },
@@ -34,25 +20,10 @@ export const getCoursesPageApi = async (
   return res.data;
 };
 
-// alias cho code đang import getAdminCoursesPageApi
-export const getAdminCoursesPageApi = getCoursesPageApi;
+// ======================= CRUD COURSE (ADMIN) =======================
+// BE: @RequestMapping("/api/admin/courses") trong CourseAdminController
 
-// DETAIL
-export const getCourseDetailApi = async (id: number): Promise<Course> => {
-  const res = await axiosInstance.get<Course>(`/courses/${id}`);
-  return res.data;
-};
-
-export const getCourseStructureApi = async (
-  id: number
-): Promise<CourseStructure> => {
-  const res = await axiosInstance.get<CourseStructure>(
-    `/courses/${id}/structure`
-  );
-  return res.data;
-};
-
-// CREATE / UPDATE / DELETE
+// POST /api/admin/courses
 export const createCourseApi = async (
   payload: CourseCreatePayload
 ): Promise<Course> => {
@@ -60,6 +31,7 @@ export const createCourseApi = async (
   return res.data;
 };
 
+// PUT /api/admin/courses/{id}
 export const updateCourseApi = async (
   id: number,
   payload: CourseUpdatePayload
@@ -68,11 +40,20 @@ export const updateCourseApi = async (
   return res.data;
 };
 
+// DELETE /api/admin/courses/{id}
 export const deleteCourseApi = async (id: number): Promise<void> => {
   await axiosInstance.delete(`/admin/courses/${id}`);
 };
 
-// alias cho code đang import createAdminCourseApi, updateAdminCourseApi, deleteAdminCourseApi
+// Giữ alias cho code cũ đang import
 export const createAdminCourseApi = createCourseApi;
 export const updateAdminCourseApi = updateCourseApi;
 export const deleteAdminCourseApi = deleteCourseApi;
+
+// ======================= DETAIL (nếu cần dùng) =======================
+
+// GET /api/courses/{id}
+export const getCourseDetailApi = async (id: number): Promise<Course> => {
+  const res = await axiosInstance.get<Course>(`/courses/${id}`);
+  return res.data;
+};

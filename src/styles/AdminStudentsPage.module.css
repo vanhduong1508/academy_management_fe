@@ -1,9 +1,9 @@
-/* src/styles/AdminStudentsPage.module.css */
-
 .page {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 16px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #111827;
 }
 
 .headerRow {
@@ -11,107 +11,97 @@
   justify-content: space-between;
   align-items: flex-start;
   gap: 16px;
+  margin-bottom: 24px;
 }
 
 .title {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 600;
+  margin: 0 0 4px;
+  font-size: 1.6rem;
+  font-weight: 700;
 }
 
 .subtitle {
-  margin: 4px 0 0;
-  font-size: 13px;
-  color: #9ca3af;
+  margin: 0;
+  font-size: 0.9rem;
+  color: #6b7280;
 }
 
 .refreshButton {
-  padding: 6px 12px;
-  font-size: 13px;
-  border-radius: 9999px;
-  border: 1px solid #374151;
-  background: #020617;
-  color: #e5e7eb;
+  border-radius: 999px;
+  border: none;
+  padding: 8px 14px;
+  font-size: 0.9rem;
+  background-color: #e5e7eb;
+  color: #111827;
   cursor: pointer;
-  transition: background-color 0.15s ease, border-color 0.15s ease,
-    transform 0.06s ease;
+  font-weight: 500;
+  transition: background-color 0.15s ease, transform 0.05s ease;
 }
 
 .refreshButton:hover:not(:disabled) {
-  background: #111827;
-  border-color: #4b5563;
+  background-color: #d1d5db;
   transform: translateY(-0.5px);
 }
 
 .refreshButton:disabled {
-  opacity: 0.5;
+  opacity: 0.6;
   cursor: default;
 }
 
 .error {
-  margin: 0;
-  font-size: 13px;
-  color: #fecaca;
-  background: rgba(127, 29, 29, 0.4);
-  border: 1px solid rgba(239, 68, 68, 0.5);
+  margin: 8px 0 0;
+  padding: 8px 12px;
   border-radius: 8px;
-  padding: 8px 10px;
+  background-color: #fef2f2;
+  color: #b91c1c;
+  font-size: 0.85rem;
+  border: 1px solid #fecaca;
 }
 
-.layout {
-  display: flex;
-  gap: 16px;
-}
-
-/* LEFT: TABLE */
+/* Table */
 
 .tableWrapper {
-  flex: 2;
   border-radius: 12px;
-  border: 1px solid #111827;
-  overflow: hidden;
-  background: #020617;
+  background-color: #ffffff;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+  padding: 12px;
+  overflow-x: auto;
+}
+
+.infoText {
+  margin: 12px 0;
+  font-size: 0.9rem;
+  color: #6b7280;
 }
 
 .table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 13px;
+  font-size: 0.9rem;
+}
+
+.th,
+.td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .th {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #6b7280;
+  background-color: #f9fafb;
   text-align: left;
-  padding: 8px 10px;
-  background: #020617;
-  border-bottom: 1px solid #111827;
-  font-weight: 500;
-  color: #9ca3af;
 }
 
-.thRight {
-  text-align: right;
-  padding: 8px 10px;
-  background: #020617;
-  border-bottom: 1px solid #111827;
-  font-weight: 500;
-  color: #9ca3af;
-}
-
-.tr:hover {
-  background: #0b1120;
-}
-
-.td {
-  padding: 8px 10px;
-  border-top: 1px solid #020617;
-  vertical-align: middle;
-}
-
+.thRight,
 .tdRight {
-  padding: 8px 10px;
-  border-top: 1px solid #020617;
-  vertical-align: middle;
   text-align: right;
+}
+
+.tr:hover td {
+  background-color: #f9fafb;
 }
 
 .cellMain {
@@ -121,171 +111,272 @@
 }
 
 .cellTitle {
-  font-size: 13px;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .cellSub {
-  font-size: 11px;
+  font-size: 0.8rem;
   color: #9ca3af;
 }
 
-/* STATUS BADGE */
+/* Trạng thái */
+
+.badgeActive,
+.badgeInactive {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
 
 .badgeActive {
-  display: inline-flex;
-  padding: 2px 8px;
-  border-radius: 9999px;
-  font-size: 11px;
-  font-weight: 500;
-  background: rgba(22, 163, 74, 0.15);
-  color: #bbf7d0;
-  border: 1px solid rgba(34, 197, 94, 0.5);
+  background-color: #ecfdf3;
+  color: #166534;
+  border: 1px solid #bbf7d0;
 }
 
 .badgeInactive {
-  display: inline-flex;
-  padding: 2px 8px;
-  border-radius: 9999px;
-  font-size: 11px;
-  font-weight: 500;
-  background: rgba(148, 163, 184, 0.15);
-  color: #e5e7eb;
-  border: 1px solid rgba(148, 163, 184, 0.5);
+  background-color: #f9fafb;
+  color: #6b7280;
+  border: 1px solid #e5e7eb;
 }
 
-/* BUTTON */
+/* Action buttons */
 
-.viewButton {
-  padding: 4px 10px;
+.actionButton {
+  border-radius: 6px;
+  padding: 4px 8px;
   font-size: 12px;
-  border-radius: 9999px;
   border: none;
+  margin-left: 4px;
   cursor: pointer;
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
-  color: #f9fafb;
-  transition: background-color 0.15s ease, transform 0.06s ease,
-    box-shadow 0.06s ease;
+  transition: background-color 0.15s ease, transform 0.05s ease;
 }
 
-.viewButton:hover {
+.actionButton:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.actionView {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.actionView:hover:not(:disabled) {
+  background-color: #d4d4d8;
   transform: translateY(-0.5px);
-  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.6);
 }
 
-/* PAGINATION */
+.actionEdit {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.actionEdit:hover:not(:disabled) {
+  background-color: #1d4ed8;
+  transform: translateY(-0.5px);
+}
+
+.actionDelete {
+  background: #b91c1c;
+  color: #ffffff;
+}
+
+.actionDelete:hover:not(:disabled) {
+  background-color: #991b1b;
+  transform: translateY(-0.5px);
+}
+
+/* Pagination */
 
 .pagination {
+  margin-top: 12px;
   display: flex;
   justify-content: flex-end;
   align-items: center;
   gap: 8px;
-  padding: 8px 10px;
-  border-top: 1px solid #111827;
-  font-size: 12px;
-  color: #9ca3af;
+  font-size: 0.85rem;
+  color: #6b7280;
 }
 
 .pageButton {
-  padding: 4px 8px;
-  border-radius: 9999px;
-  border: 1px solid #374151;
-  background: #020617;
-  color: #e5e7eb;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  padding: 4px 10px;
+  background-color: #ffffff;
+  font-size: 0.8rem;
   cursor: pointer;
-  font-size: 12px;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.pageButton:hover:not(:disabled) {
+  background-color: #f3f4f6;
+  border-color: #9ca3af;
 }
 
 .pageButton:disabled {
-  opacity: 0.4;
+  opacity: 0.5;
   cursor: default;
 }
 
-/* RIGHT: DETAIL PANEL */
+/* Modal chi tiết */
 
-.detailPanel {
-  flex: 1.3;
-  border-radius: 12px;
-  border: 1px solid #111827;
-  background: #020617;
-  padding: 12px 12px 14px;
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.modal {
+  width: 100%;
+  max-width: 640px;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.25);
+  padding: 16px 18px 14px;
+  max-height: 90vh;
   display: flex;
   flex-direction: column;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 8px;
+  margin-bottom: 8px;
+}
+
+.modalCloseButton {
+  border: none;
+  background: transparent;
+  font-size: 1rem;
+  cursor: pointer;
+  color: #6b7280;
+  padding: 4px;
+  border-radius: 999px;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.modalCloseButton:hover {
+  background-color: #e5e7eb;
+  color: #111827;
+}
+
+.modalBody {
+  padding: 4px 2px 8px;
+  overflow-y: auto;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.buttonSecondary {
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  background-color: #ffffff;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.buttonSecondary:hover {
+  background-color: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+/* Detail content inside modal */
+
+.detailEmpty {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #6b7280;
 }
 
 .detailTitle {
   margin: 0;
-  font-size: 15px;
-  font-weight: 600;
-}
-
-.detailEmpty {
-  font-size: 13px;
-  color: #9ca3af;
-  margin: 0;
-}
-
-.detailSectionTitle {
-  margin: 8px 0 4px;
-  font-size: 13px;
+  font-size: 1.1rem;
   font-weight: 600;
 }
 
 .detailField {
-  font-size: 13px;
-  margin: 0;
+  margin: 4px 0;
+  font-size: 0.9rem;
+  color: #374151;
 }
 
 .detailFieldLabel {
-  color: #9ca3af;
+  font-weight: 600;
+  color: #111827;
+}
+
+.detailSectionTitle {
+  margin-top: 12px;
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #111827;
 }
 
 .detailEnrollList {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  margin-top: 4px;
+  gap: 8px;
+  max-height: 260px;
+  overflow-y: auto;
+  padding-right: 4px;
 }
 
 .enrollCard {
   border-radius: 10px;
-  border: 1px solid #111827;
-  padding: 8px;
-  background: #020617;
+  border: 1px solid #e5e7eb;
+  padding: 8px 10px;
+  background-color: #f9fafb;
 }
 
 .enrollTitle {
-  font-size: 13px;
-  font-weight: 500;
-  margin: 0 0 2px;
+  margin: 0;
+  font-weight: 600;
+  font-size: 0.95rem;
 }
 
 .enrollSub {
-  font-size: 11px;
+  margin: 0;
+  font-size: 0.8rem;
   color: #9ca3af;
-  margin: 0 0 4px;
 }
 
 .enrollMeta {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  font-size: 11px;
+  margin-top: 4px;
+  font-size: 0.8rem;
+  color: #4b5563;
 }
 
 .enrollProgressBar {
-  width: 100%;
+  margin-top: 6px;
   height: 6px;
-  border-radius: 9999px;
-  background: #020617;
+  background-color: #e5e7eb;
+  border-radius: 999px;
   overflow: hidden;
-  border: 1px solid #111827;
-  margin-top: 2px;
 }
 
 .enrollProgressInner {
   height: 100%;
-  border-radius: 9999px;
-  background: linear-gradient(90deg, #22c55e, #3b82f6);
+  border-radius: 999px;
+  background: linear-gradient(90deg, #22c55e, #16a34a);
 }

@@ -1,0 +1,306 @@
+/* src/styles/AdminCourseStructurePage.module.css */
+
+.page {
+  padding: 16px 24px;
+  color: #111827;
+  background-color: #f9fafb;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.error {
+  color: #fecaca;
+  background: #7f1d1d;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+.infoText {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* layout 2 cột */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(260px, 360px) 1fr;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+/* TABLE COURSES */
+.tableWrapper {
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+  padding: 12px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.th {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid #e5e7eb;
+  font-weight: 500;
+  color: #6b7280;
+  font-size: 12px;
+}
+
+.thRight {
+  color-scheme: th;
+  text-align: right;
+}
+
+.tr {
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.trSelected {
+  background-color: #eff6ff;
+}
+
+.td {
+  padding: 8px 10px;
+  vertical-align: middle;
+}
+
+.tdRight {
+  padding: 8px 10px;
+  text-align: right;
+  vertical-align: middle;
+}
+
+.cellMain {
+  display: flex;
+  flex-direction: column;
+}
+
+.cellTitle {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.cellSub {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+/* pagination */
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.pageButton {
+  border: 1px solid #d1d5db;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.pageButton:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* select button */
+.selectButton {
+  border-radius: 999px;
+  border: 1px solid #2563eb;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 11px;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+
+/* DETAIL PANEL */
+.detailPanel {
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+  padding: 16px;
+  min-height: 260px;
+}
+
+.detailEmpty {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.courseHeader {
+  margin-bottom: 16px;
+}
+
+.detailTitle {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+
+.detailSub {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.sectionTitle {
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0 0 6px;
+}
+
+/* Add chapter */
+.addChapterForm {
+  margin-bottom: 16px;
+  padding: 10px;
+  border-radius: 8px;
+  background: #f9fafb;
+}
+
+.addChapterRow {
+  display: flex;
+  gap: 8px;
+}
+
+.input {
+  flex: 1;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+.select {
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+.buttonPrimary {
+  border: none;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 12px;
+  background: #2563eb;
+  color: #ffffff;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.buttonSecondary {
+  border: none;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 12px;
+  background: #111827;
+  color: #ffffff;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* Chapters & lessons */
+.chapterList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chapterCard {
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  padding: 10px 12px;
+  background: #f9fafb;
+}
+
+.chapterTitleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+
+.chapterTitle {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.chapterMeta {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.lessonsList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 8px;
+}
+
+.lessonItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+  border-bottom: 1px dashed #e5e7eb;
+}
+
+.lessonItem:last-child {
+  border-bottom: none;
+}
+
+.lessonTitle {
+  font-size: 13px;
+}
+
+.lessonType {
+  font-size: 11px;
+  color: #6b7280;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #e5e7eb;
+}
+
+.lessonEmpty {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+/* Add lesson */
+.addLessonForm {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
