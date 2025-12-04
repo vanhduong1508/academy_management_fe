@@ -10,7 +10,7 @@ import CourseManagement from './CourseManagement';
 import CourseContentManagementPage from './CourseContentManagementPage';
 
 
-const AdminRoutes: React.FC = () => {
+const AdminRoutes = () => {
     return (
         <Routes>
             <Route path="/" element={<AdminLayout />}>
