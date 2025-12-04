@@ -1,25 +1,37 @@
 // src/pages/admin/CourseManagementPage.tsx
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   getAdminCoursesPageApi,
   createAdminCourseApi,
   updateAdminCourseApi,
   deleteAdminCourseApi,
-  type CourseCreatePayload,
-  type CourseUpdatePayload,
 } from "../../api/admin/admin-courses.api";
-import type { Course, PageResponse } from "../../types/models/course.types";
+import type {
+  Course,
+  PageResponse,
+  CourseCreatePayload,
+  CourseUpdatePayload,
+} from "../../types/models/course.types";
 import styles from "../../styles/AdminCoursesPage.module.css";
 
 type Mode = "create" | "edit";
 
 interface FormState {
   title: string;
-  description: string;
-  price: string; // string để dễ nhập, gửi lên thì parseFloat
+  description: string; // map sang content
+  startDate: string;   // yyyy-MM-dd
+  endDate: string;     // yyyy-MM-dd
 }
 
+const normalizeDateInput = (value?: string | null): string => {
+  if (!value) return "";
+  return value.slice(0, 10); // "2025-12-04T00:00:00" -> "2025-12-04"
+};
+
 export default function CourseManagementPage() {
+  const navigate = useNavigate();
+
   const [page, setPage] = useState(0);
   const [size] = useState(10);
   const [coursesPage, setCoursesPage] = useState<PageResponse<Course> | null>(
@@ -37,7 +49,8 @@ export default function CourseManagementPage() {
   const [form, setForm] = useState<FormState>({
     title: "",
     description: "",
-    price: "",
+    startDate: "",
+    endDate: "",
   });
 
   const fetchCourses = async () => {
@@ -58,6 +71,7 @@ export default function CourseManagementPage() {
 
   useEffect(() => {
     fetchCourses();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
   const handleOpenCreate = () => {
@@ -66,7 +80,8 @@ export default function CourseManagementPage() {
     setForm({
       title: "",
       description: "",
-      price: "",
+      startDate: "",
+      endDate: "",
     });
     setIsModalOpen(true);
   };
@@ -75,13 +90,10 @@ export default function CourseManagementPage() {
     setModalMode("edit");
     setEditingCourse(course);
     setForm({
-      title: (course as any).title ?? "",
-      description: (course as any).description ?? "",
-      price:
-        (course as any).price !== undefined &&
-        (course as any).price !== null
-          ? String((course as any).price)
-          : "",
+      title: course.title ?? "",
+      description: course.content ?? "",
+      startDate: normalizeDateInput(course.startDate),
+      endDate: normalizeDateInput(course.endDate),
     });
     setIsModalOpen(true);
   };
@@ -91,10 +103,7 @@ export default function CourseManagementPage() {
     setIsModalOpen(false);
   };
 
-  const handleChangeField = (
-    field: keyof FormState,
-    value: string
-  ) => {
+  const handleChangeField = (field: keyof FormState, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -104,21 +113,32 @@ export default function CourseManagementPage() {
       return;
     }
 
-    const priceNumber =
-      form.price.trim() === "" ? undefined : Number(form.price);
+    if (!form.startDate || !form.endDate) {
+      alert("Vui lòng chọn ngày bắt đầu và ngày kết thúc");
+      return;
+    }
 
-    const basePayload: CourseCreatePayload | CourseUpdatePayload = {
+    if (form.startDate > form.endDate) {
+      alert("Ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu");
+      return;
+    }
+
+    const payloadBase: CourseCreatePayload | CourseUpdatePayload = {
       title: form.title.trim(),
-      description: form.description.trim(),
-      price: isNaN(priceNumber as number) ? undefined : priceNumber,
+      startDate: form.startDate,
+      endDate: form.endDate,
+      content: form.description.trim() || null,
     };
 
     try {
       setSaving(true);
       if (modalMode === "create") {
-        await createAdminCourseApi(basePayload as CourseCreatePayload);
+        await createAdminCourseApi(payloadBase as CourseCreatePayload);
       } else if (modalMode === "edit" && editingCourse) {
-        await updateAdminCourseApi((editingCourse as any).id, basePayload);
+        await updateAdminCourseApi(
+          editingCourse.id,
+          payloadBase as CourseUpdatePayload
+        );
       }
       setIsModalOpen(false);
       await fetchCourses();
@@ -145,24 +165,20 @@ export default function CourseManagementPage() {
     }
   };
 
-  const totalPages = coursesPage?.totalPages ?? 0;
+  const handleViewStructure = (courseId: number) => {
+    navigate(`/admin/course-structure?courseId=${courseId}`);
+  };
+
+  const courses: Course[] = coursesPage?.content ?? [];
+  const totalPages = coursesPage?.totalPages ?? 1;
 
   const renderStatusBadge = (course: Course) => {
-    // tuỳ theo BE: isActive / status / published
-    const isActive =
-      (course as any).status === "ACTIVE" ||
-      (course as any).isActive === true ||
-      (course as any).published === true;
-
+    const isActive = course.status === "ACTIVE";
     const className = isActive
       ? `${styles.badgeStatus} ${styles.badgeActive}`
       : `${styles.badgeStatus} ${styles.badgeInactive}`;
 
-    return (
-      <span className={className}>
-        {isActive ? "Đang mở" : "Đã ẩn"}
-      </span>
-    );
+    return <span className={className}>{isActive ? "Đang mở" : "Đã ẩn"}</span>;
   };
 
   return (
@@ -172,7 +188,7 @@ export default function CourseManagementPage() {
           <h2 className={styles.title}>Quản lý khóa học</h2>
           <p className={styles.subtitle}>
             Tạo, chỉnh sửa và xoá khóa học. Lộ trình chi tiết (chương / bài học)
-            sẽ được quản lý ở trang &quot;Lộ trình khóa học&quot; riêng.
+            được thực hiện ở trang &quot;Lộ trình khóa học&quot; riêng.
           </p>
         </div>
         <div className={styles.actions}>
@@ -195,9 +211,9 @@ export default function CourseManagementPage() {
       {error && <p className={styles.error}>{error}</p>}
 
       <div className={styles.tableWrapper}>
-        {loading && !coursesPage ? (
+        {loading && coursesPage == null ? (
           <p className={styles.infoText}>Đang tải danh sách khóa học...</p>
-        ) : !coursesPage || coursesPage.content.length === 0 ? (
+        ) : courses.length === 0 ? (
           <p className={styles.infoText}>Chưa có khóa học nào.</p>
         ) : (
           <>
@@ -205,47 +221,55 @@ export default function CourseManagementPage() {
               <thead>
                 <tr>
                   <th className={styles.th}>Khóa học</th>
-                  <th className={styles.th}>Giá</th>
+                  <th className={styles.th}>Thời gian</th>
                   <th className={styles.th}>Trạng thái</th>
                   <th className={styles.thRight}>Thao tác</th>
                 </tr>
               </thead>
               <tbody>
-                {coursesPage.content.map((course) => (
-                  <tr key={(course as any).id} className={styles.tr}>
+                {courses.map((course) => (
+                  <tr key={course.id} className={styles.tr}>
                     <td className={styles.td}>
                       <div className={styles.cellMain}>
-                        <span className={styles.cellTitle}>
-                          {(course as any).title}
-                        </span>
+                        <span className={styles.cellTitle}>{course.title}</span>
                         <span className={styles.cellSub}>
-                          ID: {(course as any).id}
+                          ID: {course.id} – Mã: {course.code}
                         </span>
                       </div>
                     </td>
                     <td className={styles.td}>
-                      {(course as any).price != null
-                        ? `${(course as any).price.toLocaleString?.() ?? (course as any).price} đ`
-                        : "-"}
+                      <div className={styles.cellSub}>
+                        {course.startDate
+                          ? normalizeDateInput(course.startDate)
+                          : "?"}{" "}
+                        →{" "}
+                        {course.endDate
+                          ? normalizeDateInput(course.endDate)
+                          : "?"}
+                      </div>
                     </td>
                     <td className={styles.td}>{renderStatusBadge(course)}</td>
                     <td className={styles.tdRight}>
+                      <button
+                        className={`${styles.actionButton} ${styles.actionView}`}
+                        onClick={() => handleViewStructure(course.id)}
+                      >
+                        👁 Xem
+                      </button>
+
                       <button
                         className={`${styles.actionButton} ${styles.actionEdit}`}
                         onClick={() => handleOpenEdit(course)}
                       >
                         Sửa
                       </button>
+
                       <button
                         className={`${styles.actionButton} ${styles.actionDelete}`}
-                        disabled={deletingId === (course as any).id}
-                        onClick={() =>
-                          handleDelete((course as any).id as number)
-                        }
+                        disabled={deletingId === course.id}
+                        onClick={() => handleDelete(course.id)}
                       >
-                        {deletingId === (course as any).id
-                          ? "Đang xoá..."
-                          : "Xoá"}
+                        {deletingId === course.id ? "Đang xoá..." : "Xoá"}
                       </button>
                     </td>
                   </tr>
@@ -295,15 +319,13 @@ export default function CourseManagementPage() {
                 <input
                   className={styles.modalInput}
                   value={form.title}
-                  onChange={(e) =>
-                    handleChangeField("title", e.target.value)
-                  }
+                  onChange={(e) => handleChangeField("title", e.target.value)}
                   placeholder="Ví dụ: Lập trình Java từ cơ bản đến nâng cao"
                 />
               </div>
 
               <div className={styles.modalField}>
-                <label className={styles.modalLabel}>Mô tả</label>
+                <label className={styles.modalLabel}>Mô tả / Nội dung</label>
                 <textarea
                   className={styles.modalTextarea}
                   value={form.description}
@@ -315,14 +337,26 @@ export default function CourseManagementPage() {
               </div>
 
               <div className={styles.modalField}>
-                <label className={styles.modalLabel}>Học phí (VNĐ)</label>
+                <label className={styles.modalLabel}>Ngày bắt đầu</label>
                 <input
+                  type="date"
                   className={styles.modalInput}
-                  value={form.price}
+                  value={form.startDate}
                   onChange={(e) =>
-                    handleChangeField("price", e.target.value)
+                    handleChangeField("startDate", e.target.value)
                   }
-                  placeholder="Ví dụ: 1500000"
+                />
+              </div>
+
+              <div className={styles.modalField}>
+                <label className={styles.modalLabel}>Ngày kết thúc</label>
+                <input
+                  type="date"
+                  className={styles.modalInput}
+                  value={form.endDate}
+                  onChange={(e) =>
+                    handleChangeField("endDate", e.target.value)
+                  }
                 />
               </div>
             </div>

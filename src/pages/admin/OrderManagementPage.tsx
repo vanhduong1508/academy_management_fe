@@ -61,6 +61,23 @@ export default function OrderManagementPage() {
     }
   };
 
+  const renderPaymentBadge = (paymentStatus: Order["paymentStatus"]) => {
+    const cls = `${styles.badge} ${styles.badgeSuccess}`;
+    // Bạn có thể map "PAID" / "PENDING" / "FAILED" sang tiếng Việt nếu thích
+    return <span className={cls}>{paymentStatus}</span>;
+  };
+
+  const renderApprovalBadge = (approvalStatus: Order["approvalStatus"]) => {
+    const base = styles.badge;
+    if (approvalStatus === "PENDING") {
+      return <span className={`${base} ${styles.badgeWarning}`}>PENDING</span>;
+    }
+    if (approvalStatus === "APPROVED") {
+      return <span className={`${base} ${styles.badgeSuccess}`}>APPROVED</span>;
+    }
+    return <span className={`${base} ${styles.badgeDanger}`}>REJECTED</span>;
+  };
+
   return (
     <div className={styles.page}>
       <div className={styles.headerRow}>
@@ -96,6 +113,7 @@ export default function OrderManagementPage() {
                 <th className={styles.th}>ID</th>
                 <th className={styles.th}>Học viên</th>
                 <th className={styles.th}>Khóa học</th>
+                <th className={styles.th}>Số tiền</th>
                 <th className={styles.th}>Thanh toán</th>
                 <th className={styles.th}>Trạng thái</th>
                 <th className={styles.th}>Ngày tạo</th>
@@ -106,56 +124,47 @@ export default function OrderManagementPage() {
               {orders.map((order) => {
                 const isActing = actionLoadingId === order.id;
 
-                // Bạn chỉnh các field dưới cho khớp với Order model của bạn
-                const studentName =
-                  (order as any).studentName ??
-                  (order as any).student?.fullName ??
-                  `Student #${(order as any).studentId}`;
-                const courseTitle =
-                  (order as any).courseTitle ??
-                  (order as any).course?.title ??
-                  `Course #${(order as any).courseId}`;
+                const studentLabel = `Student #${order.studentId}`;
+                const courseLabel = `Course #${order.courseId}`;
 
                 return (
                   <tr key={order.id} className={styles.tr}>
                     <td className={styles.td}>{order.id}</td>
                     <td className={styles.td}>
                       <div className={styles.cellMain}>
-                        <span className={styles.cellTitle}>{studentName}</span>
-                        {"studentId" in order && (
-                          <span className={styles.cellSub}>
-                            ID: {(order as any).studentId}
-                          </span>
-                        )}
+                        <span className={styles.cellTitle}>
+                          {studentLabel}
+                        </span>
+                        <span className={styles.cellSub}>
+                          ID: {order.studentId}
+                        </span>
                       </div>
                     </td>
                     <td className={styles.td}>
                       <div className={styles.cellMain}>
-                        <span className={styles.cellTitle}>{courseTitle}</span>
-                        {"courseId" in order && (
-                          <span className={styles.cellSub}>
-                            ID: {(order as any).courseId}
-                          </span>
-                        )}
+                        <span className={styles.cellTitle}>
+                          {courseLabel}
+                        </span>
+                        <span className={styles.cellSub}>
+                          ID: {order.courseId}
+                        </span>
                       </div>
                     </td>
                     <td className={styles.td}>
-                      <span
-                        className={`${styles.badge} ${styles.badgeSuccess}`}
-                      >
-                        {order.paymentStatus}
-                      </span>
+                      {order.amount != null
+                        ? `${order.amount.toLocaleString?.("vi-VN") ??
+                            order.amount} đ`
+                        : "-"}
                     </td>
                     <td className={styles.td}>
-                      <span
-                        className={`${styles.badge} ${styles.badgeWarning}`}
-                      >
-                        {order.approvalStatus}
-                      </span>
+                      {renderPaymentBadge(order.paymentStatus)}
+                    </td>
+                    <td className={styles.td}>
+                      {renderApprovalBadge(order.approvalStatus)}
                     </td>
                     <td className={styles.td}>
                       {order.createdAt
-                        ? new Date(order.createdAt).toLocaleString()
+                        ? new Date(order.createdAt).toLocaleString("vi-VN")
                         : "-"}
                     </td>
                     <td className={styles.tdRight}>

@@ -11,7 +11,7 @@ const CourseCard: React.FC<Props> = ({ course }) => {
   return (
     <div className="course-card">
       <h3>{course.title}</h3>
-      {course.description && <p>{course.description}</p>}
+      {course.description && <p>{course.description}</p>} 
       <p>
         <strong>Giá:</strong>{" "}
         {course.price != null ? `${course.price.toLocaleString()} VND` : "Miễn phí"}

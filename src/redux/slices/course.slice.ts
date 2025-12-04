@@ -1,7 +1,7 @@
 // src/redux/slices/course.slice.ts
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { Course, PageResponse } from '../../types/models/course.types';
-import { getCoursesPageApi } from '../../api/admin/admin-courses.api';
+import { getAdminCoursesPageApi } from '../../api/admin/admin-courses.api';
 
 interface CourseState {
   items: Course[];
@@ -29,7 +29,7 @@ export const fetchCourses = createAsyncThunk(
     try {
       const page = params?.page ?? 0;
       const size = params?.size ?? 10;
-      return await getCoursesPageApi(page, size);
+      return await getAdminCoursesPageApi(page, size);
     } catch (err: any) {
       return rejectWithValue(err.response?.data?.message || 'Failed to load courses');
     }

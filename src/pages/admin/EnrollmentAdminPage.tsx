@@ -82,8 +82,9 @@ export default function EnrollmentAdminPage() {
         <div>
           <h2 className={styles.title}>Quản lý quá trình học</h2>
           <p className={styles.subtitle}>
-            Theo dõi tiến độ học tập của tất cả học viên. Tab này chỉ hiển thị
-            &quot;ai đang học tới đâu&quot;, không thao tác cấp chứng chỉ.
+            Theo dõi tiến độ học tập và trạng thái chứng chỉ của các học viên
+            trong hệ thống. Tab này chỉ hiển thị dữ liệu tổng quan, không thao
+            tác cấp chứng chỉ trực tiếp.
           </p>
         </div>
         <button
@@ -124,7 +125,7 @@ export default function EnrollmentAdminPage() {
                         {item.studentName}
                       </span>
                       <span className={styles.cellSub}>
-                        ID: {item.studentId} – Enrollment #{item.enrollmentId}
+                        ID: {item.studentId} – {item.studentName}
                       </span>
                     </div>
                   </td>
@@ -151,7 +152,9 @@ export default function EnrollmentAdminPage() {
                       </span>
                     </div>
                   </td>
-                  <td className={styles.td}>{renderStatusBadge(item.status)}</td>
+                  <td className={styles.td}>
+                    {renderStatusBadge(item.status)}
+                  </td>
                   <td className={styles.td}>{renderCertBadge(item)}</td>
                 </tr>
               ))}

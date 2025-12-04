@@ -9,18 +9,18 @@ import StudentLayout from "./components/layout/StudentLayout";
 
 // Admin Pages
 import DashboardPage from "./pages/admin/DashboardPage";
-import OrderApprovalPage from "./pages/admin/OrderManagementPage";
+import OrderManagementPage from "./pages/admin/OrderManagementPage";
 import CourseManagementPage from "./pages/admin/CourseManagementPage";
 import EnrollmentAdminPage from "./pages/admin/EnrollmentAdminPage";
 import CertificateManagementPage from "./pages/admin/CertificateManagementPage";
 import StudentManagementPage from "./pages/admin/StudentManagementPage";
+import CourseStructureAdminPage from "./pages/admin/CourseStructureAdminPage";
 
 // Student Pages
 import StudentDashboardPage from "./pages/student/StudentDashboardPage";
 import CourseListPage from "./pages/student/CourseListPage";
 import MyEnrollmentsPage from "./pages/student/MyEnrollmentsPage";
 import MyCertificatesPage from "./pages/student/MyCertificatesPage";
-
 
 // Public pages
 import HomePage from "./pages/public/HomePage";
@@ -32,7 +32,7 @@ import AuthPage from "./pages/Auth/AuthPage";
 const App: React.FC = () => {
   return (
     <Routes>
-      {/* PUBLIC */}
+      {/* ====================== PUBLIC ====================== */}
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<AuthPage />} />
       <Route path="/register" element={<AuthPage />} />
@@ -41,10 +41,11 @@ const App: React.FC = () => {
       <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<DashboardPage />} />
         <Route path="courses" element={<CourseManagementPage />} />
+        <Route path="students" element={<StudentManagementPage />} />
         <Route path="enrollments" element={<EnrollmentAdminPage />} />
-        <Route path="orders/approval" element={<OrderApprovalPage />} />
-        <Route path="certificates/eligible" element={<CertificateManagementPage />} />
-        <Route path="users" element={<StudentManagementPage />} />
+        <Route path="course-structure" element={<CourseStructureAdminPage />} />
+        <Route path="orders" element={<OrderManagementPage />} />
+        <Route path="certificates" element={<CertificateManagementPage />} />
       </Route>
 
       {/* ====================== STUDENT ROUTES ====================== */}
@@ -55,7 +56,7 @@ const App: React.FC = () => {
         <Route path="certificates" element={<MyCertificatesPage />} />
       </Route>
 
-      {/* FALLBACK */}
+      {/* ====================== FALLBACK ====================== */}
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
