@@ -20,7 +20,7 @@ root.render(
     <React.StrictMode>
         <Provider store={store}>
             {/* FIX: Thêm BrowserRouter để cung cấp Router Context */}
-            <BrowserRouter> 
+            <BrowserRouter>     
                 <App />
             </BrowserRouter>
         </Provider>
