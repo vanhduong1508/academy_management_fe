@@ -1,35 +1,8 @@
 import React from "react";
-import { Outlet, Link } from "react-router-dom";
+import { Outlet, NavLink } from "react-router-dom";
+import styles from "../../styles/AdminLayout.module.css";
 
-// Component layout cơ bản cho trang Admin
 const AdminLayout: React.FC = () => {
-  const sidebarStyle: React.CSSProperties = {
-    width: "250px",
-    backgroundColor: "#343a40", // Màu tối cho Sidebar
-    color: "white",
-    padding: "20px",
-    height: "100vh",
-    position: "fixed",
-    overflowY: "auto",
-  };
-
-  const contentStyle: React.CSSProperties = {
-    marginLeft: "250px", // Đẩy nội dung sang phải bằng chiều rộng Sidebar
-    padding: "20px",
-    backgroundColor: "#f8f9fa", // Màu nền sáng cho khu vực nội dung
-    minHeight: "100vh",
-  };
-
-  const linkStyle: React.CSSProperties = {
-    color: "white",
-    textDecoration: "none",
-    display: "block",
-    padding: "10px 0",
-    marginBottom: "5px",
-    borderBottom: "1px solid #495057",
-    transition: "background-color 0.2s",
-  };
-
   const menuItems = [
     { name: "Dashboard", path: "/admin" },
     { name: "Quản lý Khóa học", path: "/admin/courses" },
@@ -41,37 +14,32 @@ const AdminLayout: React.FC = () => {
   ];
 
   return (
-    <div style={{ display: "flex" }}>
-      {/* 1. SIDEBAR */}
-      <div style={sidebarStyle}>
-        <h3>Trang quản lý của Admin</h3>
-        <hr
-          style={{ borderTop: "1px solid #6c757d", marginBottom: "20px" }}
-        />
+    <div className={styles.layoutContainer}>
+      <aside className={styles.sidebar}>
+        <h3 className={styles.sidebarTitle}>Admin Panel</h3>
 
-        <nav>
-          {menuItems.map((item) => (
-            <Link
-              key={item.name}
-              to={item.path}
-              style={linkStyle}
-              onMouseOver={(e) =>
-                (e.currentTarget.style.backgroundColor = "#495057")
-              }
-              onMouseOut={(e) =>
-                (e.currentTarget.style.backgroundColor = "transparent")
-              }
-            >
-              {item.name}
-            </Link>
-          ))}
+        <nav className={styles.menu}>
+          <ul>
+            {menuItems.map((item) => (
+              <li key={item.path}>
+                <NavLink
+                  to={item.path}
+                  end={item.path === "/admin"}
+                  className={({ isActive }) =>
+                    isActive ? styles.active : styles.menuLink
+                  }
+                >
+                  {item.name}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
         </nav>
-      </div>
+      </aside>
 
-      {/* 2. MAIN CONTENT */}
-      <div style={contentStyle}>
+      <main className={styles.content}>
         <Outlet />
-      </div>
+      </main>
     </div>
   );
 };

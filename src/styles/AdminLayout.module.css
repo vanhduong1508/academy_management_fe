@@ -1,0 +1,74 @@
+.layoutContainer {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  background: #f5f7fa;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.sidebar {
+  width: 300px;
+  background: #ffffff;
+  border-right: 1px solid #e5e7eb;
+  padding: 22px 22px; /* giảm padding trên để sát hơn với tiêu đề */
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* giảm khoảng cách giữa Admin Panel và danh sách item */
+}
+
+.sidebarTitle {
+  font-size: 22px;
+  font-weight: 700;
+  color: #111827;
+  text-align: center;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 24px; /* tăng spacing giữa các item */
+}
+
+.menu ul,
+.menu li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.menu a,
+.menuLink {
+  text-decoration: none;
+  color: #374151;
+  padding: 16px 22px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.25s ease;
+  display: block;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.menuLink:hover {
+  background: #f3f4f6;
+  color: #000;
+}
+
+.active {
+  background: #111827;
+  color: #ffffff !important;
+  font-weight: 600;
+}
+
+.active:hover {
+  background: #111827 !important;
+  color: #ffffff !important;
+}
+
+.content {
+  flex: 1;
+  padding: 30px;
+}
