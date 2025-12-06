@@ -1,13 +1,10 @@
 // src/types/index.ts
-import type { Role, AuthUser, AuthResponse } from "./models/user.types";
 
-export * from "./models/user.types";
-export * from "./models/course.types";
-export * from "./models/enrollment.types";
-export * from "./models/order.types";
-export * from "./models/certificate.types";
-export type UserRole = Role;
-export type { AuthUser, AuthResponse };
+export * from "./shared/user.types";
+export * from "./admin/admin-course.types";
+export * from "./admin/admin-enrollment.types";
+export * from "./admin/admin-order.types";
+
 
 // 👉 Cho CourseFormModal
 export interface CourseFormPayload {

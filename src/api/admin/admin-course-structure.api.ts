@@ -2,43 +2,47 @@
 import { axiosInstance } from "../index";
 import type {
   CourseStructureResponse,
-  Chapter,
-  Lesson,
+  ChapterResponse,
+  LessonResponse,
   ChapterCreatePayload,
   LessonCreatePayload,
-} from "../../types/models/course.types";
+} from "../../types/admin/admin-course.types";
 
-// ======================= READ STRUCTURE =======================
-// GET /api/courses/{id}/structure
+/**
+ * GET /api/admin/courses/{courseId}/structure
+ */
 export const getCourseStructureApi = async (
   courseId: number
 ): Promise<CourseStructureResponse> => {
   const res = await axiosInstance.get<CourseStructureResponse>(
-    `/courses/${courseId}/structure`
+    `/admin/courses/${courseId}/structure`
   );
   return res.data;
 };
 
-// ======================= CREATE CHAPTER =======================
-// POST /api/admin/courses/{courseId}/chapters
+/**
+ * POST /api/admin/courses/{courseId}/chapters
+ */
 export const addChapterApi = async (
   courseId: number,
   payload: ChapterCreatePayload
-): Promise<Chapter> => {
-  const res = await axiosInstance.post<Chapter>(
+): Promise<ChapterResponse> => {
+  const res = await axiosInstance.post<ChapterResponse>(
     `/admin/courses/${courseId}/chapters`,
     payload
   );
   return res.data;
 };
 
-// ======================= CREATE LESSON =======================
-// POST /api/admin/chapters/{chapterId}/lessons
+/**
+ * POST /api/admin/chapters/{chapterId}/lessons
+ * payload có urlVid (link video)
+ */
 export const addLessonApi = async (
   chapterId: number,
   payload: LessonCreatePayload
-): Promise<Lesson> => {
-  const res = await axiosInstance.post<Lesson>(
+): Promise<LessonResponse> => {
+  const res = await axiosInstance.post<LessonResponse>(
     `/admin/chapters/${chapterId}/lessons`,
     payload
   );

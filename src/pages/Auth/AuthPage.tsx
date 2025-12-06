@@ -35,12 +35,13 @@ const AuthPage: React.FC = () => {
         password: loginPassword,
       });
 
-      // Lưu token + user vào redux
+      // Lưu token + user vào redux (map trong auth.slice)
       dispatch(setCredentials(authResponse));
 
-      // LẤY ROLE TỪ authResponse.user.role
-      const { user } = authResponse;
-      const redirectPath = user.role === "ADMIN" ? "/admin" : "/student";
+      // LẤY ROLE TỪ authResponse.user.role (theo BE: AuthResponse { token, user, studentId })
+      const redirectPath =
+        authResponse.user.role === "ADMIN" ? "/admin" : "/student";
+
       navigate(redirectPath, { replace: true });
     } catch (err: any) {
       const errorMessage =
@@ -76,16 +77,17 @@ const AuthPage: React.FC = () => {
     setRegLoading(true);
 
     try {
-      const { username, email, password, fullName, phone } = registerForm;
+      const { username, email, password, fullName, phone, dob } = registerForm;
 
-      // Gọi API REGISTER STUDENT – BE luôn tạo role = STUDENT
+      // BE StudentRegisterRequest: username, email, password, fullName, phone, dob, ...
       await registerStudentApi({
         username,
         email,
         password,
         fullName,
         phone,
-        dob: registerForm.dob,
+        dob,
+        // nếu sau này BE có hometown/province thì truyền thêm
       });
 
       setRegSuccess("Đăng ký thành công! Vui lòng đăng nhập.");
@@ -170,7 +172,6 @@ const AuthPage: React.FC = () => {
                 id="reg_phone"
                 value={registerForm.phone}
                 onChange={handleRegisterChange}
-                required
               />
             </div>
 
@@ -269,6 +270,7 @@ const AuthPage: React.FC = () => {
               <p>Đăng nhập để tiếp tục học hoặc quản lý hệ thống.</p>
               <button
                 className={styles.ghost}
+                type="button"
                 onClick={() => setIsRightPanelActive(false)}
               >
                 Đăng Nhập
@@ -285,6 +287,7 @@ const AuthPage: React.FC = () => {
               </p>
               <button
                 className={styles.ghost}
+                type="button"
                 onClick={() => setIsRightPanelActive(true)}
               >
                 Đăng Ký Ngay

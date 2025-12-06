@@ -2,17 +2,18 @@
 import { axiosInstance } from "../index";
 import type {
   Course,
-  PageResponse,
   CourseCreatePayload,
   CourseUpdatePayload,
-} from "../../types/models/course.types";
+} from "../../types/admin/admin-course.types";
+import type { PageResponse } from "../../types/shared/pagination.types";
 
-// ======================= LIST COURSES (PAGE) =======================
-// BE: @RequestMapping("/api/courses") trong CourseController
-// GET /api/courses?page=&size=
+/**
+ * GET /api/courses?page=&size=
+ * Dùng chung cho admin để liệt kê khóa học
+ */
 export const getAdminCoursesPageApi = async (
   page = 0,
-  size = 5
+  size = 10
 ): Promise<PageResponse<Course>> => {
   const res = await axiosInstance.get<PageResponse<Course>>("/courses", {
     params: { page, size },
@@ -20,10 +21,10 @@ export const getAdminCoursesPageApi = async (
   return res.data;
 };
 
-// ======================= CRUD COURSE (ADMIN) =======================
-// BE: @RequestMapping("/api/admin/courses") trong CourseAdminController
-
-// POST /api/admin/courses
+/**
+ * POST /api/admin/courses
+ * Tạo course mới (controller admin)
+ */
 export const createCourseApi = async (
   payload: CourseCreatePayload
 ): Promise<Course> => {
@@ -31,7 +32,10 @@ export const createCourseApi = async (
   return res.data;
 };
 
-// PUT /api/admin/courses/{id}
+/**
+ * PUT /api/admin/courses/{id}
+ * Cập nhật khóa học
+ */
 export const updateCourseApi = async (
   id: number,
   payload: CourseUpdatePayload
@@ -40,20 +44,19 @@ export const updateCourseApi = async (
   return res.data;
 };
 
-// DELETE /api/admin/courses/{id}
+/**
+ * DELETE /api/admin/courses/{id}
+ * Soft delete
+ */
 export const deleteCourseApi = async (id: number): Promise<void> => {
   await axiosInstance.delete(`/admin/courses/${id}`);
 };
 
-// Giữ alias cho code cũ đang import
-export const createAdminCourseApi = createCourseApi;
-export const updateAdminCourseApi = updateCourseApi;
-export const deleteAdminCourseApi = deleteCourseApi;
-
-// ======================= DETAIL (nếu cần dùng) =======================
-
-// GET /api/courses/{id}
+/**
+ * GET /api/admin/courses/{id}
+ * Chi tiết khóa học
+ */
 export const getCourseDetailApi = async (id: number): Promise<Course> => {
-  const res = await axiosInstance.get<Course>(`/courses/${id}`);
+  const res = await axiosInstance.get<Course>(`/admin/courses/${id}`);
   return res.data;
 };

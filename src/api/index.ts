@@ -16,26 +16,35 @@ export const axiosInstance: AxiosInstance = axios.create({
   },
 });
 
-export const setupInterceptors = (store: AppStore) => {
-  // Request: gắn token
+let storeRef: AppStore | null = null;
+
+// Gọi hàm này trong main.tsx sau khi tạo store
+export const setupAxiosInterceptors = (store: AppStore) => {
+  storeRef = store;
+
+  // Request: tự động gắn Bearer token
   axiosInstance.interceptors.request.use(
     (config) => {
-      const token = store.getState().auth.token;
+      if (!storeRef) return config;
+      const state = storeRef.getState();
+      const token: string | null = state.auth?.token ?? null;
+
       if (token) {
         config.headers = config.headers ?? {};
-        (config.headers as any).Authorization = `Bearer ${token}`;
+        config.headers.Authorization = `Bearer ${token}`;
       }
+
       return config;
     },
     (error) => Promise.reject(error)
   );
 
-  // Response: nếu 401 → logout
+  // Response: nếu 401 → logout + về /login
   axiosInstance.interceptors.response.use(
     (response) => response,
     (error) => {
-      if (error.response && error.response.status === 401) {
-        store.dispatch(logout());
+      if (error.response && error.response.status === 401 && storeRef) {
+        storeRef.dispatch(logout());
         window.location.href = "/login";
       }
       return Promise.reject(error);

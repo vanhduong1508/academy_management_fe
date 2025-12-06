@@ -1,17 +1,11 @@
 // /src/redux/store.ts (Cần phải có file này)
 
 import { configureStore } from '@reduxjs/toolkit';
-import orderReducer from './slices/order.slice';
 import authReducer from './slices/auth.slice';
-import courseReducer from './slices/course.slice';
 
 export const store = configureStore({
     reducer: {
-        orderManagement: orderReducer,
         auth: authReducer, 
-        orders: orderReducer,
-        courses: courseReducer,
-
     },
 });
 
