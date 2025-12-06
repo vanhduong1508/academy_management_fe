@@ -1,27 +1,43 @@
 // src/pages/admin/StudentManagementPage.tsx
 import { useEffect, useState } from "react";
-import { getStudentsPageApi, deleteStudentApi } from "../../api/admin/admin-students.api";
-import { getAllEnrollmentsProgressApi } from "../../api/admin/admin-enrollments.api";
-import type { Student } from "../../types/models/user.types";
-import type { PageResponse } from "../../types/models/course.types";
-import type { EnrollmentCompletion } from "../../types/models/enrollment.types";
+
+import {
+  getStudentsPageApi,
+  deleteStudentApi,
+} from "../../api/admin/admin-students.api";
+import { getEnrollmentsReadyForCertificateApi } from "../../api/admin/admin-progress.api";
+import { getIssuedCertificatesApi } from "../../api/admin/admin-certificates.api";
+
+import type { PageResponse } from "../../types/shared/pagination.types";
+import type { AdminStudent } from "../../types/admin/admin-student.types";
+import type { EnrollmentProgressResponse } from "../../types/admin/admin-progress.types";
+import type { CertificateResponse } from "../../types/admin/admin-certificate.types";
+
 import styles from "../../styles/AdminStudentsPage.module.css";
+
+type EnrollmentWithCert = EnrollmentProgressResponse & {
+  hasCertificate: boolean;
+  canIssueCertificate: boolean;
+};
 
 export default function StudentManagementPage() {
   const [page, setPage] = useState(0);
   const [size] = useState(5);
-  const [studentsPage, setStudentsPage] = useState<PageResponse<Student> | null>(
-    null
-  );
-  const [enrollments, setEnrollments] = useState<EnrollmentCompletion[]>([]);
+
+  const [studentsPage, setStudentsPage] =
+    useState<PageResponse<AdminStudent> | null>(null);
+
+  const [enrollments, setEnrollments] = useState<
+    EnrollmentProgressResponse[]
+  >([]);
+  const [certificates, setCertificates] = useState<CertificateResponse[]>([]);
 
   const [loadingStudents, setLoadingStudents] = useState(false);
   const [loadingEnrollments, setLoadingEnrollments] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<number | null>(null);
 
-  // modal xem chi tiết
-  const [detailStudent, setDetailStudent] = useState<Student | null>(null);
+  const [detailStudent, setDetailStudent] = useState<AdminStudent | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
 
   const fetchStudents = async () => {
@@ -43,12 +59,22 @@ export default function StudentManagementPage() {
   const fetchEnrollments = async () => {
     try {
       setLoadingEnrollments(true);
-      const data = await getAllEnrollmentsProgressApi();
+      // LIST enrollment đủ điều kiện (BE chỉ có API này)
+      const data = await getEnrollmentsReadyForCertificateApi();
       setEnrollments(data);
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
     } finally {
       setLoadingEnrollments(false);
+    }
+  };
+
+  const fetchCertificates = async () => {
+    try {
+      const data = await getIssuedCertificatesApi();
+      setCertificates(data);
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -59,17 +85,19 @@ export default function StudentManagementPage() {
 
   useEffect(() => {
     fetchEnrollments();
+    fetchCertificates();
   }, []);
 
   const handleRefresh = () => {
     fetchStudents();
     fetchEnrollments();
+    fetchCertificates();
   };
 
   const totalPages = studentsPage?.totalPages ?? 0;
 
-  const renderActiveBadge = (s: Student) => {
-    const isActive = (s as any).status === "ACTIVE";
+  const renderActiveBadge = (s: AdminStudent) => {
+    const isActive = s.status === "ACTIVE";
     return isActive ? (
       <span className={styles.badgeActive}>Đang hoạt động</span>
     ) : (
@@ -77,7 +105,7 @@ export default function StudentManagementPage() {
     );
   };
 
-  const openDetail = (s: Student) => {
+  const openDetail = (s: AdminStudent) => {
     setDetailStudent(s);
     setIsDetailOpen(true);
   };
@@ -87,12 +115,9 @@ export default function StudentManagementPage() {
     setDetailStudent(null);
   };
 
-  const handleDeleteStudent = async (student: Student) => {
-    const id = (student as any).id;
-    const name =
-      (student as any).fullName ??
-      (student as any).studentCode ??
-      `ID ${id}`;
+  const handleDeleteStudent = async (student: AdminStudent) => {
+    const id = student.id;
+    const name = student.fullName || student.studentCode || `ID ${id}`;
 
     if (!window.confirm(`Bạn có chắc muốn xoá học viên "${name}"?`)) {
       return;
@@ -106,12 +131,12 @@ export default function StudentManagementPage() {
         prev
           ? {
               ...prev,
-              content: prev.content.filter((s) => (s as any).id !== id),
+              content: prev.content.filter((s) => s.id !== id),
             }
           : prev
       );
 
-      if (detailStudent && (detailStudent as any).id === id) {
+      if (detailStudent && detailStudent.id === id) {
         closeDetail();
       }
     } catch (err: any) {
@@ -122,13 +147,24 @@ export default function StudentManagementPage() {
     }
   };
 
-  // enrollments của học viên đang xem chi tiết
-  const detailEnrollments: EnrollmentCompletion[] =
+  const detailEnrollments: EnrollmentWithCert[] =
     detailStudent == null
       ? []
-      : enrollments.filter(
-          (e) => e.studentId === (detailStudent as any).id
-        );
+      : enrollments
+          .filter((e) => e.studentId === detailStudent.id)
+          .map((e) => {
+            const hasCertificate = certificates.some(
+              (c) => c.enrollmentId === e.enrollmentId
+            );
+            const canIssueCertificate =
+              e.eligibleForCertificate && !hasCertificate;
+
+            return {
+              ...e,
+              hasCertificate,
+              canIssueCertificate,
+            };
+          });
 
   return (
     <div className={styles.page}>
@@ -169,12 +205,9 @@ export default function StudentManagementPage() {
               </thead>
               <tbody>
                 {studentsPage.content.map((s) => {
-                  const id = (s as any).id;
-                  const studentCode = (s as any).studentCode ?? "-";
-                  const fullName =
-                    (s as any).fullName ??
-                    (s as any).username ??
-                    studentCode;
+                  const id = s.id;
+                  const studentCode = s.studentCode ?? "-";
+                  const fullName = s.fullName || studentCode;
                   const isDeleting = deletingId === id;
 
                   return (
@@ -265,35 +298,31 @@ export default function StudentManagementPage() {
             <div className={styles.modalBody}>
               <p className={styles.detailField}>
                 <span className={styles.detailFieldLabel}>Họ tên: </span>
-                {(detailStudent as any).fullName ??
-                  (detailStudent as any).username ??
-                  (detailStudent as any).studentCode}
+                {detailStudent.fullName || detailStudent.studentCode}
               </p>
               <p className={styles.detailField}>
                 <span className={styles.detailFieldLabel}>Mã học viên: </span>
-                {(detailStudent as any).studentCode ?? "-"}
+                {detailStudent.studentCode ?? "-"}
               </p>
               <p className={styles.detailField}>
                 <span className={styles.detailFieldLabel}>Ngày sinh: </span>
-                {(detailStudent as any).dob
-                  ? new Date(
-                      (detailStudent as any).dob as string
-                    ).toLocaleDateString()
+                {detailStudent.dob
+                  ? new Date(detailStudent.dob).toLocaleDateString()
                   : "-"}
               </p>
               <p className={styles.detailField}>
                 <span className={styles.detailFieldLabel}>Quê quán: </span>
-                {(detailStudent as any).hometown ?? "-"}
+                {detailStudent.hometown ?? "-"}
               </p>
               <p className={styles.detailField}>
                 <span className={styles.detailFieldLabel}>
                   Tỉnh/Thành phố:{" "}
                 </span>
-                {(detailStudent as any).province ?? "-"}
+                {detailStudent.province ?? "-"}
               </p>
               <p className={styles.detailField}>
                 <span className={styles.detailFieldLabel}>Trạng thái: </span>
-                {(detailStudent as any).status}
+                {detailStudent.status}
               </p>
 
               <h4 className={styles.detailSectionTitle}>
@@ -318,7 +347,7 @@ export default function StudentManagementPage() {
                       </p>
                       <div className={styles.enrollMeta}>
                         <span>
-                          Tiến độ: {e.progressPercent.toFixed(1)}%
+                          Tiến độ: {e.progressPercentage.toFixed(1)}%
                         </span>
                         <span>
                           {e.hasCertificate
@@ -331,7 +360,7 @@ export default function StudentManagementPage() {
                       <div className={styles.enrollProgressBar}>
                         <div
                           className={styles.enrollProgressInner}
-                          style={{ width: `${e.progressPercent}%` }}
+                          style={{ width: `${e.progressPercentage}%` }}
                         />
                       </div>
                     </div>

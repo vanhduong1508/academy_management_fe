@@ -17,10 +17,10 @@ import StudentManagementPage from "./pages/admin/StudentManagementPage";
 import CourseStructureAdminPage from "./pages/admin/CourseStructureAdminPage";
 
 // Student Pages
-import StudentDashboardPage from "./pages/student/StudentDashboardPage";
-import CourseListPage from "./pages/student/CourseListPage";
-import MyEnrollmentsPage from "./pages/student/MyEnrollmentsPage";
-import MyCertificatesPage from "./pages/student/MyCertificatesPage";
+// import StudentDashboardPage from "./pages/student/StudentDashboardPage";
+// import CourseListPage from "./pages/student/CourseListPage";
+// import MyEnrollmentsPage from "./pages/student/MyEnrollmentsPage";
+// import MyCertificatesPage from "./pages/student/MyCertificatesPage";
 
 // Public pages
 import HomePage from "./pages/public/HomePage";
@@ -48,13 +48,13 @@ const App: React.FC = () => {
         <Route path="certificates" element={<CertificateManagementPage />} />
       </Route>
 
-      {/* ====================== STUDENT ROUTES ====================== */}
+      {/* ====================== STUDENT ROUTES ======================
       <Route path="/student" element={<StudentLayout />}>
         <Route index element={<StudentDashboardPage />} />
         <Route path="courses" element={<CourseListPage />} />
         <Route path="my-courses" element={<MyEnrollmentsPage />} />
         <Route path="certificates" element={<MyCertificatesPage />} />
-      </Route>
+      </Route> */}
 
       {/* ====================== FALLBACK ====================== */}
       <Route path="*" element={<NotFoundPage />} />

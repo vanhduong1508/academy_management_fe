@@ -1,5 +1,6 @@
+// src/redux/slices/auth.slice.ts
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { AuthUser, AuthResponse } from "../../types";
+import type { AuthResponse, AuthUser } from "../../types/auth/auth.types";
 
 interface AuthState {
   user: AuthUser | null;
@@ -16,28 +17,19 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     setCredentials: (state, action: PayloadAction<AuthResponse>) => {
-      const {
-        token,
-        userId,
-        username,
-        fullName,
-        role,
-        studentId,
-        studentCode,
-      } = action.payload;
+      const { token, user } = action.payload;
 
-      const mapped: AuthUser = {
-        id: userId,
-        username,
-        fullName,
-        role,
-        studentId,
-        studentCode,
+      const mappedUser: AuthUser = {
+        id: user.id,
+        username: user.username,
+        role: user.role,
       };
 
-      state.user = mapped;
+      state.user = mappedUser;
       state.token = token;
-      localStorage.setItem("token", token);
+
+      if (token) localStorage.setItem("token", token);
+      else localStorage.removeItem("token");
     },
     logout: (state) => {
       state.user = null;

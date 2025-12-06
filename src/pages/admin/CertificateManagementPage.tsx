@@ -1,14 +1,20 @@
 // src/pages/admin/CertificateManagementPage.tsx
 import { useEffect, useState } from "react";
-import { getAllEnrollmentsProgressApi } from "../../api/admin/admin-enrollments.api";
+
 import {
-  issueCertificateApi,
-  type CertificateResult,
-} from "../../api/admin/admin-certificates.api";
-import type { EnrollmentCompletion } from "../../types/models/enrollment.types";
+  getAllEnrollmentsProgressApi,
+  updateCompletionResultApi,
+  type CompletionResult,
+} from "../../api/admin/admin-enrollments.api";
+
+import { issueCertificateApi } from "../../api/admin/admin-certificates.api";
+
+import type { CertificateResult } from "../../types/admin/admin-certificate.types";
+import type { EnrollmentProgressResponse } from "../../types/admin/admin-progress.types";
+
 import styles from "../../styles/AdminCertificatesPage.module.css";
 
-type EnrollmentRow = EnrollmentCompletion & {
+type EnrollmentRow = EnrollmentProgressResponse & {
   selectedResult: CertificateResult;
 };
 
@@ -22,16 +28,15 @@ export default function CertificateManagementPage() {
     try {
       setLoading(true);
       setError(null);
-      const data = await getAllEnrollmentsProgressApi();
 
-      // chỉ lấy enrollments đủ điều kiện cấp chứng chỉ
-      const eligible = data.filter(
-        (x) => x.canIssueCertificate && !x.hasCertificate
-      );
+      // BE: GET /api/admin/enrollments/ready-for-certificate
+      // -> trả về list EnrollmentProgressResponse đã đủ điều kiện + chưa xét
+      const data: EnrollmentProgressResponse[] =
+        await getAllEnrollmentsProgressApi();
 
-      const mapped: EnrollmentRow[] = eligible.map((x) => ({
+      const mapped: EnrollmentRow[] = data.map((x) => ({
         ...x,
-        selectedResult: "PASS", // mặc định là đỗ
+        selectedResult: "PASS", // mặc định cho select
       }));
 
       setItems(mapped);
@@ -69,40 +74,51 @@ export default function CertificateManagementPage() {
 
     try {
       setActionId(enrollmentId);
-      await issueCertificateApi(enrollmentId, {
-        result: target.selectedResult,
+
+      // 1) Cập nhật completionResult trong Enrollment
+      const completionResult: CompletionResult =
+        target.selectedResult === "PASS" ? "PASSED" : "FAILED";
+
+      await updateCompletionResultApi(enrollmentId, {
+        result: completionResult,
       });
 
-      // Xoá khỏi list vì đã cấp xong
-      setItems((prev) =>
-        prev.filter((item) => item.enrollmentId !== enrollmentId)
-      );
+      // 2) Nếu Đạt thì cấp chứng chỉ
+      if (target.selectedResult === "PASS") {
+        await issueCertificateApi(enrollmentId, {
+          result: target.selectedResult, // "PASS"
+        });
+      }
+
+      // 3) Reload lại list từ BE (enrollment vừa xử lý sẽ biến mất khỏi danh sách ready)
+      await fetchData();
     } catch (err: any) {
       console.error(err);
-      alert(err?.response?.data?.message || "Cấp chứng chỉ thất bại");
+      alert(err?.response?.data?.message || "Cập nhật / cấp chứng chỉ thất bại");
     } finally {
       setActionId(null);
     }
   };
 
-  const renderEligibilityBadge = (item: EnrollmentCompletion) => {
-    if (item.hasCertificate) {
+  const renderEligibilityBadge = (item: EnrollmentProgressResponse) => {
+    // Về lý thuyết, tất cả item ở trang này đều đã đủ điều kiện + chưa xét
+    // Nhưng mình vẫn check cho chắc, trùng với logic BE:
+    const isReadyForCertificate =
+      item.eligibleForCertificate &&
+      (item.completionResult === null ||
+        item.completionResult === "NOT_REVIEWED");
+
+    if (!isReadyForCertificate) {
       return (
-        <span className={`${styles.badge} ${styles.badgeAlreadyIssued}`}>
-          Đã cấp chứng chỉ
+        <span className={`${styles.badge} ${styles.badgeNotEnough}`}>
+          Chưa đủ điều kiện
         </span>
       );
     }
-    if (item.canIssueCertificate) {
-      return (
-        <span className={`${styles.badge} ${styles.badgeEligible}`}>
-          Đủ điều kiện
-        </span>
-      );
-    }
+
     return (
-      <span className={`${styles.badge} ${styles.badgeNotEnough}`}>
-        Chưa đủ điều kiện
+      <span className={`${styles.badge} ${styles.badgeEligible}`}>
+        Đủ điều kiện
       </span>
     );
   };
@@ -114,8 +130,8 @@ export default function CertificateManagementPage() {
           <h2 className={styles.title}>Quản lý chứng chỉ</h2>
           <p className={styles.subtitle}>
             Danh sách học viên đã hoàn thành 100% khóa học và đủ điều kiện để
-            cấp chứng chỉ. Bạn có thể chọn kết quả (Đạt / Không đạt) trước khi
-            cấp.
+            cấp chứng chỉ. Bạn chọn kết quả (Đạt / Không đạt), hệ thống sẽ
+            cập nhật trạng thái và cấp chứng chỉ nếu Đạt.
           </p>
         </div>
         <button
@@ -177,11 +193,11 @@ export default function CertificateManagementPage() {
                         <div className={styles.progressBar}>
                           <div
                             className={styles.progressInner}
-                            style={{ width: `${item.progressPercent}%` }}
+                            style={{ width: `${item.progressPercentage}%` }}
                           />
                         </div>
                         <span className={styles.cellSub}>
-                          {item.progressPercent.toFixed(1)}%
+                          {item.progressPercentage.toFixed(1)}%
                         </span>
                       </div>
                     </td>
@@ -208,7 +224,7 @@ export default function CertificateManagementPage() {
                         disabled={isActing}
                         className={`${styles.actionButton} ${styles.actionIssue}`}
                       >
-                        {isActing ? "Đang cấp..." : "Cấp chứng chỉ"}
+                        {isActing ? "Đang xử lý..." : "Cập nhật kết quả"}
                       </button>
                     </td>
                   </tr>

@@ -1,12 +1,14 @@
 // src/api/student/student-certificates.api.ts
 import { axiosInstance } from "../index";
-import type { Certificate } from "../../types/models/certificate.types";
+import type { CertificateResponse } from "../../types/admin/admin-certificate.types";
 
-// GET /api/certificates/student/{studentId}
-export const getMyCertificatesApi = async (
+/**
+ * GET /api/certificates/student/{studentId}
+ */
+export const getStudentCertificatesApi = async (
   studentId: number
-): Promise<Certificate[]> => {
-  const res = await axiosInstance.get<Certificate[]>(
+): Promise<CertificateResponse[]> => {
+  const res = await axiosInstance.get<CertificateResponse[]>(
     `/certificates/student/${studentId}`
   );
   return res.data;

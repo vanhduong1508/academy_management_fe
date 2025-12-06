@@ -1,12 +1,11 @@
-// src/api/auth.api.ts
+// src/api/auth/auth.api.ts
 import { axiosInstance } from "../index";
 import type {
   AuthResponse,
   LoginPayload,
   RegisterStudentPayload,
-} from "../../types/models/user.types";
+} from "../../types/auth/auth.types";
 
-// LOGIN: dùng cho cả ADMIN + STUDENT
 export const loginApi = async (
   payload: LoginPayload
 ): Promise<AuthResponse> => {
@@ -14,9 +13,9 @@ export const loginApi = async (
   return res.data;
 };
 
-// REGISTER: chỉ tạo STUDENT
 export const registerStudentApi = async (
   payload: RegisterStudentPayload
-): Promise<void> => {
-  await axiosInstance.post("/auth/register", payload);
+): Promise<AuthResponse> => {
+  const res = await axiosInstance.post<AuthResponse>("/auth/register", payload);
+  return res.data;
 };

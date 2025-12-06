@@ -2,7 +2,7 @@ import React from "react";
 import { Outlet, NavLink } from "react-router-dom";
 import styles from "../../styles/StudentLayout.module.css";
 
-const StudentLayout: React.FC = () => {
+const StudentLayout = () => {
   const menuItems = [
     { name: "Dashboard", path: "/student" },
     { name: "Danh sách Khóa học", path: "/student/courses" },
@@ -22,7 +22,7 @@ const StudentLayout: React.FC = () => {
             <NavLink
               key={item.name}
               to={item.path}
-              end={item.path === "/student"}     // FIX ACTIVE DASHBOARD
+              end={item.path === "/student"}     
               className={({ isActive }) =>
                 isActive
                   ? `${styles.sidebarLink} ${styles.active}`

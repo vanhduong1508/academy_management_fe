@@ -1,1 +1,0 @@
-export { getStudentsPageApi } from "./admin-students.api";

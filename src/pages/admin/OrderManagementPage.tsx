@@ -5,7 +5,7 @@ import {
   approveOrderApi,
   rejectOrderApi,
 } from "../../api/admin/admin-orders.api";
-import type { Order } from "../../types/models/order.types";
+import type { Order } from "../../types/admin/admin-order.types";
 import styles from "../../styles/AdminOrdersPage.module.css";
 
 export default function OrderManagementPage() {
@@ -62,20 +62,37 @@ export default function OrderManagementPage() {
   };
 
   const renderPaymentBadge = (paymentStatus: Order["paymentStatus"]) => {
-    const cls = `${styles.badge} ${styles.badgeSuccess}`;
-    // Bạn có thể map "PAID" / "PENDING" / "FAILED" sang tiếng Việt nếu thích
-    return <span className={cls}>{paymentStatus}</span>;
+    const base = styles.badge;
+
+    if (paymentStatus === "PENDING") {
+      return (
+        <span className={`${base} ${styles.badgeWarning}`}>
+          Chờ thanh toán
+        </span>
+      );
+    }
+    if (paymentStatus === "PAID") {
+      return (
+        <span className={`${base} ${styles.badgeSuccess}`}>Đã thanh toán</span>
+      );
+    }
+    if (paymentStatus === "FAILED") {
+      return (
+        <span className={`${base} ${styles.badgeDanger}`}>Thanh toán lỗi</span>
+      );
+    }
+    return <span className={base}>{paymentStatus}</span>;
   };
 
   const renderApprovalBadge = (approvalStatus: Order["approvalStatus"]) => {
     const base = styles.badge;
     if (approvalStatus === "PENDING") {
-      return <span className={`${base} ${styles.badgeWarning}`}>PENDING</span>;
+      return <span className={`${base} ${styles.badgeWarning}`}>Chờ duyệt</span>;
     }
     if (approvalStatus === "APPROVED") {
-      return <span className={`${base} ${styles.badgeSuccess}`}>APPROVED</span>;
+      return <span className={`${base} ${styles.badgeSuccess}`}>Đã duyệt</span>;
     }
-    return <span className={`${base} ${styles.badgeDanger}`}>REJECTED</span>;
+    return <span className={`${base} ${styles.badgeDanger}`}>Đã từ chối</span>;
   };
 
   return (
@@ -117,6 +134,7 @@ export default function OrderManagementPage() {
                 <th className={styles.th}>Thanh toán</th>
                 <th className={styles.th}>Trạng thái</th>
                 <th className={styles.th}>Ngày tạo</th>
+                <th className={styles.th}>Ghi chú chuyển khoản</th>
                 <th className={styles.thRight}>Hành động</th>
               </tr>
             </thead>
@@ -124,49 +142,72 @@ export default function OrderManagementPage() {
               {orders.map((order) => {
                 const isActing = actionLoadingId === order.id;
 
-                const studentLabel = `Student #${order.studentId}`;
-                const courseLabel = `Course #${order.courseId}`;
+                const studentLabel =
+                  order.studentName || (order.studentId != null
+                    ? `Student #${order.studentId}`
+                    : "Không rõ học viên");
+
+                const courseLabel =
+                  order.courseTitle || (order.courseId != null
+                    ? `Course #${order.courseId}`
+                    : "Không rõ khóa học");
+
+                const amount = order.totalAmount ?? 0;
 
                 return (
                   <tr key={order.id} className={styles.tr}>
                     <td className={styles.td}>{order.id}</td>
+
                     <td className={styles.td}>
                       <div className={styles.cellMain}>
                         <span className={styles.cellTitle}>
                           {studentLabel}
                         </span>
-                        <span className={styles.cellSub}>
-                          ID: {order.studentId}
-                        </span>
+                        {order.studentId != null && (
+                          <span className={styles.cellSub}>
+                            ID: {order.studentId}
+                          </span>
+                        )}
                       </div>
                     </td>
+
                     <td className={styles.td}>
                       <div className={styles.cellMain}>
                         <span className={styles.cellTitle}>
                           {courseLabel}
                         </span>
-                        <span className={styles.cellSub}>
-                          ID: {order.courseId}
-                        </span>
+                        {order.courseId != null && (
+                          <span className={styles.cellSub}>
+                            ID: {order.courseId}
+                          </span>
+                        )}
                       </div>
                     </td>
+
                     <td className={styles.td}>
-                      {order.amount != null
-                        ? `${order.amount.toLocaleString?.("vi-VN") ??
-                            order.amount} đ`
+                      {amount > 0
+                        ? `${amount.toLocaleString("vi-VN")} đ`
                         : "-"}
                     </td>
+
                     <td className={styles.td}>
                       {renderPaymentBadge(order.paymentStatus)}
                     </td>
+
                     <td className={styles.td}>
                       {renderApprovalBadge(order.approvalStatus)}
                     </td>
+
                     <td className={styles.td}>
                       {order.createdAt
                         ? new Date(order.createdAt).toLocaleString("vi-VN")
                         : "-"}
                     </td>
+
+                    <td className={styles.td}>
+                      {order.transferNote ?? "-"}
+                    </td>
+
                     <td className={styles.tdRight}>
                       <button
                         onClick={() => handleApprove(order.id)}

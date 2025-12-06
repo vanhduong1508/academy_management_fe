@@ -1,30 +1,37 @@
 // src/api/admin/admin-students.api.ts
 import { axiosInstance } from "../index";
-import type { Student } from "../../types/models/user.types";
-import type { PageResponse } from "../../types/models/course.types";
+import type { PageResponse } from "../../types/shared/pagination.types";
+import type { AdminStudent } from "../../types/admin/admin-student.types";
 
-// Admin: phân trang danh sách học viên
-// BE: GET /api/admin/students?page=&size=
-export const getStudentsPageApi = async (
+/**
+ * GET /api/admin/students?page=&size=
+ */
+export async function getStudentsPageApi(
   page = 0,
-  size = 5
-): Promise<PageResponse<Student>> => {
-  const res = await axiosInstance.get<PageResponse<Student>>(
+  size = 10
+): Promise<PageResponse<AdminStudent>> {
+  const res = await axiosInstance.get<PageResponse<AdminStudent>>(
     "/admin/students",
-    { params: { page, size } }
+    {
+      params: { page, size },
+    }
   );
   return res.data;
-};
+}
 
-// Admin: xem chi tiết học viên
-// BE: GET /api/admin/students/{id}
-export const getStudentDetailApi = async (id: number): Promise<Student> => {
-  const res = await axiosInstance.get<Student>(`/admin/students/${id}`);
+/**
+ * GET /api/admin/students/{id}
+ */
+export async function getStudentDetailApi(
+  id: number
+): Promise<AdminStudent> {
+  const res = await axiosInstance.get<AdminStudent>(`/admin/students/${id}`);
   return res.data;
-};
+}
 
-// Admin: xóa học viên
-// BE: DELETE /api/admin/students/{id}
-export const deleteStudentApi = async (id: number): Promise<void> => {
+/**
+ * DELETE /api/admin/students/{id}
+ */
+export async function deleteStudentApi(id: number): Promise<void> {
   await axiosInstance.delete(`/admin/students/${id}`);
-};
+}

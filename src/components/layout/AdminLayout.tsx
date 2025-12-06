@@ -10,13 +10,13 @@ const AdminLayout: React.FC = () => {
     { name: "Quản lý Quá trình học tập", path: "/admin/enrollments" },
     { name: "Lộ trình Khóa học", path: "/admin/course-structure" },
     { name: "Quản lý Đơn hàng", path: "/admin/orders" },
-    { name: "Cấp Chứng chỉ", path: "/admin/certificates" },
+    { name: "Quản lý Chứng chỉ", path: "/admin/certificates" },
   ];
 
   return (
     <div className={styles.layoutContainer}>
       <aside className={styles.sidebar}>
-        <h3 className={styles.sidebarTitle}>Admin Panel</h3>
+        <h3 className={styles.sidebarTitle}>LMS ADMIN</h3>
 
         <nav className={styles.menu}>
           <ul>

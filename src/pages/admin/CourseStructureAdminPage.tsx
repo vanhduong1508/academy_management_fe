@@ -1,6 +1,7 @@
 // src/pages/admin/CourseStructureAdminPage.tsx
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+
 import { getAdminCoursesPageApi } from "../../api/admin/admin-courses.api";
 import {
   getCourseStructureApi,
@@ -9,13 +10,54 @@ import {
 } from "../../api/admin/admin-course-structure.api";
 
 import type {
-  Course,
-  PageResponse,
+  CourseResponse,
   CourseStructureResponse,
-  Chapter,
-} from "../../types/models/course.types";
+  ChapterResponse,
+  LessonResponse,
+} from "../../types/admin/admin-course.types";
+import type { PageResponse } from "../../types/shared/pagination.types";
 
 import styles from "../../styles/AdminCourseStructurePage.module.css";
+
+/**
+ * Extract YouTube video ID from various URL formats.
+ * - https://www.youtube.com/watch?v=abc123
+ * - https://youtu.be/abc123
+ * - https://www.youtube.com/embed/abc123
+ */
+function extractYoutubeId(url: string): string | null {
+  if (!url) return null;
+  const trimmed = url.trim();
+
+  // Nếu user nhập sẵn videoId (không có http) thì coi như không parse URL
+  if (!trimmed.startsWith("http://") && !trimmed.startsWith("https://")) {
+    return null;
+  }
+
+  try {
+    const parsed = new URL(trimmed);
+
+    // youtu.be/<id>
+    if (parsed.hostname === "youtu.be") {
+      return parsed.pathname.substring(1);
+    }
+
+    // youtube.com/watch?v=<id>
+    const v = parsed.searchParams.get("v");
+    if (v) return v;
+
+    // youtube.com/embed/<id>
+    const parts = parsed.pathname.split("/");
+    const embedIndex = parts.indexOf("embed");
+    if (embedIndex !== -1 && parts[embedIndex + 1]) {
+      return parts[embedIndex + 1];
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+}
 
 export default function CourseStructureAdminPage() {
   const [searchParams] = useSearchParams();
@@ -23,10 +65,11 @@ export default function CourseStructureAdminPage() {
 
   const [page, setPage] = useState(0);
   const [size] = useState(10);
-  const [coursesPage, setCoursesPage] = useState<PageResponse<Course> | null>(
-    null
-  );
-  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  const [coursesPage, setCoursesPage] =
+    useState<PageResponse<CourseResponse> | null>(null);
+
+  const [selectedCourse, setSelectedCourse] =
+    useState<CourseResponse | null>(null);
 
   const [structure, setStructure] = useState<CourseStructureResponse | null>(
     null
@@ -39,8 +82,9 @@ export default function CourseStructureAdminPage() {
   const [newChapterTitle, setNewChapterTitle] = useState("");
   const [savingChapter, setSavingChapter] = useState(false);
 
+  // Form thêm bài học: nếu type=VIDEO dùng urlVid làm link; nếu DOCUMENT dùng urlVid lưu nội dung docs
   const [lessonForms, setLessonForms] = useState<
-    Record<number, { title: string; type: string }>
+    Record<number, { title: string; type: "VIDEO" | "DOCUMENT"; urlVid: string }>
   >({});
   const [savingLessonId, setSavingLessonId] = useState<number | null>(null);
 
@@ -101,7 +145,7 @@ export default function CourseStructureAdminPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
-  const handleSelectCourse = (course: Course) => {
+  const handleSelectCourse = (course: CourseResponse) => {
     setSelectedCourse(course);
     setStructure(null);
     fetchStructure(course.id);
@@ -138,34 +182,62 @@ export default function CourseStructureAdminPage() {
 
   const handleLessonFormChange = (
     chapterId: number,
-    field: "title" | "type",
+    field: "title" | "type" | "urlVid",
     value: string
   ) => {
     setLessonForms((prev) => ({
       ...prev,
       [chapterId]: {
         title: prev[chapterId]?.title ?? "",
-        type: prev[chapterId]?.type ?? "VIDEO",
-        [field]: value,
+        type: (prev[chapterId]?.type ?? "VIDEO") as "VIDEO" | "DOCUMENT",
+        urlVid: prev[chapterId]?.urlVid ?? "",
+        [field]: field === "type" ? (value as any) : value,
       },
     }));
   };
 
-  const handleAddLesson = async (chapter: Chapter) => {
+  const handleAddLesson = async (chapter: ChapterResponse) => {
     if (!selectedCourse) return;
-    const form = lessonForms[chapter.id] || { title: "", type: "VIDEO" };
+    const form =
+      lessonForms[chapter.id] || { title: "", type: "VIDEO", urlVid: "" };
 
     if (!form.title.trim()) {
       alert("Nhập tiêu đề bài học trước đã");
       return;
     }
 
+    if (form.type === "VIDEO" && !form.urlVid.trim()) {
+      alert("Bài VIDEO cần có link YouTube");
+      return;
+    }
+
+    if (form.type === "DOCUMENT" && !form.urlVid.trim()) {
+      alert("Bài DOCUMENT cần nội dung tài liệu hoặc link");
+      return;
+    }
+
     try {
       setSavingLessonId(chapter.id);
-      const lesson = await addLessonApi(chapter.id, {
+
+      let payloadUrl: string | null = null;
+
+      if (form.type === "VIDEO") {
+        const rawUrl = form.urlVid.trim();
+        const extracted = extractYoutubeId(rawUrl);
+        const videoId = extracted !== null ? extracted : rawUrl || null;
+        payloadUrl = videoId;
+      } else {
+        // DOCUMENT: lưu nguyên text (link hoặc nội dung)
+        payloadUrl = form.urlVid.trim() || null;
+      }
+
+      const payload = {
         title: form.title.trim(),
-        type: form.type || null,
-      });
+        type: form.type,
+        urlVid: payloadUrl,
+      };
+
+      const lesson: LessonResponse = await addLessonApi(chapter.id, payload);
 
       setStructure((prev) =>
         prev
@@ -182,7 +254,7 @@ export default function CourseStructureAdminPage() {
 
       setLessonForms((prev) => ({
         ...prev,
-        [chapter.id]: { title: "", type: form.type },
+        [chapter.id]: { title: "", type: form.type, urlVid: "" },
       }));
     } catch (err: any) {
       console.error(err);
@@ -192,14 +264,64 @@ export default function CourseStructureAdminPage() {
     }
   };
 
+  const renderLesson = (lesson: LessonResponse) => {
+    // Nếu là VIDEO => render iframe
+    if (lesson.type === "VIDEO") {
+      let videoId: string | null = null;
+      if (lesson.urlVid) {
+        const extracted = extractYoutubeId(lesson.urlVid);
+        videoId = extracted !== null ? extracted : lesson.urlVid;
+      }
+
+      return (
+        <li key={lesson.id} className={styles.lessonItem}>
+          <div className={styles.lessonHeader}>
+            <span className={styles.lessonTitle}>{lesson.title}</span>
+            <span className={styles.lessonType}>VIDEO</span>
+          </div>
+
+          {videoId && (
+            <div className={styles.lessonVideoWrapper}>
+              <iframe
+                className={styles.lessonIframe}
+                width="420"
+                height="236"
+                src={`https://www.youtube.com/embed/${videoId}`}
+                title={`Video bài học ${lesson.title}`}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              />
+            </div>
+          )}
+        </li>
+      );
+    }
+
+    // DOCUMENT: hiển thị text/urlVid như tài liệu
+    return (
+      <li key={lesson.id} className={styles.lessonItem}>
+        <div className={styles.lessonHeader}>
+          <span className={styles.lessonTitle}>{lesson.title}</span>
+          <span className={styles.lessonType}>DOCUMENT</span>
+        </div>
+        {lesson.urlVid && (
+          <div className={styles.lessonDocWrapper}>
+            <pre className={styles.lessonDocContent}>{lesson.urlVid}</pre>
+          </div>
+        )}
+      </li>
+    );
+  };
+
   return (
     <div className={styles.page}>
       <div className={styles.headerRow}>
         <div>
           <h2 className={styles.title}>Lộ trình khóa học</h2>
           <p className={styles.subtitle}>
-            Chọn khóa học bên trái, sau đó thêm/sắp xếp chương và bài học cho
-            lộ trình.
+            Chọn khóa học bên trái, sau đó thêm chương / bài học. Nếu chọn VIDEO
+            sẽ nhập link YouTube; nếu chọn DOCUMENT sẽ nhập nội dung tài liệu
+            (hoặc link).
           </p>
         </div>
       </div>
@@ -207,7 +329,7 @@ export default function CourseStructureAdminPage() {
       {error && <p className={styles.error}>{error}</p>}
 
       <div className={styles.layout}>
-        {/* BẢNG KHÓA HỌC BÊN TRÁI */}
+        {/* DANH SÁCH KHÓA HỌC BÊN TRÁI */}
         <div className={styles.tableWrapper}>
           {loadingCourses && !coursesPage ? (
             <p className={styles.infoText}>Đang tải danh sách khóa học...</p>
@@ -331,15 +453,13 @@ export default function CourseStructureAdminPage() {
                     const lessonForm =
                       lessonForms[chapter.id] || {
                         title: "",
-                        type: "VIDEO",
+                        type: "VIDEO" as const,
+                        urlVid: "",
                       };
                     const isSavingLesson = savingLessonId === chapter.id;
 
                     return (
-                      <div
-                        key={chapter.id}
-                        className={styles.chapterCard}
-                      >
+                      <div key={chapter.id} className={styles.chapterCard}>
                         <div className={styles.chapterTitleRow}>
                           <span className={styles.chapterTitle}>
                             {chapter.title}
@@ -350,19 +470,9 @@ export default function CourseStructureAdminPage() {
                         </div>
 
                         <ul className={styles.lessonsList}>
-                          {chapter.lessons.map((lesson) => (
-                            <li
-                              key={lesson.id}
-                              className={styles.lessonItem}
-                            >
-                              <span className={styles.lessonTitle}>
-                                {lesson.title}
-                              </span>
-                              <span className={styles.lessonType}>
-                                {lesson.type || "UNKNOWN"}
-                              </span>
-                            </li>
-                          ))}
+                          {chapter.lessons.map((lesson) =>
+                            renderLesson(lesson)
+                          )}
                           {chapter.lessons.length === 0 && (
                             <li className={styles.lessonEmpty}>
                               Chưa có bài học nào trong chương này.
@@ -383,6 +493,7 @@ export default function CourseStructureAdminPage() {
                               )
                             }
                           />
+
                           <select
                             className={styles.select}
                             value={lessonForm.type}
@@ -396,8 +507,39 @@ export default function CourseStructureAdminPage() {
                           >
                             <option value="VIDEO">VIDEO</option>
                             <option value="DOCUMENT">DOCUMENT</option>
-                            <option value="QUIZ">QUIZ</option>
                           </select>
+
+                          {lessonForm.type === "VIDEO" && (
+                            <input
+                              className={styles.input}
+                              placeholder="URL YouTube (hoặc videoId)"
+                              value={lessonForm.urlVid}
+                              onChange={(e) =>
+                                handleLessonFormChange(
+                                  chapter.id,
+                                  "urlVid",
+                                  e.target.value
+                                )
+                              }
+                            />
+                          )}
+
+                          {lessonForm.type === "DOCUMENT" && (
+                            <textarea
+                              className={styles.textarea}
+                              placeholder="Nội dung tài liệu hoặc link tới tài liệu..."
+                              rows={3}
+                              value={lessonForm.urlVid}
+                              onChange={(e) =>
+                                handleLessonFormChange(
+                                  chapter.id,
+                                  "urlVid",
+                                  e.target.value
+                                )
+                              }
+                            />
+                          )}
+
                           <button
                             className={styles.buttonSecondary}
                             onClick={() => handleAddLesson(chapter)}

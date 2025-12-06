@@ -1,11 +1,20 @@
 // src/pages/admin/EnrollmentAdminPage.tsx
 import { useEffect, useState } from "react";
-import { getAllEnrollmentsProgressApi } from "../../api/admin/admin-enrollments.api";
-import type { EnrollmentCompletion } from "../../types/models/enrollment.types";
+
+import {
+  getAllEnrollmentProgressForAdminApi,
+} from "../../api/admin/admin-progress.api";
+
+import { getIssuedCertificatesApi } from "../../api/admin/admin-certificates.api";
+
+import type { EnrollmentProgressResponse } from "../../types/admin/admin-progress.types";
+import type { CertificateResponse } from "../../types/admin/admin-certificate.types";
+
 import styles from "../../styles/AdminProgressPage.module.css";
 
 export default function EnrollmentAdminPage() {
-  const [items, setItems] = useState<EnrollmentCompletion[]>([]);
+  const [items, setItems] = useState<EnrollmentProgressResponse[]>([]);
+  const [certificates, setCertificates] = useState<CertificateResponse[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -13,14 +22,24 @@ export default function EnrollmentAdminPage() {
     try {
       setLoading(true);
       setError(null);
-      const data = await getAllEnrollmentsProgressApi();
-      setItems(data);
+
+      const [progressList, certList] = await Promise.all([
+        // ✅ list tất cả enrollments + progress
+        getAllEnrollmentProgressForAdminApi(),
+        // list chứng chỉ đã cấp
+        getIssuedCertificatesApi(),
+      ]);
+
+      setItems(Array.isArray(progressList) ? progressList : []);
+      setCertificates(Array.isArray(certList) ? certList : []);
     } catch (err: any) {
       console.error(err);
       setError(
         err?.response?.data?.message ||
           "Không tải được dữ liệu tiến độ học tập."
       );
+      setItems([]);
+      setCertificates([]);
     } finally {
       setLoading(false);
     }
@@ -30,39 +49,46 @@ export default function EnrollmentAdminPage() {
     fetchData();
   }, []);
 
-  const renderStatusBadge = (status: EnrollmentCompletion["status"]) => {
+  const renderStatusBadge = (item: EnrollmentProgressResponse) => {
     const base = styles.badge;
-    if (status === "COMPLETED") {
+
+    if (item.completionResult === "PASSED") {
       return (
         <span className={`${base} ${styles.badgeStatusCompleted}`}>
-          Đã hoàn thành
+          Đã hoàn thành (Đạt)
         </span>
       );
     }
-    if (status === "NOT_COMPLETED") {
+    if (item.completionResult === "FAILED") {
       return (
         <span className={`${base} ${styles.badgeStatusNotCompleted}`}>
-          Không hoàn thành
+          Không đạt
         </span>
       );
     }
     return (
       <span className={`${base} ${styles.badgeStatus}`}>
-        Đang học
+        Đang học / Chưa xét
       </span>
     );
   };
 
-  const renderCertBadge = (item: EnrollmentCompletion) => {
+  const renderCertBadge = (item: EnrollmentProgressResponse) => {
     const base = styles.badge;
-    if (item.hasCertificate) {
+
+    const hasCertificate = certificates.some(
+      (c) => c.enrollmentId === item.enrollmentId
+    );
+    const canIssueCertificate = item.eligibleForCertificate && !hasCertificate;
+
+    if (hasCertificate) {
       return (
         <span className={`${base} ${styles.badgeCertHas}`}>
           Đã cấp chứng chỉ
         </span>
       );
     }
-    if (item.canIssueCertificate) {
+    if (canIssueCertificate) {
       return (
         <span className={`${base} ${styles.badgeCertReady}`}>
           Đủ điều kiện cấp
@@ -82,9 +108,7 @@ export default function EnrollmentAdminPage() {
         <div>
           <h2 className={styles.title}>Quản lý quá trình học</h2>
           <p className={styles.subtitle}>
-            Theo dõi tiến độ học tập và trạng thái chứng chỉ của các học viên
-            trong hệ thống. Tab này chỉ hiển thị dữ liệu tổng quan, không thao
-            tác cấp chứng chỉ trực tiếp.
+            Theo dõi tiến độ học tập và trạng thái chứng chỉ của các học viên.
           </p>
         </div>
         <button
@@ -101,9 +125,7 @@ export default function EnrollmentAdminPage() {
       {loading && items.length === 0 ? (
         <p className={styles.infoText}>Đang tải dữ liệu...</p>
       ) : items.length === 0 ? (
-        <p className={styles.infoText}>
-          Chưa có dữ liệu enrollments nào.
-        </p>
+        <p className={styles.infoText}>Chưa có enrollment nào.</p>
       ) : (
         <div className={styles.tableWrapper}>
           <table className={styles.table}>
@@ -125,7 +147,7 @@ export default function EnrollmentAdminPage() {
                         {item.studentName}
                       </span>
                       <span className={styles.cellSub}>
-                        ID: {item.studentId} – {item.studentName}
+                        Mã HV: {item.studentCode} – Enrollment #{item.enrollmentId}
                       </span>
                     </div>
                   </td>
@@ -135,7 +157,7 @@ export default function EnrollmentAdminPage() {
                         {item.courseTitle}
                       </span>
                       <span className={styles.cellSub}>
-                        Course ID: {item.courseId}
+                        Mã khóa: {item.courseCode}
                       </span>
                     </div>
                   </td>
@@ -144,17 +166,15 @@ export default function EnrollmentAdminPage() {
                       <div className={styles.progressBar}>
                         <div
                           className={styles.progressInner}
-                          style={{ width: `${item.progressPercent}%` }}
+                          style={{ width: `${item.progressPercentage}%` }}
                         />
                       </div>
                       <span className={styles.progressText}>
-                        {item.progressPercent.toFixed(1)}%
+                        {item.progressPercentage.toFixed(1)}%
                       </span>
                     </div>
                   </td>
-                  <td className={styles.td}>
-                    {renderStatusBadge(item.status)}
-                  </td>
+                  <td className={styles.td}>{renderStatusBadge(item)}</td>
                   <td className={styles.td}>{renderCertBadge(item)}</td>
                 </tr>
               ))}

@@ -1,0 +1,15 @@
+// src/types/admin/admin-student.types.ts
+
+export interface AdminStudent {
+  id: number;
+  studentCode: string;
+  fullName: string;
+  dob: string | null;          // LocalDate
+  hometown: string | null;
+  province: string | null;
+  status: string;              // ACTIVE / INACTIVE
+  email: string | null;
+  phone: string | null;
+  createdAt: string;
+  updatedAt: string;
+}

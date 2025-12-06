@@ -1,22 +1,37 @@
-// src/api/admin/admin-certificates.api.ts
 import { axiosInstance } from "../index";
 import type {
-  Certificate,
-  CertificateResult,
+  CertificateResponse,
   IssueCertificatePayload,
-} from "../../types/models/certificate.types";
+} from "../../types/admin/admin-certificate.types";
+import type { PageResponse } from "../../types/shared/pagination.types";
 
+export async function getIssuedCertificatesApi(): Promise<CertificateResponse[]> {
+  const res = await axiosInstance.get<
+    PageResponse<CertificateResponse> | CertificateResponse[]
+  >("/admin/certificates/enrollments", {
+    params: {
+      page: 0,
+      size: 1000,
+    },
+  });
 
-export type { CertificateResult };
+  const data = res.data as
+    | PageResponse<CertificateResponse>
+    | CertificateResponse[];
 
-// BE: POST /api/certificates/enrollment/{enrollmentId}
-export const issueCertificateApi = async (
+  if (Array.isArray(data)) {
+    return data;
+  }
+  return data.content ?? [];
+}
+
+export async function issueCertificateApi(
   enrollmentId: number,
   payload: IssueCertificatePayload
-): Promise<Certificate> => {
-  const res = await axiosInstance.post<Certificate>(
-    `/certificates/enrollment/${enrollmentId}`,
+): Promise<CertificateResponse> {
+  const res = await axiosInstance.post<CertificateResponse>(
+    `/admin/certificates/enrollment/${enrollmentId}`,
     payload
   );
   return res.data;
-};
+}

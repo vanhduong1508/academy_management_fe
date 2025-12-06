@@ -1,27 +1,37 @@
 // src/pages/admin/CourseManagementPage.tsx
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+
 import {
   getAdminCoursesPageApi,
-  createAdminCourseApi,
-  updateAdminCourseApi,
-  deleteAdminCourseApi,
+  createCourseApi,
+  updateCourseApi,
+  deleteCourseApi,
 } from "../../api/admin/admin-courses.api";
+
+import {
+  getCourseStructureApi,
+} from "../../api/admin/admin-course-structure.api";
+
 import type {
-  Course,
-  PageResponse,
+  CourseResponse,
   CourseCreatePayload,
   CourseUpdatePayload,
-} from "../../types/models/course.types";
+  CourseStructureResponse,
+  ChapterResponse,
+  LessonResponse,
+} from "../../types/admin/admin-course.types";
+import type { PageResponse } from "../../types/shared/pagination.types";
+
 import styles from "../../styles/AdminCoursesPage.module.css";
 
 type Mode = "create" | "edit";
 
 interface FormState {
   title: string;
-  description: string; // map sang content
-  startDate: string;   // yyyy-MM-dd
-  endDate: string;     // yyyy-MM-dd
+  description: string;
+  startDate: string;
+  endDate: string;
+  price: string;
 }
 
 const normalizeDateInput = (value?: string | null): string => {
@@ -30,13 +40,10 @@ const normalizeDateInput = (value?: string | null): string => {
 };
 
 export default function CourseManagementPage() {
-  const navigate = useNavigate();
-
   const [page, setPage] = useState(0);
   const [size] = useState(10);
-  const [coursesPage, setCoursesPage] = useState<PageResponse<Course> | null>(
-    null
-  );
+  const [coursesPage, setCoursesPage] =
+    useState<PageResponse<CourseResponse> | null>(null);
 
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -45,13 +52,27 @@ export default function CourseManagementPage() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<Mode>("create");
-  const [editingCourse, setEditingCourse] = useState<Course | null>(null);
+  const [editingCourse, setEditingCourse] = useState<CourseResponse | null>(
+    null
+  );
   const [form, setForm] = useState<FormState>({
     title: "",
     description: "",
     startDate: "",
     endDate: "",
+    price: "",
   });
+
+  // ====== VIEW DETAIL MODAL (course + chapters + lessons) ======
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [viewingCourse, setViewingCourse] = useState<CourseResponse | null>(
+    null
+  );
+  const [structure, setStructure] = useState<CourseStructureResponse | null>(
+    null
+  );
+  const [structureLoading, setStructureLoading] = useState(false);
+  const [structureError, setStructureError] = useState<string | null>(null);
 
   const fetchCourses = async () => {
     try {
@@ -82,11 +103,12 @@ export default function CourseManagementPage() {
       description: "",
       startDate: "",
       endDate: "",
+      price: "",
     });
     setIsModalOpen(true);
   };
 
-  const handleOpenEdit = (course: Course) => {
+  const handleOpenEdit = (course: CourseResponse) => {
     setModalMode("edit");
     setEditingCourse(course);
     setForm({
@@ -94,6 +116,7 @@ export default function CourseManagementPage() {
       description: course.content ?? "",
       startDate: normalizeDateInput(course.startDate),
       endDate: normalizeDateInput(course.endDate),
+      price: course.price != null ? String(course.price) : "",
     });
     setIsModalOpen(true);
   };
@@ -123,23 +146,39 @@ export default function CourseManagementPage() {
       return;
     }
 
-    const payloadBase: CourseCreatePayload | CourseUpdatePayload = {
-      title: form.title.trim(),
-      startDate: form.startDate,
-      endDate: form.endDate,
-      content: form.description.trim() || null,
-    };
+    const trimmedContent = form.description.trim();
 
     try {
       setSaving(true);
+
       if (modalMode === "create") {
-        await createAdminCourseApi(payloadBase as CourseCreatePayload);
+        const priceNumber = Number(form.price);
+        if (Number.isNaN(priceNumber) || priceNumber <= 0) {
+          alert("Vui lòng nhập giá khóa học hợp lệ (> 0)");
+          setSaving(false);
+          return;
+        }
+
+        const payload: CourseCreatePayload = {
+          title: form.title.trim(),
+          content: trimmedContent,
+          price: priceNumber,
+          startDate: form.startDate,
+          endDate: form.endDate,
+        };
+
+        await createCourseApi(payload);
       } else if (modalMode === "edit" && editingCourse) {
-        await updateAdminCourseApi(
-          editingCourse.id,
-          payloadBase as CourseUpdatePayload
-        );
+        const payload: CourseUpdatePayload = {
+          title: form.title.trim(),
+          content: trimmedContent,
+          startDate: form.startDate,
+          endDate: form.endDate,
+        };
+
+        await updateCourseApi(editingCourse.id, payload);
       }
+
       setIsModalOpen(false);
       await fetchCourses();
     } catch (err: any) {
@@ -155,7 +194,7 @@ export default function CourseManagementPage() {
       return;
     try {
       setDeletingId(courseId);
-      await deleteAdminCourseApi(courseId);
+      await deleteCourseApi(courseId);
       await fetchCourses();
     } catch (err: any) {
       console.error(err);
@@ -165,14 +204,39 @@ export default function CourseManagementPage() {
     }
   };
 
-  const handleViewStructure = (courseId: number) => {
-    navigate(`/admin/course-structure?courseId=${courseId}`);
+  // ====== XEM CHI TIẾT: GỌI getCourseStructureApi ======
+  const handleOpenView = async (course: CourseResponse) => {
+    setViewingCourse(course);
+    setIsViewModalOpen(true);
+
+    setStructure(null);
+    setStructureError(null);
+
+    try {
+      setStructureLoading(true);
+      const data = await getCourseStructureApi(course.id);
+      setStructure(data);
+    } catch (err: any) {
+      console.error(err);
+      setStructureError(
+        err?.response?.data?.message || "Không tải được lộ trình khóa học."
+      );
+    } finally {
+      setStructureLoading(false);
+    }
   };
 
-  const courses: Course[] = coursesPage?.content ?? [];
+  const handleCloseViewModal = () => {
+    setIsViewModalOpen(false);
+    setViewingCourse(null);
+    setStructure(null);
+    setStructureError(null);
+  };
+
+  const courses: CourseResponse[] = coursesPage?.content ?? [];
   const totalPages = coursesPage?.totalPages ?? 1;
 
-  const renderStatusBadge = (course: Course) => {
+  const renderStatusBadge = (course: CourseResponse) => {
     const isActive = course.status === "ACTIVE";
     const className = isActive
       ? `${styles.badgeStatus} ${styles.badgeActive}`
@@ -181,14 +245,49 @@ export default function CourseManagementPage() {
     return <span className={className}>{isActive ? "Đang mở" : "Đã ẩn"}</span>;
   };
 
+  const renderChapter = (chapter: ChapterResponse) => {
+    const lessons: LessonResponse[] = chapter.lessons ?? [];
+
+    return (
+      <div key={chapter.id} className={styles.chapterBlock}>
+        <div className={styles.chapterHeader}>
+          <span className={styles.chapterIndex}>
+            Chương {chapter.orderIndex}
+          </span>
+          <span className={styles.chapterTitle}>{chapter.title}</span>
+        </div>
+        {lessons.length > 0 ? (
+          <ul className={styles.lessonList}>
+            {lessons.map((lesson) => (
+              <li key={lesson.id} className={styles.lessonItem}>
+                <span className={styles.lessonIndex}>
+                  Bài {lesson.orderIndex}:
+                </span>
+                <span className={styles.lessonTitle}>{lesson.title}</span>
+                {lesson.urlVid && (
+                  <span className={styles.lessonDuration}>
+                    {" "}
+                    – Video: {lesson.urlVid}
+                  </span>
+                )}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className={styles.lessonEmpty}>Chưa có bài học nào.</p>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className={styles.page}>
       <div className={styles.headerRow}>
         <div>
           <h2 className={styles.title}>Quản lý khóa học</h2>
           <p className={styles.subtitle}>
-            Tạo, chỉnh sửa và xoá khóa học. Lộ trình chi tiết (chương / bài học)
-            được thực hiện ở trang &quot;Lộ trình khóa học&quot; riêng.
+            Tạo, chỉnh sửa và xoá khóa học. Có thể xem nhanh lộ trình (chương /
+            bài học) ở popup chi tiết.
           </p>
         </div>
         <div className={styles.actions}>
@@ -252,7 +351,7 @@ export default function CourseManagementPage() {
                     <td className={styles.tdRight}>
                       <button
                         className={`${styles.actionButton} ${styles.actionView}`}
-                        onClick={() => handleViewStructure(course.id)}
+                        onClick={() => handleOpenView(course)}
                       >
                         👁 Xem
                       </button>
@@ -336,27 +435,41 @@ export default function CourseManagementPage() {
                 />
               </div>
 
-              <div className={styles.modalField}>
-                <label className={styles.modalLabel}>Ngày bắt đầu</label>
-                <input
-                  type="date"
-                  className={styles.modalInput}
-                  value={form.startDate}
-                  onChange={(e) =>
-                    handleChangeField("startDate", e.target.value)
-                  }
-                />
+              <div className={styles.modalFieldGroup}>
+                <div className={styles.modalField}>
+                  <label className={styles.modalLabel}>Ngày bắt đầu</label>
+                  <input
+                    type="date"
+                    className={styles.modalInput}
+                    value={form.startDate}
+                    onChange={(e) =>
+                      handleChangeField("startDate", e.target.value)
+                    }
+                  />
+                </div>
+
+                <div className={styles.modalField}>
+                  <label className={styles.modalLabel}>Ngày kết thúc</label>
+                  <input
+                    type="date"
+                    className={styles.modalInput}
+                    value={form.endDate}
+                    onChange={(e) =>
+                      handleChangeField("endDate", e.target.value)
+                    }
+                  />
+                </div>
               </div>
 
               <div className={styles.modalField}>
-                <label className={styles.modalLabel}>Ngày kết thúc</label>
+                <label className={styles.modalLabel}>Học phí (VNĐ)</label>
                 <input
-                  type="date"
+                  type="number"
                   className={styles.modalInput}
-                  value={form.endDate}
-                  onChange={(e) =>
-                    handleChangeField("endDate", e.target.value)
-                  }
+                  value={form.price}
+                  onChange={(e) => handleChangeField("price", e.target.value)}
+                  placeholder="Ví dụ: 1500000"
+                  disabled={modalMode === "edit"}
                 />
               </div>
             </div>
@@ -379,6 +492,82 @@ export default function CourseManagementPage() {
                   : modalMode === "create"
                   ? "Tạo mới"
                   : "Lưu thay đổi"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL VIEW COURSE DETAIL + STRUCTURE */}
+      {isViewModalOpen && viewingCourse && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
+            <h3 className={styles.modalTitle}>Chi tiết khóa học</h3>
+
+            <div className={styles.modalBody}>
+              <p>
+                <strong>Tên khóa học:</strong> {viewingCourse.title}
+              </p>
+              <p>
+                <strong>Mã khóa:</strong> {viewingCourse.code}
+              </p>
+              <p>
+                <strong>ID:</strong> {viewingCourse.id}
+              </p>
+              <p>
+                <strong>Trạng thái:</strong>{" "}
+                {viewingCourse.status === "ACTIVE" ? "Đang mở" : "Đã ẩn"}
+              </p>
+              <p>
+                <strong>Thời gian:</strong>{" "}
+                {viewingCourse.startDate
+                  ? normalizeDateInput(viewingCourse.startDate)
+                  : "?"}{" "}
+                →{" "}
+                {viewingCourse.endDate
+                  ? normalizeDateInput(viewingCourse.endDate)
+                  : "?"}
+              </p>
+              <p>
+                <strong>Học phí:</strong>{" "}
+                {viewingCourse.price != null
+                  ? viewingCourse.price.toLocaleString("vi-VN") + " VNĐ"
+                  : "Chưa đặt"}
+              </p>
+              <p>
+                <strong>Mô tả:</strong>
+              </p>
+              <p>
+                {viewingCourse.content && viewingCourse.content.trim().length > 0
+                  ? viewingCourse.content
+                  : "Chưa có mô tả chi tiết."}
+              </p>
+
+              <hr className={styles.sectionDivider} />
+
+              <h4 className={styles.sectionTitle}>Lộ trình khóa học</h4>
+
+              {structureLoading ? (
+                <p className={styles.infoText}>Đang tải lộ trình khóa học...</p>
+              ) : structureError ? (
+                <p className={styles.error}>{structureError}</p>
+              ) : !structure || structure.chapters.length === 0 ? (
+                <p className={styles.infoText}>
+                  Khóa học này chưa có chương / bài học.
+                </p>
+              ) : (
+                <div className={styles.structureWrapper}>
+                  {structure.chapters.map((chapter) => renderChapter(chapter))}
+                </div>
+              )}
+            </div>
+
+            <div className={styles.modalFooter}>
+              <button
+                className={styles.button}
+                onClick={handleCloseViewModal}
+              >
+                Đóng
               </button>
             </div>
           </div>
