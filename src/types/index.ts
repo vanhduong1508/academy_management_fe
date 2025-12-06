@@ -1,23 +1,30 @@
-// src/types/index.ts
-
 export * from "./shared/user.types";
-export * from "./admin/admin-course.types";
+
+export * from "./auth/auth.types";
+
+export * from "./student/course.types";
+export * from "./student/enrollment.types";
+export * from "./student/order.types";
+export * from "./student/progress.types";
+export * from "./student/certificate.types";
+export * from "./student/student.types";
+
+// Admin types giữ nguyên
 export * from "./admin/admin-enrollment.types";
 export * from "./admin/admin-order.types";
 
+// Pagination
+export interface PaginationMeta {
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+}
 
-// 👉 Cho CourseFormModal
+// CourseFormModal
 export interface CourseFormPayload {
   title: string;
   startDate: string;
   endDate: string;
   content: string;
-}
-
-// 👉 Cho Pagination component
-export interface PaginationMeta {
-  page: number;          // current page (0-based)
-  size: number;          // page size
-  totalElements: number;
-  totalPages: number;
 }

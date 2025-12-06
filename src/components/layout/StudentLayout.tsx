@@ -7,6 +7,7 @@ const StudentLayout = () => {
     { name: "Dashboard", path: "/student" },
     { name: "Danh sách Khóa học", path: "/student/courses" },
     { name: "Khóa học của tôi", path: "/student/my-courses" },
+    { name: "Đơn hàng", path: "/student/orders" },
     { name: "Chứng chỉ của tôi", path: "/student/certificates" },
     { name: "Hồ sơ cá nhân", path: "/student/profile" },
   ];
