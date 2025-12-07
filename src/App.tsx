@@ -16,11 +16,15 @@ import CertificateManagementPage from "./pages/admin/CertificateManagementPage";
 import StudentManagementPage from "./pages/admin/StudentManagementPage";
 import CourseStructureAdminPage from "./pages/admin/CourseStructureAdminPage";
 
-// Student Pages
-// import StudentDashboardPage from "./pages/student/StudentDashboardPage";
-// import CourseListPage from "./pages/student/CourseListPage";
-// import MyEnrollmentsPage from "./pages/student/MyEnrollmentsPage";
-// import MyCertificatesPage from "./pages/student/MyCertificatesPage";
+// Student/User Pages
+import Home from "./pages/user/Home";
+import Courses from "./pages/user/Courses";
+import CourseDetail from "./pages/user/CourseDetail";
+import MyCourses from "./pages/user/MyCourses";
+import Learning from "./pages/user/Learning";
+import Orders from "./pages/user/Orders";
+import Profile from "./pages/user/Profile";
+import MyCertificates from "./pages/user/MyCertificates";
 
 // Public pages
 import HomePage from "./pages/public/HomePage";
@@ -48,13 +52,17 @@ const App: React.FC = () => {
         <Route path="certificates" element={<CertificateManagementPage />} />
       </Route>
 
-      {/* ====================== STUDENT ROUTES ======================
+      {/* ====================== STUDENT/USER ROUTES ====================== */}
       <Route path="/student" element={<StudentLayout />}>
-        <Route index element={<StudentDashboardPage />} />
-        <Route path="courses" element={<CourseListPage />} />
-        <Route path="my-courses" element={<MyEnrollmentsPage />} />
-        <Route path="certificates" element={<MyCertificatesPage />} />
-      </Route> */}
+        <Route index element={<Home />} />
+        <Route path="courses" element={<Courses />} />
+        <Route path="courses/:id" element={<CourseDetail />} />
+        <Route path="my-courses" element={<MyCourses />} />
+        <Route path="learning/:courseId" element={<Learning />} />
+        <Route path="orders" element={<Orders />} />
+        <Route path="profile" element={<Profile />} />
+        <Route path="certificates" element={<MyCertificates />} />
+      </Route>
 
       {/* ====================== FALLBACK ====================== */}
       <Route path="*" element={<NotFoundPage />} />
