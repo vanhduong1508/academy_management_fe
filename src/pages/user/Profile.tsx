@@ -1,4 +1,3 @@
-// src/pages/user/Profile.tsx
 import { useEffect, useState } from "react";
 import { getMyProfileApi, updateMyProfileApi } from "../../api/student/student.api";
 import type { StudentResponse, UpdateStudentPayload } from "../../types/student/student.types";
@@ -30,7 +29,7 @@ export default function Profile() {
       setProfile(data);
       setForm({
         fullName: data.fullName || "",
-        dob: data.dob ? data.dob.slice(0, 10) : "", // Format YYYY-MM-DD
+        dob: data.dob ? data.dob.slice(0, 10) : "", 
         hometown: data.hometown || "",
         province: data.province || "",
       });

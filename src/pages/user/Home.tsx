@@ -1,4 +1,3 @@
-// src/pages/user/Home.tsx
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -116,7 +115,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Recent Enrollments */}
       {activeEnrollments.length > 0 && (
         <div className={styles.section}>
           <h3 className={styles.sectionTitle}>Khóa học đang học</h3>

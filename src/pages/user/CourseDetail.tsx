@@ -1,4 +1,3 @@
-// src/pages/user/CourseDetail.tsx
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getCourseByIdApi, getCourseStructureApi } from "../../api/student/course.api";
@@ -23,8 +22,7 @@ const CourseDetail = () => {
   useEffect(() => {
     if (id) {
       fetchCourseData(Number(id));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    } 
   }, [id]);
 
   const fetchCourseData = async (courseId: number) => {
@@ -33,7 +31,7 @@ const CourseDetail = () => {
       setError(null);
       const [courseData, structureData] = await Promise.all([
         getCourseByIdApi(courseId),
-        getCourseStructureApi(courseId).catch(() => null), // Structure có thể không có
+        getCourseStructureApi(courseId).catch(() => null),   
       ]);
       setCourse(courseData);
       setStructure(structureData);

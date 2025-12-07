@@ -18,7 +18,11 @@ export const getMyOrdersApi = async (): Promise<OrderResponse[]> => {
 };
 
 export const getPaymentInfoApi = async (): Promise<PaymentInfoResponse> => {
-  const res =
-    await axiosInstance.get<PaymentInfoResponse>("/payment-info");
+  const res = await axiosInstance.get<PaymentInfoResponse>("/payment-info");
+  return res.data;
+};
+
+export const confirmPaymentApi = async (orderId: number) => {
+  const res = await axiosInstance.post(`/orders/${orderId}/confirm-payment`);
   return res.data;
 };

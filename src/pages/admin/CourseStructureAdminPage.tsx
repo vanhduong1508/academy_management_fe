@@ -1,4 +1,3 @@
-// src/pages/admin/CourseStructureAdminPage.tsx
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
@@ -19,17 +18,10 @@ import type { PageResponse } from "../../types/shared/pagination.types";
 
 import styles from "../../styles/AdminCourseStructurePage.module.css";
 
-/**
- * Extract YouTube video ID from various URL formats.
- * - https://www.youtube.com/watch?v=abc123
- * - https://youtu.be/abc123
- * - https://www.youtube.com/embed/abc123
- */
 function extractYoutubeId(url: string): string | null {
   if (!url) return null;
   const trimmed = url.trim();
 
-  // Nếu user nhập sẵn videoId (không có http) thì coi như không parse URL
   if (!trimmed.startsWith("http://") && !trimmed.startsWith("https://")) {
     return null;
   }
@@ -37,16 +29,13 @@ function extractYoutubeId(url: string): string | null {
   try {
     const parsed = new URL(trimmed);
 
-    // youtu.be/<id>
     if (parsed.hostname === "youtu.be") {
       return parsed.pathname.substring(1);
     }
 
-    // youtube.com/watch?v=<id>
     const v = parsed.searchParams.get("v");
     if (v) return v;
 
-    // youtube.com/embed/<id>
     const parts = parsed.pathname.split("/");
     const embedIndex = parts.indexOf("embed");
     if (embedIndex !== -1 && parts[embedIndex + 1]) {

@@ -1,4 +1,3 @@
-// src/pages/admin/DashboardPage.tsx
 import { useEffect, useState } from "react";
 
 import { getStudentsPageApi } from "../../api/admin/admin-students.api";

@@ -1,4 +1,3 @@
-// src/pages/admin/EnrollmentAdminPage.tsx
 import { useEffect, useState } from "react";
 
 import {

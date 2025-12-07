@@ -1,5 +1,3 @@
-// src/components/admin/LessonFormModal.tsx
-
 import React, { useEffect, useState } from 'react';
 import Input from '../common/Input/Input';
 import Button from '../common/Button/Button';

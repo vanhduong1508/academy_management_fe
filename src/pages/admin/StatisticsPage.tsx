@@ -1,4 +1,3 @@
-// src/pages/admin/StatisticsPage.tsx
 import React from "react";
 
 const StatisticsPage: React.FC = () => {

@@ -1,4 +1,3 @@
-// src/pages/admin/CourseManagementPage.tsx
 import { useEffect, useState } from "react";
 
 import {

@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAppDispatch } from "../../redux/hooks";

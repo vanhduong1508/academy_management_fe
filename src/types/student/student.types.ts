@@ -1,4 +1,3 @@
-// Match backend StudentResponse structure
 export interface StudentResponse {
   id: number;
   studentCode: string;
@@ -13,7 +12,6 @@ export interface StudentResponse {
   updatedAt: string;
 }
 
-// Match backend StudentUpdateRequest structure
 export interface UpdateStudentPayload {
   fullName: string;
   dob: string; // LocalDate format: YYYY-MM-DD

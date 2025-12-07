@@ -1,5 +1,3 @@
-// src/components/admin/CourseFormModal.tsx
-
 import React, { useEffect, useState } from 'react';
 import { CourseFormPayload } from '../../types';
 import Input from '../common/Input/Input';

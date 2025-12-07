@@ -1,4 +1,3 @@
-// src/pages/admin/CertificateManagementPage.tsx
 import { useEffect, useState } from "react";
 
 import {

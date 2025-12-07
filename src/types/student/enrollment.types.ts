@@ -3,7 +3,6 @@ export interface EnrollPayload {
   courseId: number;
 }
 
-// Match backend EnrollmentResponse structure
 export interface EnrollmentResponse {
   id: number;
   studentId: number;
@@ -17,7 +16,7 @@ export interface EnrollmentResponse {
   enrolledAt: string;
   createdAt: string;
   updatedAt: string;
-  result: "PASS" | "FAIL" | null; // CertificateResult enum
+  result: "PASS" | "FAIL" | null; 
   certificateCode: string | null;
 }
 

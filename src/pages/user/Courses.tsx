@@ -1,4 +1,3 @@
-// src/pages/user/Courses.tsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAllCoursesApi } from "../../api/student/course.api";
@@ -20,7 +19,6 @@ const Courses = () => {
 
   useEffect(() => {
     fetchCourses();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
   const fetchCourses = async () => {
@@ -31,9 +29,7 @@ const Courses = () => {
       setCoursesPage(data);
     } catch (err: any) {
       console.error(err);
-      setError(
-        err?.response?.data?.message || "Không tải được danh sách khóa học."
-      );
+      setError(err?.response?.data?.message || "Không tải được danh sách khóa học.");
     } finally {
       setLoading(false);
     }
@@ -56,15 +52,9 @@ const Courses = () => {
       <div className={styles.headerRow}>
         <div>
           <h2 className={styles.title}>Danh sách khóa học</h2>
-          <p className={styles.subtitle}>
-            Xem và đăng ký các khóa học có sẵn trong hệ thống.
-          </p>
+          <p className={styles.subtitle}>Xem và đăng ký các khóa học có sẵn trong hệ thống.</p>
         </div>
-        <button
-          className={styles.button}
-          onClick={fetchCourses}
-          disabled={loading}
-        >
+        <button className={styles.button} onClick={fetchCourses} disabled={loading}>
           {loading ? "Đang tải..." : "Tải lại"}
         </button>
       </div>
@@ -89,19 +79,25 @@ const Courses = () => {
                     <h3 className={styles.courseCardTitle}>{course.title}</h3>
                     {renderStatusBadge(course)}
                   </div>
+
                   <p className={styles.courseCardCode}>Mã: {course.code}</p>
                   <p className={styles.courseCardContent}>
                     {course.content?.slice(0, 150) || "Chưa có mô tả"}...
                   </p>
+
                   <div className={styles.courseCardMeta}>
                     <span>
                       {normalizeDateInput(course.startDate)} →{" "}
                       {normalizeDateInput(course.endDate)}
                     </span>
+
                     <span className={styles.coursePrice}>
-                      {course.price?.toLocaleString("vi-VN")} VNĐ
+                      {course.price !== null && course.price !== undefined
+                        ? Number(course.price).toLocaleString("vi-VN") + " VNĐ"
+                        : "Miễn phí"}
                     </span>
                   </div>
+
                   <button
                     className={styles.courseCardButton}
                     onClick={(e) => {
@@ -115,11 +111,9 @@ const Courses = () => {
               ))}
             </div>
 
-            {/* PAGINATION */}
             <div className={styles.pagination}>
-              <span>
-                Trang {(coursesPage?.number ?? page) + 1}/{totalPages || 1}
-              </span>
+              <span>Trang {(coursesPage?.number ?? page) + 1}/{totalPages}</span>
+
               <button
                 className={styles.pageButton}
                 disabled={page === 0 || coursesPage?.first}
@@ -127,13 +121,12 @@ const Courses = () => {
               >
                 Trước
               </button>
+
               <button
                 className={styles.pageButton}
                 disabled={page + 1 >= totalPages || coursesPage?.last}
                 onClick={() =>
-                  setPage((p) =>
-                    totalPages > 0 ? Math.min(totalPages - 1, p + 1) : p
-                  )
+                  setPage((p) => (totalPages > 0 ? Math.min(totalPages - 1, p + 1) : p))
                 }
               >
                 Sau

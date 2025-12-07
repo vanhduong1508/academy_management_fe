@@ -1,4 +1,3 @@
-// src/pages/user/MyCourses.tsx
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getMyEnrollmentsApi } from "../../api/student/enrollment.api";
