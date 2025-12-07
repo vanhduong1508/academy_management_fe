@@ -15,6 +15,7 @@ export default function Orders() {
   const [loadingPaymentInfo, setLoadingPaymentInfo] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<OrderResponse | null>(null);
 
   useEffect(() => {
     fetchOrders();
@@ -48,25 +49,49 @@ export default function Orders() {
   };
 
   const renderStatusBadge = (order: OrderResponse) => {
-    const paymentStatus = order.paymentStatus;
-    const approvalStatus = order.approvalStatus;
+    const { paymentStatus, approvalStatus } = order;
 
-    if (paymentStatus === "PAID" && approvalStatus === "APPROVED") {
-      return <span className={`${styles.badge} ${styles.badgeSuccess}`}>Đã thanh toán</span>;
+    if (approvalStatus === "APPROVED") {
+      return (
+        <span className={`${styles.badge} ${styles.badgeSuccess}`}>
+          Thanh toán thành công
+        </span>
+      );
     }
-    if (paymentStatus === "PENDING" && approvalStatus === "PENDING") {
-      return <span className={`${styles.badge} ${styles.badgePending}`}>Chờ thanh toán</span>;
+
+    if (approvalStatus === "PENDING") {
+      return (
+        <span className={`${styles.badge} ${styles.badgePending}`}>
+          Đang xử lý
+        </span>
+      );
     }
+
     if (approvalStatus === "REJECTED") {
-      return <span className={`${styles.badge} ${styles.badgeRejected}`}>Đã từ chối</span>;
+      return (
+        <span className={`${styles.badge} ${styles.badgeRejected}`}>
+          Đã từ chối
+        </span>
+      );
     }
+
     if (paymentStatus === "FAILED") {
-      return <span className={`${styles.badge} ${styles.badgeFailed}`}>Thanh toán thất bại</span>;
+      return (
+        <span className={`${styles.badge} ${styles.badgeFailed}`}>
+          Thanh toán thất bại
+        </span>
+      );
     }
-    return <span className={`${styles.badge} ${styles.badgePending}`}>Đang xử lý</span>;
+
+    return (
+      <span className={`${styles.badge} ${styles.badgePending}`}>
+        Đang xử lý
+      </span>
+    );
   };
 
-  const handleShowPaymentInfo = () => {
+  const handleShowPaymentInfo = (order?: OrderResponse) => {
+    if (order) setSelectedOrder(order);
     setShowPaymentModal(true);
   };
 
@@ -82,10 +107,10 @@ export default function Orders() {
         <div className={styles.actions}>
           <button
             className={styles.button}
-            onClick={handleShowPaymentInfo}
+            onClick={() => handleShowPaymentInfo()}
             disabled={loadingPaymentInfo}
           >
-            Thông tin thanh toán
+            Thông tin thanh toán chung
           </button>
           <button
             className={styles.button}
@@ -113,6 +138,7 @@ export default function Orders() {
                 <th className={styles.th}>Số tiền</th>
                 <th className={styles.th}>Trạng thái</th>
                 <th className={styles.th}>Ngày tạo</th>
+                <th className={styles.th}>Thanh toán</th>
               </tr>
             </thead>
             <tbody>
@@ -142,6 +168,14 @@ export default function Orders() {
                       {normalizeDate(order.createdAt)}
                     </span>
                   </td>
+                  <td className={styles.td}>
+                    <button
+                      className={styles.button}
+                      onClick={() => handleShowPaymentInfo(order)}
+                    >
+                      Thanh toán
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -155,6 +189,17 @@ export default function Orders() {
           <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
             <h3 className={styles.modalTitle}>Thông tin thanh toán</h3>
             <div className={styles.modalBody}>
+              {selectedOrder && (
+                <div className={styles.paymentOrder}>
+                  <p>
+                    <strong>Khóa học:</strong> {selectedOrder.courseTitle}
+                  </p>
+                  <p>
+                    <strong>Số tiền phải trả:</strong>{" "}
+                    {selectedOrder.price?.toLocaleString("vi-VN")} VNĐ
+                  </p>
+                </div>
+              )}
               {loadingPaymentInfo ? (
                 <p className={styles.infoText}>Đang tải thông tin...</p>
               ) : paymentInfo ? (
@@ -199,4 +244,3 @@ export default function Orders() {
     </div>
   );
 }
-
