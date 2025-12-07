@@ -2,6 +2,7 @@ import React from "react";
 import { Outlet, NavLink } from "react-router-dom";
 import styles from "../../styles/AdminLayout.module.css";
 
+
 const AdminLayout: React.FC = () => {
   const menuItems = [
     { name: "Dashboard", path: "/admin" },
@@ -11,6 +12,7 @@ const AdminLayout: React.FC = () => {
     { name: "Lộ trình Khóa học", path: "/admin/course-structure" },
     { name: "Quản lý Đơn hàng", path: "/admin/orders" },
     { name: "Quản lý Chứng chỉ", path: "/admin/certificates" },
+    { name: "Thống kê", path: "/admin/statistics" },
   ];
 
   return (

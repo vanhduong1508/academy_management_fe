@@ -1,5 +1,5 @@
 // src/pages/admin/EnrollmentAdminPage.tsx
-import { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import {
   getAllEnrollmentProgressForAdminApi,
@@ -18,15 +18,28 @@ export default function EnrollmentAdminPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // SEARCH / FILTER / PAGINATION
+  const [searchText, setSearchText] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [filterCertStatus, setFilterCertStatus] = useState<
+    "all" | "has" | "ready" | "none"
+  >("all");
+
+  const [page, setPage] = useState(0);
+  const [pageSize] = useState(5);
+
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(searchText.trim().toLowerCase()), 250);
+    return () => clearTimeout(t);
+  }, [searchText]);
+
   const fetchData = async () => {
     try {
       setLoading(true);
       setError(null);
 
       const [progressList, certList] = await Promise.all([
-        // ✅ list tất cả enrollments + progress
         getAllEnrollmentProgressForAdminApi(),
-        // list chứng chỉ đã cấp
         getIssuedCertificatesApi(),
       ]);
 
@@ -49,7 +62,54 @@ export default function EnrollmentAdminPage() {
     fetchData();
   }, []);
 
-  const renderStatusBadge = (item: EnrollmentProgressResponse) => {
+  // create lookup set for certificate enrollmentIds for O(1) checks
+  const certEnrollmentSet = useMemo(() => {
+    const s = new Set<number>();
+    for (const c of certificates) {
+      if (typeof c.enrollmentId === "number") s.add(c.enrollmentId);
+    }
+    return s;
+  }, [certificates]);
+
+  // enrich items with certificate status (memoized)
+  const itemsWithCert = useMemo(() => {
+    return items.map((it) => {
+      const hasCertificate = certEnrollmentSet.has(it.enrollmentId);
+      const canIssueCertificate = it.eligibleForCertificate && !hasCertificate;
+      return { ...it, hasCertificate, canIssueCertificate };
+    });
+  }, [items, certEnrollmentSet]);
+
+  // filtered by search + cert status
+  const filtered = useMemo(() => {
+    const q = debouncedSearch;
+    return itemsWithCert.filter((it) => {
+      if (filterCertStatus === "has" && !it.hasCertificate) return false;
+      if (filterCertStatus === "ready" && !it.canIssueCertificate) return false;
+      if (filterCertStatus === "none" && (it.hasCertificate || it.canIssueCertificate)) return false;
+
+      if (!q) return true;
+
+      // search by student name, student code, course title, course code, enrollment id
+      const hay = `${it.studentName ?? ""} ${it.studentCode ?? ""} ${it.courseTitle ?? ""} ${it.courseCode ?? ""} ${it.enrollmentId}`.toLowerCase();
+      return hay.includes(q);
+    });
+  }, [itemsWithCert, debouncedSearch, filterCertStatus]);
+
+  // pagination (client-side)
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  // clamp page
+  useEffect(() => {
+    if (page >= totalPages) setPage(Math.max(0, totalPages - 1));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [totalPages]);
+
+  const paginated = useMemo(() => {
+    const start = page * pageSize;
+    return filtered.slice(start, start + pageSize);
+  }, [filtered, page, pageSize]);
+
+  const renderStatusBadge = (item: EnrollmentProgressResponse & { hasCertificate?: boolean; canIssueCertificate?: boolean; }) => {
     const base = styles.badge;
 
     if (item.completionResult === "PASSED") {
@@ -73,13 +133,11 @@ export default function EnrollmentAdminPage() {
     );
   };
 
-  const renderCertBadge = (item: EnrollmentProgressResponse) => {
+  const renderCertBadge = (it: { enrollmentId: number; eligibleForCertificate?: boolean; hasCertificate?: boolean; canIssueCertificate?: boolean; }) => {
     const base = styles.badge;
 
-    const hasCertificate = certificates.some(
-      (c) => c.enrollmentId === item.enrollmentId
-    );
-    const canIssueCertificate = item.eligibleForCertificate && !hasCertificate;
+    const hasCertificate = !!it.hasCertificate;
+    const canIssueCertificate = !!it.canIssueCertificate;
 
     if (hasCertificate) {
       return (
@@ -111,21 +169,42 @@ export default function EnrollmentAdminPage() {
             Theo dõi tiến độ học tập và trạng thái chứng chỉ của các học viên.
           </p>
         </div>
-        <button
-          onClick={fetchData}
-          className={styles.refreshButton}
-          disabled={loading}
-        >
-          {loading ? "Đang tải..." : "Tải lại"}
-        </button>
+
+        <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+          <input
+            className={styles.searchInput}
+            placeholder="Tìm: tên học viên, mã, khóa, id..."
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+          />
+
+          <select
+            className={styles.select}
+            value={filterCertStatus}
+            onChange={(e) => setFilterCertStatus(e.target.value as any)}
+          >
+            <option value="all">Tất cả</option>
+            <option value="has">Đã có chứng chỉ</option>
+            <option value="ready">Đủ điều kiện cấp</option>
+            <option value="none">Chưa tham gia / chưa đủ điều kiện</option>
+          </select>
+
+          <button
+            onClick={fetchData}
+            className={styles.refreshButton}
+            disabled={loading}
+          >
+            {loading ? "Đang tải..." : "Tải lại"}
+          </button>
+        </div>
       </div>
 
       {error && <p className={styles.error}>{error}</p>}
 
       {loading && items.length === 0 ? (
         <p className={styles.infoText}>Đang tải dữ liệu...</p>
-      ) : items.length === 0 ? (
-        <p className={styles.infoText}>Chưa có enrollment nào.</p>
+      ) : filtered.length === 0 ? (
+        <p className={styles.infoText}>Không tìm thấy enrollment phù hợp.</p>
       ) : (
         <div className={styles.tableWrapper}>
           <table className={styles.table}>
@@ -139,7 +218,7 @@ export default function EnrollmentAdminPage() {
               </tr>
             </thead>
             <tbody>
-              {items.map((item) => (
+              {paginated.map((item) => (
                 <tr key={item.enrollmentId} className={styles.tr}>
                   <td className={styles.td}>
                     <div className={styles.cellMain}>
@@ -147,7 +226,7 @@ export default function EnrollmentAdminPage() {
                         {item.studentName}
                       </span>
                       <span className={styles.cellSub}>
-                        Mã HV: {item.studentCode} – Enrollment #{item.enrollmentId}
+                        Mã HV: {item.studentId}
                       </span>
                     </div>
                   </td>
@@ -157,7 +236,7 @@ export default function EnrollmentAdminPage() {
                         {item.courseTitle}
                       </span>
                       <span className={styles.cellSub}>
-                        Mã khóa: {item.courseCode}
+                        Mã khóa: {item.courseId}
                       </span>
                     </div>
                   </td>
@@ -180,6 +259,32 @@ export default function EnrollmentAdminPage() {
               ))}
             </tbody>
           </table>
+
+          {/* pagination controls */}
+          <div className={styles.pagination} style={{ marginTop: 12 }}>
+            <span>
+              Trang {page + 1}/{totalPages}
+            </span>
+            <button
+              className={styles.pageButton}
+              disabled={page === 0}
+              onClick={() => setPage((p) => Math.max(0, p - 1))}
+            >
+              Trước
+            </button>
+            <button
+              className={styles.pageButton}
+              disabled={page + 1 >= totalPages}
+              onClick={() =>
+                setPage((p) => (totalPages > 0 ? Math.min(totalPages - 1, p + 1) : p))
+              }
+            >
+              Sau
+            </button>
+            <span style={{ marginLeft: 12, color: "var(--muted)" }}>
+              {filtered.length} kết quả
+            </span>
+          </div>
         </div>
       )}
     </div>

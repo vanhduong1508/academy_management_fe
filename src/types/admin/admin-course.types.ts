@@ -38,6 +38,7 @@ export interface CourseUpdatePayload {
   startDate: string;
   endDate: string;
   content?: string | null;
+  price?: number | null;
 }
 
 // ============= STRUCTURE: CourseStructureResponse / ChapterResponse / LessonResponse =============
@@ -45,16 +46,16 @@ export interface CourseUpdatePayload {
 export interface LessonResponse {
   id: number;
   title: string;
-  type: string;          // "VIDEO" | "QUIZ" | "DOCUMENT" | ...
-  urlVid: string | null; // link video (nếu là VIDEO)
-  orderIndex: number;    // thứ tự bài trong chương
+  type: string;         
+  urlVid: string | null; 
+  orderIndex: number;   
 }
 
 export interface ChapterResponse {
   id: number;
   title: string;
-  orderIndex: number;        // thứ tự chương trong khóa
-  lessons: LessonResponse[]; // danh sách bài học trong chương
+  orderIndex: number;        
+  lessons: LessonResponse[];
 }
 
 export interface CourseStructureResponse {

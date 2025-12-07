@@ -15,6 +15,7 @@ import EnrollmentAdminPage from "./pages/admin/EnrollmentAdminPage";
 import CertificateManagementPage from "./pages/admin/CertificateManagementPage";
 import StudentManagementPage from "./pages/admin/StudentManagementPage";
 import CourseStructureAdminPage from "./pages/admin/CourseStructureAdminPage";
+import AdminStatisticsPage from "./pages/admin/AdminStatisticsPage";
 
 // Student/User Pages
 import Home from "./pages/user/Home";
@@ -50,6 +51,7 @@ const App: React.FC = () => {
         <Route path="course-structure" element={<CourseStructureAdminPage />} />
         <Route path="orders" element={<OrderManagementPage />} />
         <Route path="certificates" element={<CertificateManagementPage />} />
+        <Route path="statistics" element={<AdminStatisticsPage />} />
       </Route>
 
       {/* ====================== STUDENT/USER ROUTES ====================== */}

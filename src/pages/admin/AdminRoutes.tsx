@@ -9,6 +9,7 @@ import StudentManagementPage from "./StudentManagementPage";
 import EnrollmentAdminPage from "./EnrollmentAdminPage";
 import OrderManagementPage from "./OrderManagementPage";
 import CertificateManagementPage from "./CertificateManagementPage";
+import AdminStatisticsPage from "./AdminStatisticsPage";
 
 const AdminRoutes = () => {
   return (
@@ -20,6 +21,7 @@ const AdminRoutes = () => {
         <Route path="enrollments" element={<EnrollmentAdminPage />} />
         <Route path="orders" element={<OrderManagementPage />} />
         <Route path="certificates" element={<CertificateManagementPage />} />
+        <Route path="statistics" element={<AdminStatisticsPage />} />
       </Route>
     </Routes>
   );

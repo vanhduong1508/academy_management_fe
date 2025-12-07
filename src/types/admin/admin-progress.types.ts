@@ -13,7 +13,7 @@ export interface EnrollmentProgressResponse {
   courseCode: string;
   courseTitle: string;
 
-  progressPercentage: number;      // ✅ TRÙNG BE: progressPercentage
+  progressPercentage: number;     
   totalVideoLessons: number;
   completedVideoLessons: number;
 

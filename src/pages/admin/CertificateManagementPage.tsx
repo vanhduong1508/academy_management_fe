@@ -1,19 +1,13 @@
-// src/pages/admin/CertificateManagementPage.tsx
 import { useEffect, useState } from "react";
-
 import {
   getAllEnrollmentsProgressApi,
   updateCompletionResultApi,
   type CompletionResult,
 } from "../../api/admin/admin-enrollments.api";
-
 import { issueCertificateApi } from "../../api/admin/admin-certificates.api";
-
 import type { CertificateResult } from "../../types/admin/admin-certificate.types";
 import type { EnrollmentProgressResponse } from "../../types/admin/admin-progress.types";
-
 import styles from "../../styles/AdminCertificatesPage.module.css";
-
 type EnrollmentRow = EnrollmentProgressResponse & {
   selectedResult: CertificateResult;
 };
@@ -29,14 +23,12 @@ export default function CertificateManagementPage() {
       setLoading(true);
       setError(null);
 
-      // BE: GET /api/admin/enrollments/ready-for-certificate
-      // -> trả về list EnrollmentProgressResponse đã đủ điều kiện + chưa xét
       const data: EnrollmentProgressResponse[] =
         await getAllEnrollmentsProgressApi();
 
       const mapped: EnrollmentRow[] = data.map((x) => ({
         ...x,
-        selectedResult: "PASS", // mặc định cho select
+        selectedResult: "PASS",
       }));
 
       setItems(mapped);
@@ -83,14 +75,12 @@ export default function CertificateManagementPage() {
         result: completionResult,
       });
 
-      // 2) Nếu Đạt thì cấp chứng chỉ
       if (target.selectedResult === "PASS") {
         await issueCertificateApi(enrollmentId, {
           result: target.selectedResult, // "PASS"
         });
       }
 
-      // 3) Reload lại list từ BE (enrollment vừa xử lý sẽ biến mất khỏi danh sách ready)
       await fetchData();
     } catch (err: any) {
       console.error(err);
@@ -101,8 +91,6 @@ export default function CertificateManagementPage() {
   };
 
   const renderEligibilityBadge = (item: EnrollmentProgressResponse) => {
-    // Về lý thuyết, tất cả item ở trang này đều đã đủ điều kiện + chưa xét
-    // Nhưng mình vẫn check cho chắc, trùng với logic BE:
     const isReadyForCertificate =
       item.eligibleForCertificate &&
       (item.completionResult === null ||
