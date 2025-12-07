@@ -34,11 +34,9 @@ interface FormState {
   price: string;
 }
 
-// --- Helpers ---------------------------------------------------------------
 const normalizeDateInput = (value?: string | null): string => {
   if (!value) return "";
   const s = String(value);
-  // Expecting ISO-like string: YYYY-MM-DD or YYYY-MM-DDTHH:mm:ss...
   if (s.length >= 10) return s.slice(0, 10);
   return s;
 };
@@ -57,7 +55,6 @@ const formatCurrency = (value?: number | null) => {
   return new Intl.NumberFormat("vi-VN").format(value) + " VNĐ";
 };
 
-// --- Component -------------------------------------------------------------
 export default function CourseManagementPage() {
   const [page, setPage] = useState(0);
   const [size] = useState(10);
@@ -82,7 +79,6 @@ export default function CourseManagementPage() {
     price: "",
   });
 
-  // ====== VIEW DETAIL MODAL (course + chapters + lessons) ======
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [viewingCourse, setViewingCourse] = useState<CourseResponse | null>(
     null

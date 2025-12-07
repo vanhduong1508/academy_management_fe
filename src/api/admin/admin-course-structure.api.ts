@@ -1,4 +1,3 @@
-// src/api/admin/admin-course-structure.api.ts
 import { axiosInstance } from "../index";
 import type {
   CourseStructureResponse,
@@ -6,6 +5,8 @@ import type {
   LessonResponse,
   ChapterCreatePayload,
   LessonCreatePayload,
+  ChapterUpdatePayload,
+  LessonUpdatePayload
 } from "../../types/admin/admin-course.types";
 
 /**
@@ -47,4 +48,38 @@ export const addLessonApi = async (
     payload
   );
   return res.data;
+};
+
+export const updateChapterApi = async (
+  chapterId: number,
+  payload: ChapterUpdatePayload
+) => {
+  const res = await axiosInstance.put<ChapterResponse>(
+    `/admin/chapters/${chapterId}`,
+    payload
+  );
+  return res.data;
+};
+
+export const deleteChapterApi = async (
+  chapterId: number
+): Promise<void> => {
+  await axiosInstance.delete(`/admin/chapters/${chapterId}`);
+};
+
+export const updateLessonApi = async (
+  lessonId: number,
+  payload: LessonUpdatePayload
+) => {
+  const res = await axiosInstance.put<LessonResponse>(
+    `/admin/lessons/${lessonId}`,
+    payload
+  );
+  return res.data;
+};
+
+export const deleteLessonApi = async (
+  lessonId: number
+): Promise<void> => {
+  await axiosInstance.delete(`/admin/lessons/${lessonId}`);
 };
