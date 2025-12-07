@@ -66,13 +66,15 @@ export default function CourseStructureAdminPage() {
   const [coursesPage, setCoursesPage] =
     useState<PageResponse<CourseResponse> | null>(null);
 
-  const [selectedCourse, setSelectedCourse] =
-    useState<CourseResponse | null>(null);
+  const [selectedCourse, setSelectedCourse] = useState<CourseResponse | null>(
+    null
+  );
 
   const [selectedChapter, setSelectedChapter] =
     useState<ChapterResponse | null>(null);
-  const [selectedLesson, setSelectedLesson] =
-    useState<LessonResponse | null>(null);
+  const [selectedLesson, setSelectedLesson] = useState<LessonResponse | null>(
+    null
+  );
 
   const [structure, setStructure] = useState<CourseStructureResponse | null>(
     null
@@ -86,7 +88,17 @@ export default function CourseStructureAdminPage() {
   const [savingChapter, setSavingChapter] = useState(false);
 
   const [lessonForms, setLessonForms] = useState<
-    Record<number, { title: string; type: "VIDEO" | "DOCUMENT"; urlVid: string }>
+    Record<
+      number,
+      { title: string; type: "VIDEO" | "DOCUMENT"; urlVid: string }
+    >
+  >({});
+
+  const [collapsedChapters, setCollapsedChapters] = useState<
+    Record<number, boolean>
+  >({});
+  const [collapsedLessons, setCollapsedLessons] = useState<
+    Record<number, boolean>
   >({});
 
   const [savingLessonId, setSavingLessonId] = useState<number | null>(null);
@@ -213,8 +225,11 @@ export default function CourseStructureAdminPage() {
 
   const handleAddLesson = async (chapter: ChapterResponse) => {
     if (!selectedCourse) return;
-    const form =
-      lessonForms[chapter.id] || { title: "", type: "VIDEO", urlVid: "" };
+    const form = lessonForms[chapter.id] || {
+      title: "",
+      type: "VIDEO",
+      urlVid: "",
+    };
 
     if (!form.title.trim()) {
       alert("Nhập tiêu đề bài học trước đã");
@@ -242,7 +257,6 @@ export default function CourseStructureAdminPage() {
         const videoId = extracted !== null ? extracted : rawUrl || null;
         payloadUrl = videoId;
       } else {
-        // DOCUMENT: lưu nguyên text (link hoặc nội dung)
         payloadUrl = form.urlVid.trim() || null;
       }
 
@@ -494,16 +508,32 @@ export default function CourseStructureAdminPage() {
       setSavingLessonId(null);
     }
   };
+  const toggleChapterCollapse = (chapterId: number) => {
+    setCollapsedChapters((prev) => ({
+      ...prev,
+      [chapterId]: !prev[chapterId],
+    }));
+  };
 
-  // Update renderLesson to accept chapter parameter so we can show edit UI
+  const toggleLessonCollapse = (lessonId: number) => {
+    setCollapsedLessons((prev) => ({
+      ...prev,
+      [lessonId]: !prev[lessonId],
+    }));
+  };
+
   const renderLesson = (chapter: ChapterResponse, lesson: LessonResponse) => {
     const editForm = lessonEditForms[lesson.id];
-
-    // If lesson is in edit mode -> show inline edit UI
     if (editForm) {
       return (
         <li key={lesson.id} className={styles.lessonItem}>
           <div className={styles.lessonHeader}>
+            <button
+              className={styles.collapseButton}
+              onClick={() => toggleLessonCollapse(lesson.id)}
+            >
+              {collapsedLessons[lesson.id] ? "▶" : "▼"}
+            </button>
             <input
               className={styles.input}
               value={editForm.title}
@@ -658,9 +688,9 @@ export default function CourseStructureAdminPage() {
         <div>
           <h2 className={styles.title}>Lộ trình khóa học</h2>
           <p className={styles.subtitle}>
-            Chọn khóa học bên trái, sau đó thêm chương / bài học. Nếu chọn
-            VIDEO sẽ nhập link YouTube; nếu chọn DOCUMENT sẽ nhập nội dung tài
-            liệu (hoặc link).
+            Chọn khóa học bên trái, sau đó thêm chương / bài học. Nếu chọn VIDEO
+            sẽ nhập link YouTube; nếu chọn DOCUMENT sẽ nhập nội dung tài liệu
+            (hoặc link).
           </p>
         </div>
       </div>
@@ -742,7 +772,6 @@ export default function CourseStructureAdminPage() {
           )}
         </div>
 
-        {/* PANEL LỘ TRÌNH BÊN PHẢI */}
         <div className={styles.detailPanel}>
           {!selectedCourse ? (
             <p className={styles.detailEmpty}>
@@ -789,12 +818,11 @@ export default function CourseStructureAdminPage() {
                   </p>
                 ) : (
                   structure.chapters.map((chapter) => {
-                    const lessonForm =
-                      lessonForms[chapter.id] || {
-                        title: "",
-                        type: "VIDEO" as const,
-                        urlVid: "",
-                      };
+                    const lessonForm = lessonForms[chapter.id] || {
+                      title: "",
+                      type: "VIDEO" as const,
+                      urlVid: "",
+                    };
                     const isSavingLesson = savingLessonId === chapter.id;
 
                     const isChapterEditing = editingChapterId === chapter.id;
@@ -802,6 +830,12 @@ export default function CourseStructureAdminPage() {
                     return (
                       <div key={chapter.id} className={styles.chapterCard}>
                         <div className={styles.chapterTitleRow}>
+                          <button
+                            className={styles.collapseButton}
+                            onClick={() => toggleChapterCollapse(chapter.id)}
+                          >
+                            {collapsedChapters[chapter.id] ? "▶" : "▼"}
+                          </button>
                           {isChapterEditing ? (
                             <>
                               <input
@@ -853,18 +887,21 @@ export default function CourseStructureAdminPage() {
                           )}
                         </div>
 
-                        <ul className={styles.lessonsList}>
-                          {chapter.lessons.map((lesson) =>
-                            renderLesson(chapter, lesson)
-                          )}
-                          {chapter.lessons.length === 0 && (
-                            <li className={styles.lessonEmpty}>
-                              Chưa có bài học nào trong chương này.
-                            </li>
-                          )}
-                        </ul>
+                        {!collapsedChapters[chapter.id] && (
+                          <ul className={styles.lessonsList}>
+                            {chapter.lessons.map((lesson) =>
+                              renderLesson(chapter, lesson)
+                            )}
+                            {chapter.lessons.length === 0 && (
+                              <li className={styles.lessonEmpty}>
+                                Chưa có bài học nào trong chương này.
+                              </li>
+                            )}
+                          </ul>
+                        )}
 
-                        <div className={styles.addLessonForm}>
+                        {!collapsedChapters[chapter.id] && (
+                          <div className={styles.addLessonForm}>
                           <input
                             className={styles.input}
                             placeholder="Tiêu đề bài học mới"
@@ -932,6 +969,7 @@ export default function CourseStructureAdminPage() {
                             {isSavingLesson ? "Đang thêm..." : "Thêm bài học"}
                           </button>
                         </div>
+                        )}
                       </div>
                     );
                   })
