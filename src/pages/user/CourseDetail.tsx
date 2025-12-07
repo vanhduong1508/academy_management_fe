@@ -1,4 +1,3 @@
-// src/pages/user/CourseDetail.tsx
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getCourseByIdApi, getCourseStructureApi } from "../../api/student/course.api";

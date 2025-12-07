@@ -1,4 +1,3 @@
-// src/pages/user/Courses.tsx
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAllCoursesApi } from "../../api/student/course.api";

@@ -1,4 +1,3 @@
-// src/pages/user/Orders.tsx
 import { useEffect, useState } from "react";
 import { getMyOrdersApi, getPaymentInfoApi } from "../../api/student/order.api";
 import type { OrderResponse, PaymentInfoResponse } from "../../types/student/order.types";
@@ -132,8 +131,8 @@ export default function Orders() {
                   </td>
                   <td className={styles.td}>
                     <span className={styles.amount}>
-                      {order.totalAmount != null
-                        ? `${order.totalAmount.toLocaleString("vi-VN")} VNĐ`
+                      {order.price != null
+                        ? `${order.price.toLocaleString("vi-VN")} VNĐ`
                         : "-"}
                     </span>
                   </td>

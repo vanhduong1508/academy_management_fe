@@ -1,4 +1,3 @@
-// src/pages/user/MyCertificates.tsx
 import { useEffect, useState } from "react";
 import { getMyCertificatesApi } from "../../api/student/certificate.api";
 import type { CertificateResponse } from "../../types/student/certificate.types";
