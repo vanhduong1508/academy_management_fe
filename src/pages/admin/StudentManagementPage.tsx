@@ -4,10 +4,10 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   getStudentsPageApi,
   deleteStudentApi,
+  getCourseOfStudent,
 } from "../../api/admin/admin-students.api";
 import { getEnrollmentsReadyForCertificateApi } from "../../api/admin/admin-progress.api";
 import { getIssuedCertificatesApi } from "../../api/admin/admin-certificates.api";
-
 
 import type { PageResponse } from "../../types/shared/pagination.types";
 import type { AdminStudent } from "../../types/admin/admin-student.types";
@@ -16,11 +16,6 @@ import type { CertificateResponse } from "../../types/admin/admin-certificate.ty
 
 import styles from "../../styles/AdminStudentsPage.module.css";
 
-type EnrollmentWithCert = EnrollmentProgressResponse & {
-  hasCertificate: boolean;
-  canIssueCertificate: boolean;
-};
-
 export default function StudentManagementPage() {
   const [page, setPage] = useState(0);
   const [size] = useState(5);
@@ -28,7 +23,6 @@ export default function StudentManagementPage() {
   const [studentsPage, setStudentsPage] =
     useState<PageResponse<AdminStudent> | null>(null);
 
-  // raw data cached in refs to avoid repeated allocation/transformations
   const enrollmentsRef = useRef<EnrollmentProgressResponse[]>([]);
   const certificatesRef = useRef<CertificateResponse[]>([]);
 
@@ -37,15 +31,17 @@ export default function StudentManagementPage() {
   const [error, setError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<number | null>(null);
 
-  // detail modal
+  const [studentCourses, setStudentCourses] = useState<
+    EnrollmentProgressResponse[]
+  >([]);
+  const [loadingCourses, setLoadingCourses] = useState(false);
+
   const [detailStudent, setDetailStudent] = useState<AdminStudent | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
 
-  // SEARCH / FILTER (debounced client-side search)
   const [searchText, setSearchText] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
-  // performance: avoid re-fetch meta on every page change; fetch once and refresh manually
   const fetchMeta = async () => {
     try {
       setLoadingMeta(true);
@@ -66,12 +62,14 @@ export default function StudentManagementPage() {
     try {
       setLoadingStudents(true);
       setError(null);
-      // NOTE: if backend supports search/status query params, extend getStudentsPageApi to accept them
+
       const data = await getStudentsPageApi(page, size);
       setStudentsPage(data);
     } catch (err: any) {
       console.error(err);
-      setError(err?.response?.data?.message || "Không tải được danh sách học viên.");
+      setError(
+        err?.response?.data?.message || "Không tải được danh sách học viên."
+      );
     } finally {
       setLoadingStudents(false);
     }
@@ -94,16 +92,29 @@ export default function StudentManagementPage() {
 
   // debounce user search input to reduce renders / filtering cost
   useEffect(() => {
-    const t = setTimeout(() => setDebouncedSearch(searchText.trim().toLowerCase()), 300);
+    const t = setTimeout(
+      () => setDebouncedSearch(searchText.trim().toLowerCase()),
+      300
+    );
     return () => clearTimeout(t);
   }, [searchText]);
 
   const totalPages = studentsPage?.totalPages ?? 0;
 
-
-  const openDetail = (s: AdminStudent) => {
+  const openDetail = async (s: AdminStudent) => {
     setDetailStudent(s);
     setIsDetailOpen(true);
+    setLoadingCourses(true);
+
+    try {
+      const courses = await getCourseOfStudent(s.id);
+      setStudentCourses(Array.isArray(courses) ? courses : []);
+    } catch (err) {
+      console.error("Load student courses failed", err);
+      setStudentCourses([]);
+    } finally {
+      setLoadingCourses(false);
+    }
   };
 
   const closeDetail = () => {
@@ -135,20 +146,6 @@ export default function StudentManagementPage() {
       setDeletingId(null);
     }
   };
-
-  // Derived enrollments for the detail student (memoized)
-  const detailEnrollments: EnrollmentWithCert[] = useMemo(() => {
-    if (!detailStudent) return [];
-    const enrollments = enrollmentsRef.current.filter((e) => e.studentId === detailStudent.id);
-    const certificates = certificatesRef.current;
-
-    return enrollments.map((e) => {
-      const hasCertificate = certificates.some((c) => c.enrollmentId === e.enrollmentId);
-      const canIssueCertificate = e.eligibleForCertificate && !hasCertificate;
-      return { ...e, hasCertificate, canIssueCertificate };
-    });
-  }, [detailStudent]);
-
   // client-side filtered students for the current page
   const filteredStudents = useMemo(() => {
     const list = studentsPage?.content ?? [];
@@ -156,7 +153,9 @@ export default function StudentManagementPage() {
 
     return list.filter((s) => {
       if (!q) return true;
-      const hay = `${s.fullName ?? ""} ${s.studentCode ?? ""} ${s.id}`.toLowerCase();
+      const hay = `${s.fullName ?? ""} ${s.studentCode ?? ""} ${
+        s.id
+      }`.toLowerCase();
       return hay.includes(q);
     });
   }, [studentsPage, debouncedSearch]);
@@ -167,7 +166,8 @@ export default function StudentManagementPage() {
         <div>
           <h2 className={styles.title}>Quản lý học viên</h2>
           <p className={styles.subtitle}>
-            Danh sách học viên trong hệ thống. Bấm "👁" để xem chi tiết hồ sơ và tiến độ học tập.
+            Danh sách học viên trong hệ thống. Bấm "👁" để xem chi tiết hồ sơ và
+            tiến độ học tập.
           </p>
         </div>
 
@@ -258,7 +258,9 @@ export default function StudentManagementPage() {
                 className={styles.pageButton}
                 disabled={page + 1 >= totalPages}
                 onClick={() =>
-                  setPage((p) => (totalPages > 0 ? Math.min(totalPages - 1, p + 1) : p))
+                  setPage((p) =>
+                    totalPages > 0 ? Math.min(totalPages - 1, p + 1) : p
+                  )
                 }
               >
                 Sau
@@ -268,7 +270,6 @@ export default function StudentManagementPage() {
         )}
       </div>
 
-      {/* MODAL XEM CHI TIẾT */}
       {isDetailOpen && detailStudent && (
         <div className={styles.modalOverlay}>
           <div className={styles.modal}>
@@ -290,40 +291,60 @@ export default function StudentManagementPage() {
               </p>
               <p className={styles.detailField}>
                 <span className={styles.detailFieldLabel}>Ngày sinh: </span>
-                {detailStudent.dob ? new Date(detailStudent.dob).toLocaleDateString() : "-"}
+                {detailStudent.dob
+                  ? new Date(detailStudent.dob).toLocaleDateString()
+                  : "-"}
               </p>
               <p className={styles.detailField}>
                 <span className={styles.detailFieldLabel}>Quê quán: </span>
                 {detailStudent.hometown ?? "-"}
               </p>
               <p className={styles.detailField}>
-                <span className={styles.detailFieldLabel}>Tỉnh/Thành phố: </span>
+                <span className={styles.detailFieldLabel}>
+                  Tỉnh/Thành phố:{" "}
+                </span>
                 {detailStudent.province ?? "-"}
               </p>
 
-              <h4 className={styles.detailSectionTitle}>Quá trình học ({detailEnrollments.length})</h4>
+              <h4 className={styles.detailSectionTitle}>
+                {" "}
+                Danh sách khóa học ({studentCourses.length})
+              </h4>
 
-              {loadingMeta && enrollmentsRef.current.length === 0 ? (
-                <p className={styles.detailEmpty}>Đang tải dữ liệu enrollments...</p>
-              ) : detailEnrollments.length === 0 ? (
-                <p className={styles.detailEmpty}>Học viên hiện chưa đăng ký khóa học nào.</p>
+              {loadingCourses ? (
+                <p className={styles.detailEmpty}>
+                  Đang tải danh sách khóa học...
+                </p>
+              ) : studentCourses.length === 0 ? (
+                <p className={styles.detailEmpty}>
+                  Học viên chưa đăng ký khóa học nào.
+                </p>
               ) : (
                 <div className={styles.detailEnrollList}>
-                  {detailEnrollments.map((e) => (
+                  {studentCourses.map((e) => (
                     <div key={e.enrollmentId} className={styles.enrollCard}>
                       <p className={styles.enrollTitle}>{e.courseTitle}</p>
+
                       <p className={styles.enrollSub}>
                         Course ID: {e.courseId} – Enrollment #{e.enrollmentId}
                       </p>
+
                       <div className={styles.enrollMeta}>
-                        <span>Tiến độ: {e.progressPercentage.toFixed(1)}%</span>
                         <span>
-                          {e.hasCertificate ? "Đã cấp chứng chỉ" : e.canIssueCertificate ? "Đủ điều kiện cấp" : "Chưa đủ điều kiện"}
+                          Tiến độ: {e.progressPercentage?.toFixed(1) ?? 0}%
+                        </span>
+                        <span>
+                          {e.eligibleForCertificate
+                            ? "Đủ điều kiện cấp chứng chỉ"
+                            : "Chưa đủ điều kiện"}
                         </span>
                       </div>
 
                       <div className={styles.enrollProgressBar}>
-                        <div className={styles.enrollProgressInner} style={{ width: `${e.progressPercentage}%` }} />
+                        <div
+                          className={styles.enrollProgressInner}
+                          style={{ width: `${e.progressPercentage ?? 0}%` }}
+                        />
                       </div>
                     </div>
                   ))}
@@ -332,7 +353,9 @@ export default function StudentManagementPage() {
             </div>
 
             <div className={styles.modalFooter}>
-              <button className={styles.buttonSecondary} onClick={closeDetail}>Đóng</button>
+              <button className={styles.buttonSecondary} onClick={closeDetail}>
+                Đóng
+              </button>
             </div>
           </div>
         </div>
@@ -340,3 +363,4 @@ export default function StudentManagementPage() {
     </div>
   );
 }
+
