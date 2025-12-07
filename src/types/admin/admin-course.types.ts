@@ -9,11 +9,11 @@ export interface Course {
   id: number;
   code: string;
   title: string;
-  startDate: string | null;    // LocalDate -> ISO string
+  startDate: string | null;   
   endDate: string | null;
   content: string | null;
   status: CourseStatus;
-  price: number;               // BigDecimal -> number
+  price: number;              
   createdAt: string;
   updatedAt: string;
 }
@@ -24,7 +24,7 @@ export type CourseResponse = Course;
 // Page<Course>
 export type CoursePage = PageResponse<Course>;
 
-// ============= PAYLOAD (CourseCreateRequest / CourseUpdateRequest) =============
+
 export interface CourseCreatePayload {
   title: string;
   startDate?: string | null;
@@ -41,7 +41,7 @@ export interface CourseUpdatePayload {
   price?: number | null;
 }
 
-// ============= STRUCTURE: CourseStructureResponse / ChapterResponse / LessonResponse =============
+
 
 export interface LessonResponse {
   id: number;
@@ -59,10 +59,10 @@ export interface ChapterResponse {
 }
 
 export interface CourseStructureResponse {
-  id: number;                    // courseId
-  title: string;                 // tên khóa học
-  description: string | null;    // mô tả / content
-  chapters: ChapterResponse[];   // danh sách chương
+  id: number;                    
+  title: string;                
+  description: string | null;    
+  chapters: ChapterResponse[];   
 }
 
 // ============= PAYLOAD CHAPTER / LESSON =============
@@ -74,4 +74,14 @@ export interface LessonCreatePayload {
   title: string;
   type: string;          // VIDEO / QUIZ / DOCUMENT...
   urlVid: string | null;
+}
+
+export interface LessonUpdatePayload {
+  title: string;
+  type: string;          // VIDEO / QUIZ / DOCUMENT...
+  urlVid: string | null;
+}
+
+export interface ChapterUpdatePayload {
+  title: string;
 }

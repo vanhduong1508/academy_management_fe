@@ -7,6 +7,10 @@ import {
   getCourseStructureApi,
   addChapterApi,
   addLessonApi,
+  updateChapterApi,
+  updateLessonApi,
+  deleteChapterApi,
+  deleteLessonApi,
 } from "../../api/admin/admin-course-structure.api";
 
 import type {
@@ -19,12 +23,6 @@ import type { PageResponse } from "../../types/shared/pagination.types";
 
 import styles from "../../styles/AdminCourseStructurePage.module.css";
 
-/**
- * Extract YouTube video ID from various URL formats.
- * - https://www.youtube.com/watch?v=abc123
- * - https://youtu.be/abc123
- * - https://www.youtube.com/embed/abc123
- */
 function extractYoutubeId(url: string): string | null {
   if (!url) return null;
   const trimmed = url.trim();
@@ -71,6 +69,11 @@ export default function CourseStructureAdminPage() {
   const [selectedCourse, setSelectedCourse] =
     useState<CourseResponse | null>(null);
 
+  const [selectedChapter, setSelectedChapter] =
+    useState<ChapterResponse | null>(null);
+  const [selectedLesson, setSelectedLesson] =
+    useState<LessonResponse | null>(null);
+
   const [structure, setStructure] = useState<CourseStructureResponse | null>(
     null
   );
@@ -82,11 +85,23 @@ export default function CourseStructureAdminPage() {
   const [newChapterTitle, setNewChapterTitle] = useState("");
   const [savingChapter, setSavingChapter] = useState(false);
 
-  // Form thêm bài học: nếu type=VIDEO dùng urlVid làm link; nếu DOCUMENT dùng urlVid lưu nội dung docs
   const [lessonForms, setLessonForms] = useState<
     Record<number, { title: string; type: "VIDEO" | "DOCUMENT"; urlVid: string }>
   >({});
+
   const [savingLessonId, setSavingLessonId] = useState<number | null>(null);
+
+  // === Edit state for inline editing ===
+  const [editingChapterId, setEditingChapterId] = useState<number | null>(null);
+  const [editingChapterTitle, setEditingChapterTitle] = useState<string>("");
+
+  // lessonEditForms keyed by lesson.id
+  const [lessonEditForms, setLessonEditForms] = useState<
+    Record<
+      number,
+      { title: string; type: "VIDEO" | "DOCUMENT"; urlVid: string }
+    >
+  >({});
 
   const courses = coursesPage?.content ?? [];
   const totalPages = coursesPage?.totalPages ?? 1;
@@ -264,8 +279,301 @@ export default function CourseStructureAdminPage() {
     }
   };
 
-  const renderLesson = (lesson: LessonResponse) => {
-    // Nếu là VIDEO => render iframe
+  const handleDeleteChapter = async (chapter: ChapterResponse) => {
+    if (!selectedCourse) return;
+
+    if (!window.confirm("Bạn có chắc muốn xóa chương này?")) return;
+
+    try {
+      await deleteChapterApi(chapter.id);
+
+      setStructure((prev) =>
+        prev
+          ? {
+              ...prev,
+              chapters: prev.chapters.filter((c) => c.id !== chapter.id),
+            }
+          : prev
+      );
+
+      // Reset selectedChapter nếu đang mở đúng chương đó
+      if (selectedChapter?.id === chapter.id) {
+        setSelectedChapter(null);
+        setSelectedLesson(null);
+      }
+    } catch (err: any) {
+      console.error(err);
+      alert(err?.response?.data?.message || "Xóa chương thất bại");
+    }
+  };
+
+  const handleDeleteLesson = async (
+    chapter: ChapterResponse,
+    lesson: LessonResponse
+  ) => {
+    if (!selectedCourse) return;
+
+    if (!window.confirm("Bạn có chắc muốn xóa bài học này?")) return;
+
+    try {
+      await deleteLessonApi(lesson.id);
+
+      setStructure((prev) =>
+        prev
+          ? {
+              ...prev,
+              chapters: prev.chapters.map((c) =>
+                c.id === chapter.id
+                  ? {
+                      ...c,
+                      lessons: c.lessons.filter((l) => l.id !== lesson.id),
+                    }
+                  : c
+              ),
+            }
+          : prev
+      );
+
+      // Nếu đang xem đúng bài đó → reset selectedLesson
+      if (selectedLesson?.id === lesson.id) {
+        setSelectedLesson(null);
+      }
+    } catch (err: any) {
+      console.error(err);
+      alert(err?.response?.data?.message || "Xóa bài học thất bại");
+    }
+  };
+
+  const startEditChapter = (chapter: ChapterResponse) => {
+    setEditingChapterId(chapter.id);
+    setEditingChapterTitle(chapter.title ?? "");
+  };
+
+  const cancelEditChapter = () => {
+    setEditingChapterId(null);
+    setEditingChapterTitle("");
+  };
+
+  const saveEditChapter = async (chapter: ChapterResponse) => {
+    if (!editingChapterId || editingChapterId !== chapter.id) return;
+    const trimmed = editingChapterTitle.trim();
+    if (!trimmed) {
+      alert("Tiêu đề chương không được để trống");
+      return;
+    }
+    try {
+      // Call api
+      const updated = await updateChapterApi(chapter.id, { title: trimmed });
+
+      setStructure((prev) =>
+        prev
+          ? {
+              ...prev,
+              chapters: prev.chapters.map((c) =>
+                c.id === chapter.id ? { ...c, ...updated } : c
+              ),
+            }
+          : prev
+      );
+
+      // reset edit state
+      setEditingChapterId(null);
+      setEditingChapterTitle("");
+    } catch (err: any) {
+      console.error(err);
+      alert(err?.response?.data?.message || "Cập nhật chương thất bại");
+    }
+  };
+
+  const startEditLesson = (lesson: LessonResponse) => {
+    setLessonEditForms((prev) => ({
+      ...prev,
+      [lesson.id]: {
+        title: lesson.title ?? "",
+        type: (lesson.type as "VIDEO" | "DOCUMENT") ?? "VIDEO",
+        urlVid: lesson.urlVid ?? "",
+      },
+    }));
+  };
+
+  const cancelEditLesson = (lessonId: number) => {
+    setLessonEditForms((prev) => {
+      const copy = { ...prev };
+      delete copy[lessonId];
+      return copy;
+    });
+  };
+
+  const changeLessonEditField = (
+    lessonId: number,
+    field: "title" | "type" | "urlVid",
+    value: string
+  ) => {
+    setLessonEditForms((prev) => ({
+      ...prev,
+      [lessonId]: {
+        title: prev[lessonId]?.title ?? "",
+        type: (prev[lessonId]?.type ?? "VIDEO") as "VIDEO" | "DOCUMENT",
+        urlVid: prev[lessonId]?.urlVid ?? "",
+        [field]: field === "type" ? (value as any) : value,
+      },
+    }));
+  };
+
+  const saveEditLesson = async (
+    chapter: ChapterResponse,
+    lesson: LessonResponse
+  ) => {
+    const form = lessonEditForms[lesson.id];
+    if (!form) return;
+    const trimmedTitle = form.title.trim();
+    if (!trimmedTitle) {
+      alert("Tiêu đề bài học không được để trống");
+      return;
+    }
+
+    if (form.type === "VIDEO" && !form.urlVid.trim()) {
+      alert("Bài VIDEO cần có link YouTube hoặc videoId");
+      return;
+    }
+
+    if (form.type === "DOCUMENT" && !form.urlVid.trim()) {
+      alert("Bài DOCUMENT cần có nội dung hoặc link");
+      return;
+    }
+
+    try {
+      setSavingLessonId(chapter.id);
+
+      let payloadUrl: string | null = null;
+      if (form.type === "VIDEO") {
+        const rawUrl = form.urlVid.trim();
+        const extracted = extractYoutubeId(rawUrl);
+        const videoId = extracted !== null ? extracted : rawUrl || null;
+        payloadUrl = videoId;
+      } else {
+        payloadUrl = form.urlVid.trim() || null;
+      }
+
+      const payload = {
+        title: trimmedTitle,
+        type: form.type,
+        urlVid: payloadUrl,
+      };
+
+      const updated = await updateLessonApi(lesson.id, payload);
+
+      setStructure((prev) =>
+        prev
+          ? {
+              ...prev,
+              chapters: prev.chapters.map((c) =>
+                c.id === chapter.id
+                  ? {
+                      ...c,
+                      lessons: c.lessons.map((l) =>
+                        l.id === lesson.id ? { ...l, ...updated } : l
+                      ),
+                    }
+                  : c
+              ),
+            }
+          : prev
+      );
+
+      // remove edit form for this lesson
+      setLessonEditForms((prev) => {
+        const copy = { ...prev };
+        delete copy[lesson.id];
+        return copy;
+      });
+    } catch (err: any) {
+      console.error(err);
+      alert(err?.response?.data?.message || "Cập nhật bài học thất bại");
+    } finally {
+      setSavingLessonId(null);
+    }
+  };
+
+  // Update renderLesson to accept chapter parameter so we can show edit UI
+  const renderLesson = (chapter: ChapterResponse, lesson: LessonResponse) => {
+    const editForm = lessonEditForms[lesson.id];
+
+    // If lesson is in edit mode -> show inline edit UI
+    if (editForm) {
+      return (
+        <li key={lesson.id} className={styles.lessonItem}>
+          <div className={styles.lessonHeader}>
+            <input
+              className={styles.input}
+              value={editForm.title}
+              onChange={(e) =>
+                changeLessonEditField(lesson.id, "title", e.target.value)
+              }
+            />
+            <select
+              className={styles.select}
+              value={editForm.type}
+              onChange={(e) =>
+                changeLessonEditField(
+                  lesson.id,
+                  "type",
+                  e.target.value as "VIDEO" | "DOCUMENT"
+                )
+              }
+            >
+              <option value="VIDEO">VIDEO</option>
+              <option value="DOCUMENT">DOCUMENT</option>
+            </select>
+          </div>
+
+          <div style={{ marginTop: 8 }}>
+            {editForm.type === "VIDEO" && (
+              <input
+                className={styles.input}
+                placeholder="URL YouTube (hoặc videoId)"
+                value={editForm.urlVid}
+                onChange={(e) =>
+                  changeLessonEditField(lesson.id, "urlVid", e.target.value)
+                }
+              />
+            )}
+
+            {editForm.type === "DOCUMENT" && (
+              <textarea
+                className={styles.textarea}
+                rows={3}
+                placeholder="Nội dung tài liệu hoặc link..."
+                value={editForm.urlVid}
+                onChange={(e) =>
+                  changeLessonEditField(lesson.id, "urlVid", e.target.value)
+                }
+              />
+            )}
+          </div>
+
+          <div className={styles.lessonActionsRow}>
+            <button
+              className={styles.buttonSecondary}
+              onClick={() => saveEditLesson(chapter, lesson)}
+              disabled={savingLessonId === chapter.id}
+            >
+              {savingLessonId === chapter.id ? "Đang lưu..." : "Lưu"}
+            </button>
+
+            <button
+              className={styles.button}
+              onClick={() => cancelEditLesson(lesson.id)}
+              disabled={savingLessonId === chapter.id}
+            >
+              Hủy
+            </button>
+          </div>
+        </li>
+      );
+    }
+
+    // default (non-edit) rendering
     if (lesson.type === "VIDEO") {
       let videoId: string | null = null;
       if (lesson.urlVid) {
@@ -278,6 +586,21 @@ export default function CourseStructureAdminPage() {
           <div className={styles.lessonHeader}>
             <span className={styles.lessonTitle}>{lesson.title}</span>
             <span className={styles.lessonType}>VIDEO</span>
+
+            <div className={styles.lessonActionsInline}>
+              <button
+                className={styles.buttonSecondary}
+                onClick={() => startEditLesson(lesson)}
+              >
+                Sửa
+              </button>
+              <button
+                className={styles.buttonSecondary}
+                onClick={() => handleDeleteLesson(chapter, lesson)}
+              >
+                Xóa
+              </button>
+            </div>
           </div>
 
           {videoId && (
@@ -297,13 +620,29 @@ export default function CourseStructureAdminPage() {
       );
     }
 
-    // DOCUMENT: hiển thị text/urlVid như tài liệu
+    // DOCUMENT
     return (
       <li key={lesson.id} className={styles.lessonItem}>
         <div className={styles.lessonHeader}>
           <span className={styles.lessonTitle}>{lesson.title}</span>
           <span className={styles.lessonType}>DOCUMENT</span>
+
+          <div className={styles.lessonActionsInline}>
+            <button
+              className={styles.buttonSecondary}
+              onClick={() => startEditLesson(lesson)}
+            >
+              Sửa
+            </button>
+            <button
+              className={styles.buttonSecondary}
+              onClick={() => handleDeleteLesson(chapter, lesson)}
+            >
+              Xóa
+            </button>
+          </div>
         </div>
+
         {lesson.urlVid && (
           <div className={styles.lessonDocWrapper}>
             <pre className={styles.lessonDocContent}>{lesson.urlVid}</pre>
@@ -319,9 +658,9 @@ export default function CourseStructureAdminPage() {
         <div>
           <h2 className={styles.title}>Lộ trình khóa học</h2>
           <p className={styles.subtitle}>
-            Chọn khóa học bên trái, sau đó thêm chương / bài học. Nếu chọn VIDEO
-            sẽ nhập link YouTube; nếu chọn DOCUMENT sẽ nhập nội dung tài liệu
-            (hoặc link).
+            Chọn khóa học bên trái, sau đó thêm chương / bài học. Nếu chọn
+            VIDEO sẽ nhập link YouTube; nếu chọn DOCUMENT sẽ nhập nội dung tài
+            liệu (hoặc link).
           </p>
         </div>
       </div>
@@ -458,20 +797,65 @@ export default function CourseStructureAdminPage() {
                       };
                     const isSavingLesson = savingLessonId === chapter.id;
 
+                    const isChapterEditing = editingChapterId === chapter.id;
+
                     return (
                       <div key={chapter.id} className={styles.chapterCard}>
                         <div className={styles.chapterTitleRow}>
-                          <span className={styles.chapterTitle}>
-                            {chapter.title}
-                          </span>
-                          <span className={styles.chapterMeta}>
-                            {chapter.lessons.length} bài học
-                          </span>
+                          {isChapterEditing ? (
+                            <>
+                              <input
+                                className={styles.input}
+                                value={editingChapterTitle}
+                                onChange={(e) =>
+                                  setEditingChapterTitle(e.target.value)
+                                }
+                              />
+                              <div className={styles.chapterActionsInline}>
+                                <button
+                                  className={styles.buttonSecondary}
+                                  onClick={() => saveEditChapter(chapter)}
+                                >
+                                  Lưu
+                                </button>
+                                <button
+                                  className={styles.buttonSecondary}
+                                  onClick={cancelEditChapter}
+                                >
+                                  Hủy
+                                </button>
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <span className={styles.chapterTitle}>
+                                {chapter.title}
+                              </span>
+                              <span className={styles.chapterMeta}>
+                                {chapter.lessons.length} bài học
+                              </span>
+
+                              <div className={styles.chapterActions}>
+                                <button
+                                  className={styles.buttonSecondary}
+                                  onClick={() => startEditChapter(chapter)}
+                                >
+                                  Sửa
+                                </button>
+                                <button
+                                  className={styles.buttonSecondary}
+                                  onClick={() => handleDeleteChapter(chapter)}
+                                >
+                                  Xóa
+                                </button>
+                              </div>
+                            </>
+                          )}
                         </div>
 
                         <ul className={styles.lessonsList}>
                           {chapter.lessons.map((lesson) =>
-                            renderLesson(lesson)
+                            renderLesson(chapter, lesson)
                           )}
                           {chapter.lessons.length === 0 && (
                             <li className={styles.lessonEmpty}>
