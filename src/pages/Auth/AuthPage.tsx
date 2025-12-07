@@ -60,6 +60,8 @@ const AuthPage: React.FC = () => {
     password: "",
     phone: "",
     dob: "",
+    hometown: "",
+    province: "",
   });
   const [regLoading, setRegLoading] = useState(false);
   const [regError, setRegError] = useState("");
@@ -87,7 +89,8 @@ const AuthPage: React.FC = () => {
         fullName,
         phone,
         dob,
-        // nếu sau này BE có hometown/province thì truyền thêm
+        hometown: registerForm.hometown,
+        province: registerForm.province,
       });
 
       setRegSuccess("Đăng ký thành công! Vui lòng đăng nhập.");
@@ -102,6 +105,8 @@ const AuthPage: React.FC = () => {
           password: "",
           phone: "",
           dob: "",
+          hometown: "",
+          province: "",
         });
       }, 1500);
     } catch (err: any) {
@@ -120,7 +125,6 @@ const AuthPage: React.FC = () => {
           isRightPanelActive ? styles["right-panel-active"] : ""
         }`}
       >
-        {/* --- REGISTER STUDENT --- */}
         <div
           className={`${styles["form-container"]} ${styles["sign-up-container"]}`}
         >
@@ -184,6 +188,16 @@ const AuthPage: React.FC = () => {
                 value={registerForm.dob}
                 onChange={handleRegisterChange}
                 required
+              />
+            </div>
+
+            <div className={styles["input-group"]}>
+              <Input
+                placeholder="Tỉnh / Thành phố"
+                name="province"
+                id="reg_province"
+                value={registerForm.province}
+                onChange={handleRegisterChange}
               />
             </div>
 

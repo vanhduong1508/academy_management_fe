@@ -1,74 +1,241 @@
+:root{
+  --bg: #f5f7fa;
+  --panel: #ffffff;
+  --muted: #6b7280;
+  --text: #111827;
+  --accent: #06b6d4;
+  --accent-700: #0891b2;
+  --border: #e5e7eb;
+  --shadow: 0 8px 28px rgba(2,6,23,0.06);
+  --radius: 12px;
+  --sidebar-width: 300px;
+  --sidebar-compact: 78px;
+  --ui-font: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Page layout */
 .layoutContainer {
   display: flex;
   width: 100%;
   min-height: 100vh;
-  background: #f5f7fa;
-  font-family: "Segoe UI", sans-serif;
+  background: var(--bg);
+  font-family: var(--ui-font);
+  color: var(--text);
 }
 
 .sidebar {
-  width: 300px;
-  background: #ffffff;
-  border-right: 1px solid #e5e7eb;
-  padding: 22px 22px; /* giảm padding trên để sát hơn với tiêu đề */
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: var(--sidebar-width);
+  background: var(--panel);
+  border-right: 1px solid var(--border);
+  padding: 22px;
   display: flex;
   flex-direction: column;
-  gap: 15px; /* giảm khoảng cách giữa Admin Panel và danh sách item */
+  gap: 30px;
+  box-shadow: none;
+  z-index: 40;
+  overflow: hidden;
+  transition: width 180ms ease, box-shadow 180ms ease, background 180ms ease;
 }
 
+
+.sidebar.collapsed {
+  width: var(--sidebar-compact);
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+/* Title */
 .sidebarTitle {
-  font-size: 22px;
-  font-weight: 700;
-  color: #111827;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text);
   text-align: center;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+  margin: 5px 0;
+  line-height: 1.5;
+}
+
+.sidebar.collapsed .sidebarTitle {
+  font-size: 0;             
+  padding-bottom: 5px;
+  border-bottom: none;
 }
 
 .menu {
   display: flex;
   flex-direction: column;
-  gap: 24px; /* tăng spacing giữa các item */
+  gap: 6px;
+  overflow: visible;
 }
 
-.menu ul,
-.menu li {
+.menu ul {
   list-style: none;
   margin: 0;
   padding: 0;
 }
+.menu li { margin: 0; padding: 0; }
 
-.menu a,
-.menuLink {
+.menuLink,
+.menu a {
   text-decoration: none;
   color: #374151;
-  padding: 16px 22px;
-  border-radius: 12px;
-  font-size: 16px;
-  font-weight: 500;
-  transition: all 0.25s ease;
-  display: block;
-  line-height: 1.5;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  transition: background 150ms ease, color 150ms ease, transform 80ms ease;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   white-space: nowrap;
+  cursor: pointer;
 }
 
+/* Icon slot inside link: optional <span className="menuIcon"> */
+.menuIcon {
+  display:inline-flex;
+  width:20px;
+  height:20px;
+  align-items:center;
+  justify-content:center;
+  color:var(--muted);
+  flex-shrink:0;
+}
+
+/* Hover state */
 .menuLink:hover {
   background: #f3f4f6;
-  color: #000;
+  color: var(--text);
+  transform: translateY(-1px);
 }
 
+/* Active link (NavLink will map to .active) */
 .active {
-  background: #111827;
+  background: var(--text);
   color: #ffffff !important;
-  font-weight: 600;
+  font-weight: 700;
+  box-shadow: 0 6px 18px rgba(2,6,23,0.06);
 }
 
-.active:hover {
-  background: #111827 !important;
-  color: #ffffff !important;
+/* When sidebar collapsed, hide label text and center icons */
+.sidebar.collapsed .menuLink {
+  justify-content: center;
+  padding-left: 6px;
+  padding-right: 6px;
+  font-size: 0; /* hide text */
+}
+.sidebar.collapsed .menuIcon {
+  width: 28px;
+  height: 28px;
 }
 
+/* Focus accessibility */
+.menuLink:focus {
+  outline: 3px solid rgba(6,182,212,0.14);
+  outline-offset: 2px;
+}
+
+/* Optionally dim non-active items when active exists */
+.menu.dimOnActive .menuLink:not(.active) {
+  opacity: 0.9;
+}
+
+/* ---------- FOOTER / bottom area inside sidebar ---------- */
+.sidebarFooter {
+  margin-top: auto;
+  font-size: 13px;
+  color: var(--muted);
+  text-align: center;
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+}
+
+/* Hidden on compact */
+.sidebar.collapsed .sidebarFooter { display: none; }
+
+/* ---------- CONTENT (main) ---------- */
+/* Main content must leave space for fixed sidebar */
 .content {
   flex: 1;
-  padding: 30px;
+  padding: 28px;
+  margin-left: var(--sidebar-width);
+  min-height: 100vh;
+  transition: margin-left 180ms ease, padding 180ms ease;
+  background: transparent;
 }
+
+/* When sidebar collapsed, shift content accordingly */
+.sidebar.collapsed ~ .content,
+.layoutContainer .sidebar.collapsed + .content {
+  margin-left: var(--sidebar-compact);
+}
+
+/* Small helper for inner container */
+.pageInner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ---------- Responsive: mobile ---------- */
+/* On small screens, make sidebar behave like an overlay and collapsible */
+@media (max-width: 920px) {
+  .sidebar {
+    position: fixed;
+    transform: translateX(-110%);
+    transition: transform 220ms cubic-bezier(.2,.9,.2,1);
+    box-shadow: 0 20px 50px rgba(2,6,23,0.12);
+    width: 280px;
+  }
+
+  /* when layout has .sidebarOpen class (toggle via JS), show it */
+  .layoutContainer.sidebarOpen .sidebar {
+    transform: translateX(0%);
+  }
+
+  /* content should not have large left margin on mobile */
+  .content {
+    margin-left: 0;
+    padding: 18px;
+  }
+
+  /* compact state is not used on mobile */
+  .sidebar.collapsed { width: 280px; }
+
+  /* optionally hide long texts in menu to avoid wrap */
+  .menuLink { font-size: 15px }
+}
+
+/* ---------- Utilities / small components ---------- */
+/* small badge to show numeric counts beside link */
+.menuBadge {
+  margin-left: auto;
+  font-weight:800;
+  background: rgba(6,182,212,0.12);
+  color: var(--accent-700);
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
+/* subtle divider used inside sidebar */
+.sidebarDivider {
+  height: 1px;
+  background: var(--border);
+  margin: 6px 0;
+}
+
+/* Tiny helpers for text truncation in sidebar labels */
+.sidebarLabel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+  max-width: calc(var(--sidebar-width) - 120px);
+}
+.sidebar.collapsed .sidebarLabel { max-width: 0; }
+

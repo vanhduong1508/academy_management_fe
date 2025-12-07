@@ -1,382 +1,88 @@
-.page {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 24px 16px;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  color: #111827;
+:root{
+  --bg:#f8fbfb;
+  --card:#ffffff;
+  --muted:#6b7280;
+  --text:#071029;
+  --primary:#0ea5a4;
+  --accent:#06b6d4;
+  --danger:#ef4444;
+  --shadow:0 10px 30px rgba(2,6,23,0.06);
+  --radius:12px;
+  --ui-font: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
 }
 
-.headerRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 16px;
-  margin-bottom: 24px;
+.page{
+  max-width:1200px;margin:26px auto;padding:22px;font-family:var(--ui-font);color:var(--text);
 }
 
-.title {
-  margin: 0 0 4px;
-  font-size: 1.6rem;
-  font-weight: 700;
+.headerRow{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:16px}
+.title{font-size:20px;margin:0;font-weight:700}
+.subtitle{margin:0;color:var(--muted);font-size:13px}
+
+.refreshButton{
+  padding:9px 12px;border-radius:10px;border:1px solid rgba(15,23,42,0.06);background:var(--card);cursor:pointer;font-weight:600;
 }
+.refreshButton[disabled]{opacity:.6;cursor:not-allowed}
 
-.subtitle {
-  margin: 0;
-  font-size: 0.9rem;
-  color: #6b7280;
-}
+/* table */
+.tableWrapper{margin-top:12px}
+.table{width:100%;border-collapse:collapse;background:transparent}
+.th,.td{padding:12px 12px;text-align:left;border-bottom:1px solid rgba(15,23,42,0.04);vertical-align:middle}
+.th{font-size:13px;color:var(--muted);font-weight:700}
+.thRight{text-align:right}
+.tdRight{text-align:right}
+.tr{transition:background .12s ease}
+.tr:hover{background:rgba(14,165,164,0.03)}
 
-.refreshButton {
-  border-radius: 999px;
-  border: none;
-  padding: 8px 14px;
-  font-size: 0.9rem;
-  background-color: #e5e7eb;
-  color: #111827;
-  cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.15s ease, transform 0.05s ease;
-}
+.cellMain{display:flex;flex-direction:column}
+.cellTitle{font-weight:700}
+.cellSub{font-size:12px;color:var(--muted);margin-top:6px}
 
-.refreshButton:hover:not(:disabled) {
-  background-color: #d1d5db;
-  transform: translateY(-0.5px);
-}
+/* actions */
+.actionButton{margin-left:6px;padding:7px 10px;border-radius:9px;border:1px solid rgba(15,23,42,0.04);cursor:pointer;font-size:13px;background:#fbfdff;transition:transform .08s}
+.actionButton:active{transform:translateY(1px)}
+.actionDelete{color:var(--danger);border-color:rgba(239,68,68,0.06)}
 
-.refreshButton:disabled {
-  opacity: 0.6;
-  cursor: default;
-}
+/* pagination */
+.pagination{display:flex;gap:10px;align-items:center;justify-content:flex-end;margin-top:14px}
+.pageButton{padding:8px 12px;border-radius:10px;border:1px solid rgba(15,23,42,0.06);background:var(--card);cursor:pointer}
+.pageButton[disabled]{opacity:.6;cursor:not-allowed}
 
-.error {
-  margin: 8px 0 0;
-  padding: 8px 12px;
-  border-radius: 8px;
-  background-color: #fef2f2;
-  color: #b91c1c;
-  font-size: 0.85rem;
-  border: 1px solid #fecaca;
-}
+.infoText{padding:28px;text-align:center;color:var(--muted)}
+.error{padding:12px;background:#fff5f5;color:var(--danger);border-left:4px solid rgba(239,68,68,0.12);border-radius:8px}
 
-/* Table */
+/* modal */
+.modalOverlay{position:fixed;inset:0;background:rgba(2,6,23,0.45);display:flex;align-items:center;justify-content:center;padding:20px;z-index:60}
+.modal{width:100%;max-width:920px;background:linear-gradient(180deg,#ffffff,#fbfeff);border-radius:14px;padding:18px;box-shadow:var(--shadow)}
+.modalHeader{display:flex;justify-content:space-between;align-items:center}
+.detailTitle{margin:0;font-size:18px;font-weight:700}
+.modalCloseButton{background:transparent;border:none;font-size:18px;cursor:pointer}
+.modalBody{margin-top:12px;max-height:64vh;overflow:auto;padding-right:8px}
+.detailField{margin:8px 0;font-size:14px}
+.detailFieldLabel{font-weight:700;color:var(--muted);margin-right:8px}
+.detailSectionTitle{margin-top:14px;margin-bottom:8px}
+.detailEmpty{color:var(--muted);padding:8px}
 
-.tableWrapper {
-  border-radius: 12px;
-  background-color: #ffffff;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-  padding: 12px;
-  overflow-x: auto;
-}
+/* enrollment cards */
+.detailEnrollList{display:flex;flex-direction:column;gap:12px;margin-top:8px}
+.enrollCard{background:linear-gradient(180deg,#ffffff,#fbfdff);padding:12px;border-radius:12px;border:1px solid rgba(15,23,42,0.03);box-shadow:0 6px 18px rgba(2,6,23,0.03)}
+.enrollTitle{font-weight:800;margin:0}
+.enrollSub{color:var(--muted);font-size:13px;margin:6px 0}
+.enrollMeta{display:flex;gap:12px;color:var(--muted);font-size:13px;margin-bottom:8px}
+.enrollProgressBar{background:rgba(15,23,42,0.04);height:10px;border-radius:999px;overflow:hidden}
+.enrollProgressInner{height:100%;background:linear-gradient(90deg,var(--primary),var(--accent));transition:width .45s cubic-bezier(.2,.8,.2,1)}
 
-.infoText {
-  margin: 12px 0;
-  font-size: 0.9rem;
-  color: #6b7280;
-}
+/* controls in header */
+.searchInput{flex:1;padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06);font-size:14px}
+.select{padding:9px;border-radius:10px;border:1px solid rgba(15,23,42,0.06);background:white}
 
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.9rem;
-}
+/* footer */
+.modalFooter{display:flex;justify-content:flex-end;margin-top:12px}
+.buttonSecondary{padding:9px 12px;border-radius:10px;border:1px solid rgba(15,23,42,0.06);background:var(--card);cursor:pointer}
 
-.th,
-.td {
-  padding: 10px 12px;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.th {
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: #6b7280;
-  background-color: #f9fafb;
-  text-align: left;
-}
-
-.thRight,
-.tdRight {
-  text-align: right;
-}
-
-.tr:hover td {
-  background-color: #f9fafb;
-}
-
-.cellMain {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.cellTitle {
-  font-weight: 600;
-}
-
-.cellSub {
-  font-size: 0.8rem;
-  color: #9ca3af;
-}
-
-/* Trạng thái */
-
-.badgeActive,
-.badgeInactive {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2px 8px;
-  border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-
-.badgeActive {
-  background-color: #ecfdf3;
-  color: #166534;
-  border: 1px solid #bbf7d0;
-}
-
-.badgeInactive {
-  background-color: #f9fafb;
-  color: #6b7280;
-  border: 1px solid #e5e7eb;
-}
-
-/* Action buttons */
-
-.actionButton {
-  border-radius: 6px;
-  padding: 4px 8px;
-  font-size: 12px;
-  border: none;
-  margin-left: 4px;
-  cursor: pointer;
-  transition: background-color 0.15s ease, transform 0.05s ease;
-}
-
-.actionButton:disabled {
-  opacity: 0.6;
-  cursor: default;
-}
-
-.actionView {
-  background: #e5e7eb;
-  color: #111827;
-}
-
-.actionView:hover:not(:disabled) {
-  background-color: #d4d4d8;
-  transform: translateY(-0.5px);
-}
-
-.actionEdit {
-  background: #2563eb;
-  color: #ffffff;
-}
-
-.actionEdit:hover:not(:disabled) {
-  background-color: #1d4ed8;
-  transform: translateY(-0.5px);
-}
-
-.actionDelete {
-  background: #b91c1c;
-  color: #ffffff;
-}
-
-.actionDelete:hover:not(:disabled) {
-  background-color: #991b1b;
-  transform: translateY(-0.5px);
-}
-
-/* Pagination */
-
-.pagination {
-  margin-top: 12px;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.85rem;
-  color: #6b7280;
-}
-
-.pageButton {
-  border-radius: 999px;
-  border: 1px solid #d1d5db;
-  padding: 4px 10px;
-  background-color: #ffffff;
-  font-size: 0.8rem;
-  cursor: pointer;
-  transition: background-color 0.15s ease, border-color 0.15s ease;
-}
-
-.pageButton:hover:not(:disabled) {
-  background-color: #f3f4f6;
-  border-color: #9ca3af;
-}
-
-.pageButton:disabled {
-  opacity: 0.5;
-  cursor: default;
-}
-
-/* Modal chi tiết */
-
-.modalOverlay {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(15, 23, 42, 0.35);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 50;
-}
-
-.modal {
-  width: 100%;
-  max-width: 640px;
-  background-color: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.25);
-  padding: 16px 18px 14px;
-  max-height: 90vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.modalHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 8px;
-}
-
-.modalCloseButton {
-  border: none;
-  background: transparent;
-  font-size: 1rem;
-  cursor: pointer;
-  color: #6b7280;
-  padding: 4px;
-  border-radius: 999px;
-  transition: background-color 0.15s ease, color 0.15s ease;
-}
-
-.modalCloseButton:hover {
-  background-color: #e5e7eb;
-  color: #111827;
-}
-
-.modalBody {
-  padding: 4px 2px 8px;
-  overflow-y: auto;
-}
-
-.modalFooter {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  margin-top: 8px;
-}
-
-.buttonSecondary {
-  border-radius: 999px;
-  border: 1px solid #d1d5db;
-  padding: 6px 14px;
-  font-size: 0.85rem;
-  background-color: #ffffff;
-  cursor: pointer;
-  transition: background-color 0.15s ease, border-color 0.15s ease;
-}
-
-.buttonSecondary:hover {
-  background-color: #f3f4f6;
-  border-color: #9ca3af;
-}
-
-/* Detail content inside modal */
-
-.detailEmpty {
-  margin: 0;
-  font-size: 0.9rem;
-  color: #6b7280;
-}
-
-.detailTitle {
-  margin: 0;
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
-.detailField {
-  margin: 4px 0;
-  font-size: 0.9rem;
-  color: #374151;
-}
-
-.detailFieldLabel {
-  font-weight: 600;
-  color: #111827;
-}
-
-.detailSectionTitle {
-  margin-top: 12px;
-  margin-bottom: 8px;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #111827;
-}
-
-.detailEnrollList {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  max-height: 260px;
-  overflow-y: auto;
-  padding-right: 4px;
-}
-
-.enrollCard {
-  border-radius: 10px;
-  border: 1px solid #e5e7eb;
-  padding: 8px 10px;
-  background-color: #f9fafb;
-}
-
-.enrollTitle {
-  margin: 0;
-  font-weight: 600;
-  font-size: 0.95rem;
-}
-
-.enrollSub {
-  margin: 0;
-  font-size: 0.8rem;
-  color: #9ca3af;
-}
-
-.enrollMeta {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 4px;
-  font-size: 0.8rem;
-  color: #4b5563;
-}
-
-.enrollProgressBar {
-  margin-top: 6px;
-  height: 6px;
-  background-color: #e5e7eb;
-  border-radius: 999px;
-  overflow: hidden;
-}
-
-.enrollProgressInner {
-  height: 100%;
-  border-radius: 999px;
-  background: linear-gradient(90deg, #22c55e, #16a34a);
+/* responsive */
+@media (max-width:920px){
+  .headerRow{flex-direction:column;align-items:flex-start;gap:8px}
+  .modal{max-width:98%;padding:14px}
+  .pagination{justify-content:center}
 }

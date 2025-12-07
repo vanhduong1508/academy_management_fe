@@ -1,5 +1,5 @@
 // src/pages/admin/CourseManagementPage.tsx
-import { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 import {
   getAdminCoursesPageApi,
@@ -34,11 +34,30 @@ interface FormState {
   price: string;
 }
 
+// --- Helpers ---------------------------------------------------------------
 const normalizeDateInput = (value?: string | null): string => {
   if (!value) return "";
-  return value.slice(0, 10); // "2025-12-04T00:00:00" -> "2025-12-04"
+  const s = String(value);
+  // Expecting ISO-like string: YYYY-MM-DD or YYYY-MM-DDTHH:mm:ss...
+  if (s.length >= 10) return s.slice(0, 10);
+  return s;
 };
 
+const parsePositiveNumber = (v: string): number | undefined => {
+  if (v === "" || v == null) return undefined;
+  // remove non-numeric except dot and minus (defensive)
+  const cleaned = String(v).replace(/[^0-9.-]/g, "");
+  const parsed = Number(cleaned);
+  if (!Number.isFinite(parsed)) return NaN;
+  return parsed;
+};
+
+const formatCurrency = (value?: number | null) => {
+  if (value == null) return "";
+  return new Intl.NumberFormat("vi-VN").format(value) + " VNĐ";
+};
+
+// --- Component -------------------------------------------------------------
 export default function CourseManagementPage() {
   const [page, setPage] = useState(0);
   const [size] = useState(10);
@@ -74,6 +93,10 @@ export default function CourseManagementPage() {
   const [structureLoading, setStructureLoading] = useState(false);
   const [structureError, setStructureError] = useState<string | null>(null);
 
+  const [searchText, setSearchText] = useState("");
+  const [filterStartDate, setFilterStartDate] = useState<string>("");
+  const [filterEndDate, setFilterEndDate] = useState<string>("");
+
   const fetchCourses = async () => {
     try {
       setLoading(true);
@@ -94,6 +117,36 @@ export default function CourseManagementPage() {
     fetchCourses();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const courses: CourseResponse[] = coursesPage?.content ?? [];
+  const filteredCourses = useMemo(() => {
+    const q = searchText.trim().toLowerCase();
+    return courses.filter((c) => {
+      // search by title, code, id
+      if (q) {
+        const hay = `${c.title ?? ""} ${c.code ?? ""} ${String(c.id)}`.toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+
+      // date range filters (compare only yyyy-mm-dd)
+      const s = normalizeDateInput(c.startDate);
+      const e = normalizeDateInput(c.endDate);
+
+      if (filterStartDate) {
+        // course must end on/after filterStartDate to be visible
+        if (e && e < filterStartDate) return false;
+      }
+      if (filterEndDate) {
+        // course must start on/before filterEndDate to be visible
+        if (s && s > filterEndDate) return false;
+      }
+
+      return true;
+    });
+  }, [courses, searchText, filterStartDate, filterEndDate]);
+
+  const totalPages = coursesPage?.totalPages ?? 1;
 
   const handleOpenCreate = () => {
     setModalMode("create");
@@ -152,8 +205,8 @@ export default function CourseManagementPage() {
       setSaving(true);
 
       if (modalMode === "create") {
-        const priceNumber = Number(form.price);
-        if (Number.isNaN(priceNumber) || priceNumber <= 0) {
+        const priceNumber = parsePositiveNumber(form.price);
+        if (Number.isNaN(priceNumber) || priceNumber === undefined || priceNumber <= 0) {
           alert("Vui lòng nhập giá khóa học hợp lệ (> 0)");
           setSaving(false);
           return;
@@ -162,18 +215,30 @@ export default function CourseManagementPage() {
         const payload: CourseCreatePayload = {
           title: form.title.trim(),
           content: trimmedContent,
-          price: priceNumber,
+          price: priceNumber as number,
           startDate: form.startDate,
           endDate: form.endDate,
         };
 
         await createCourseApi(payload);
       } else if (modalMode === "edit" && editingCourse) {
+        let priceNumber: number | undefined = undefined;
+        if (form.price !== "") {
+          const parsed = parsePositiveNumber(form.price);
+          if (Number.isNaN(parsed) || parsed === undefined || parsed <= 0) {
+            alert("Vui lòng nhập giá khóa học hợp lệ (> 0)");
+            setSaving(false);
+            return;
+          }
+          priceNumber = parsed;
+        }
+
         const payload: CourseUpdatePayload = {
           title: form.title.trim(),
           content: trimmedContent,
           startDate: form.startDate,
           endDate: form.endDate,
+          price: priceNumber,
         };
 
         await updateCourseApi(editingCourse.id, payload);
@@ -233,18 +298,6 @@ export default function CourseManagementPage() {
     setStructureError(null);
   };
 
-  const courses: CourseResponse[] = coursesPage?.content ?? [];
-  const totalPages = coursesPage?.totalPages ?? 1;
-
-  const renderStatusBadge = (course: CourseResponse) => {
-    const isActive = course.status === "ACTIVE";
-    const className = isActive
-      ? `${styles.badgeStatus} ${styles.badgeActive}`
-      : `${styles.badgeStatus} ${styles.badgeInactive}`;
-
-    return <span className={className}>{isActive ? "Đang mở" : "Đã ẩn"}</span>;
-  };
-
   const renderChapter = (chapter: ChapterResponse) => {
     const lessons: LessonResponse[] = chapter.lessons ?? [];
 
@@ -264,12 +317,6 @@ export default function CourseManagementPage() {
                   Bài {lesson.orderIndex}:
                 </span>
                 <span className={styles.lessonTitle}>{lesson.title}</span>
-                {lesson.urlVid && (
-                  <span className={styles.lessonDuration}>
-                    {" "}
-                    – Video: {lesson.urlVid}
-                  </span>
-                )}
               </li>
             ))}
           </ul>
@@ -290,6 +337,7 @@ export default function CourseManagementPage() {
             bài học) ở popup chi tiết.
           </p>
         </div>
+
         <div className={styles.actions}>
           <button
             className={`${styles.button} ${styles.buttonPrimary}`}
@@ -307,13 +355,44 @@ export default function CourseManagementPage() {
         </div>
       </div>
 
+      {/* SEARCH / FILTER UI */}
+      <div className={styles.filterRow}>
+        <input
+          className={styles.searchInput}
+          placeholder="Tìm theo tên, mã, id..."
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+        />
+
+
+        <label className={styles.smallLabel}>
+          Từ
+          <input
+            type="date"
+            className={styles.dateInput}
+            value={filterStartDate}
+            onChange={(e) => setFilterStartDate(e.target.value)}
+          />
+        </label>
+
+        <label className={styles.smallLabel}>
+          Đến
+          <input
+            type="date"
+            className={styles.dateInput}
+            value={filterEndDate}
+            onChange={(e) => setFilterEndDate(e.target.value)}
+          />
+        </label>
+      </div>
+
       {error && <p className={styles.error}>{error}</p>}
 
       <div className={styles.tableWrapper}>
         {loading && coursesPage == null ? (
           <p className={styles.infoText}>Đang tải danh sách khóa học...</p>
-        ) : courses.length === 0 ? (
-          <p className={styles.infoText}>Chưa có khóa học nào.</p>
+        ) : filteredCourses.length === 0 ? (
+          <p className={styles.infoText}>Không tìm thấy khóa học phù hợp.</p>
         ) : (
           <>
             <table className={styles.table}>
@@ -321,12 +400,11 @@ export default function CourseManagementPage() {
                 <tr>
                   <th className={styles.th}>Khóa học</th>
                   <th className={styles.th}>Thời gian</th>
-                  <th className={styles.th}>Trạng thái</th>
                   <th className={styles.thRight}>Thao tác</th>
                 </tr>
               </thead>
               <tbody>
-                {courses.map((course) => (
+                {filteredCourses.map((course) => (
                   <tr key={course.id} className={styles.tr}>
                     <td className={styles.td}>
                       <div className={styles.cellMain}>
@@ -347,7 +425,6 @@ export default function CourseManagementPage() {
                           : "?"}
                       </div>
                     </td>
-                    <td className={styles.td}>{renderStatusBadge(course)}</td>
                     <td className={styles.tdRight}>
                       <button
                         className={`${styles.actionButton} ${styles.actionView}`}
@@ -376,7 +453,7 @@ export default function CourseManagementPage() {
               </tbody>
             </table>
 
-            {/* PAGINATION */}
+            {/* PAGINATION (keeps original page control) */}
             <div className={styles.pagination}>
               <span>
                 Trang {page + 1}/{totalPages || 1}
@@ -420,6 +497,7 @@ export default function CourseManagementPage() {
                   value={form.title}
                   onChange={(e) => handleChangeField("title", e.target.value)}
                   placeholder="Ví dụ: Lập trình Java từ cơ bản đến nâng cao"
+                  disabled={saving}
                 />
               </div>
 
@@ -432,6 +510,7 @@ export default function CourseManagementPage() {
                     handleChangeField("description", e.target.value)
                   }
                   placeholder="Mô tả ngắn gọn nội dung và mục tiêu khóa học..."
+                  disabled={saving}
                 />
               </div>
 
@@ -445,6 +524,7 @@ export default function CourseManagementPage() {
                     onChange={(e) =>
                       handleChangeField("startDate", e.target.value)
                     }
+                    disabled={saving}
                   />
                 </div>
 
@@ -457,6 +537,7 @@ export default function CourseManagementPage() {
                     onChange={(e) =>
                       handleChangeField("endDate", e.target.value)
                     }
+                    disabled={saving}
                   />
                 </div>
               </div>
@@ -469,8 +550,25 @@ export default function CourseManagementPage() {
                   value={form.price}
                   onChange={(e) => handleChangeField("price", e.target.value)}
                   placeholder="Ví dụ: 1500000"
-                  disabled={modalMode === "edit"}
+                  min={0}
+                  step={1000}
+                  disabled={saving}
                 />
+
+                {/* Hiển thị helper / preview format */}
+                <div className={styles.helpRow}>
+                  <small className={styles.helpText}>
+                    {modalMode === "edit"
+                      ? "Để trống nếu không muốn thay đổi giá."
+                      : "Nhập giá lớn hơn 0."}
+                  </small>
+
+                  {form.price !== "" && (
+                    <small className={styles.helpText}>
+                      Xem trước: {formatCurrency(parsePositiveNumber(form.price) as number)}
+                    </small>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -515,10 +613,6 @@ export default function CourseManagementPage() {
                 <strong>ID:</strong> {viewingCourse.id}
               </p>
               <p>
-                <strong>Trạng thái:</strong>{" "}
-                {viewingCourse.status === "ACTIVE" ? "Đang mở" : "Đã ẩn"}
-              </p>
-              <p>
                 <strong>Thời gian:</strong>{" "}
                 {viewingCourse.startDate
                   ? normalizeDateInput(viewingCourse.startDate)
@@ -531,7 +625,7 @@ export default function CourseManagementPage() {
               <p>
                 <strong>Học phí:</strong>{" "}
                 {viewingCourse.price != null
-                  ? viewingCourse.price.toLocaleString("vi-VN") + " VNĐ"
+                  ? formatCurrency(viewingCourse.price)
                   : "Chưa đặt"}
               </p>
               <p>
