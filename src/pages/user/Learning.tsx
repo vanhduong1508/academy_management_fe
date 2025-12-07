@@ -2,29 +2,77 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { getCourseStructureApi } from "../../api/student/course.api";
-import { completeLessonApi, getEnrollmentProgressApi } from "../../api/student/progress.api";
-import type { CourseStructureResponse, LessonResponse } from "../../types/student/course.types";
+import {
+  completeLessonApi,
+  getEnrollmentProgressApi,
+} from "../../api/student/progress.api";
+
+import type {
+  CourseStructureResponse,
+  LessonResponse,
+} from "../../types/student/course.types";
 import type { EnrollmentProgressResponse } from "../../types/student/progress.types";
+
 import styles from "../../styles/user/UserProgress.module.css";
 
 const Learning = () => {
   const { courseId } = useParams<{ courseId: string }>();
   const location = useLocation();
   const navigate = useNavigate();
-  
-  // Get enrollmentId from location state (passed from MyCourses)
+
   const enrollmentId = location.state?.enrollmentId as number | undefined;
 
-  const [structure, setStructure] = useState<CourseStructureResponse | null>(null);
-  const [progress, setProgress] = useState<EnrollmentProgressResponse | null>(null);
-  const [currentLesson, setCurrentLesson] = useState<LessonResponse | null>(null);
+  const [structure, setStructure] =
+    useState<CourseStructureResponse | null>(null);
+  const [progress, setProgress] =
+    useState<EnrollmentProgressResponse | null>(null);
+  const [currentLesson, setCurrentLesson] =
+    useState<LessonResponse | null>(null);
+
   const [loading, setLoading] = useState(false);
   const [completing, setCompleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  /* ========================
+     UTIL - giống ADMIN
+  ========================= */
+  const extractYoutubeId = (url: string | null): string | null => {
+    if (!url) return null;
+    const trimmed = url.trim();
+
+    if (!trimmed.startsWith("http://") && !trimmed.startsWith("https://")) {
+      return trimmed; // đã là videoId
+    }
+
+    try {
+      const parsed = new URL(trimmed);
+
+      if (parsed.hostname === "youtu.be") {
+        return parsed.pathname.substring(1);
+      }
+
+      const v = parsed.searchParams.get("v");
+      if (v) return v;
+
+      const parts = parsed.pathname.split("/");
+      const embedIndex = parts.indexOf("embed");
+      if (embedIndex !== -1 && parts[embedIndex + 1]) {
+        return parts[embedIndex + 1];
+      }
+
+      return null;
+    } catch {
+      return null;
+    }
+  };
+
+  /* ========================
+        FETCH DATA
+  ========================= */
   useEffect(() => {
     if (courseId) {
-      fetchData(Number(courseId));
+      const id = Number(courseId);
+      fetchStructure(id);
       if (enrollmentId) {
         fetchProgress(enrollmentId);
       }
@@ -32,20 +80,20 @@ const Learning = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [courseId, enrollmentId]);
 
-  const fetchData = async (id: number) => {
+  const fetchStructure = async (id: number) => {
     try {
       setLoading(true);
       setError(null);
+
       const res = await getCourseStructureApi(id);
       setStructure(res);
-      
-      // Set first lesson as default
+
       if (res.chapters.length > 0 && res.chapters[0].lessons.length > 0) {
         setCurrentLesson(res.chapters[0].lessons[0]);
       }
     } catch (err: any) {
       console.error(err);
-      setError(err?.response?.data?.message || "Không tải được dữ liệu khóa học.");
+      setError(err?.response?.data?.message || "Không tải được khóa học.");
     } finally {
       setLoading(false);
     }
@@ -55,70 +103,57 @@ const Learning = () => {
     try {
       const res = await getEnrollmentProgressApi(enrollId);
       setProgress(res);
-    } catch (err: any) {
-      console.error("Could not fetch progress:", err);
+    } catch (err) {
+      console.error("Fetch progress error:", err);
     }
+  };
+
+  /* ==========================
+       LOCK LESSON LOGIC
+  =========================== */
+  const canAccessLesson = (lesson: LessonResponse): boolean => {
+    if (!structure || !progress) return false;
+
+    const allLessons: LessonResponse[] = [];
+
+    structure.chapters.forEach((ch) =>
+      ch.lessons.forEach((l) => allLessons.push(l))
+    );
+
+    const index = allLessons.findIndex((l) => l.id === lesson.id);
+    if (index === -1) return false;
+
+    const unlockedCount = progress.completedVideoLessons + 1;
+
+    return index < unlockedCount;
   };
 
   const handleLessonComplete = async () => {
     if (!currentLesson || !enrollmentId) {
-      alert("Thông tin không đủ để hoàn thành bài học.");
+      alert("Thiếu thông tin để hoàn thành bài học.");
       return;
     }
 
     try {
       setCompleting(true);
       await completeLessonApi(currentLesson.id, { enrollmentId });
-      alert("Đã hoàn thành bài học!");
-      
-      // Refresh progress
+
+      alert("✅ Hoàn thành bài học!");
+
       await fetchProgress(enrollmentId);
-      
-      // Find next lesson
-      if (structure) {
-        let found = false;
-        for (const chapter of structure.chapters) {
-          for (let i = 0; i < chapter.lessons.length; i++) {
-            if (chapter.lessons[i].id === currentLesson.id && i < chapter.lessons.length - 1) {
-              setCurrentLesson(chapter.lessons[i + 1]);
-              found = true;
-              break;
-            }
-          }
-          if (found) break;
-        }
-        // If no next lesson in current chapter, go to first lesson of next chapter
-        if (!found) {
-          const currentChapterIndex = structure.chapters.findIndex((ch) =>
-            ch.lessons.some((l) => l.id === currentLesson.id)
-          );
-          if (currentChapterIndex >= 0 && currentChapterIndex < structure.chapters.length - 1) {
-            const nextChapter = structure.chapters[currentChapterIndex + 1];
-            if (nextChapter.lessons.length > 0) {
-              setCurrentLesson(nextChapter.lessons[0]);
-            }
-          }
-        }
-      }
     } catch (err: any) {
       console.error(err);
-      alert(err?.response?.data?.message || "Hoàn thành bài học thất bại.");
+      alert(err?.response?.data?.message || "Lỗi khi hoàn thành bài.");
     } finally {
       setCompleting(false);
     }
   };
 
-  const extractYoutubeId = (url: string | null): string | null => {
-    if (!url) return null;
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-    const match = url.match(regExp);
-    return match && match[2].length === 11 ? match[2] : null;
-  };
-
+  /* ========================= */
   if (loading) {
     return (
       <div className={styles.page}>
-        <p className={styles.infoText}>Đang tải dữ liệu khóa học...</p>
+        <p>Đang tải khóa học...</p>
       </div>
     );
   }
@@ -126,12 +161,9 @@ const Learning = () => {
   if (error || !structure || !currentLesson) {
     return (
       <div className={styles.page}>
-        <p className={styles.error}>{error || "Không tìm thấy khóa học."}</p>
-        <button
-          className={styles.button}
-          onClick={() => navigate("/student/my-courses")}
-        >
-          Quay lại khóa học của tôi
+        <p>{error || "Không tìm thấy dữ liệu."}</p>
+        <button onClick={() => navigate("/student/my-courses")}>
+          Quay lại
         </button>
       </div>
     );
@@ -140,13 +172,8 @@ const Learning = () => {
   if (!enrollmentId) {
     return (
       <div className={styles.page}>
-        <p className={styles.error}>
-          Không tìm thấy thông tin đăng ký. Vui lòng quay lại và chọn khóa học từ danh sách.
-        </p>
-        <button
-          className={styles.button}
-          onClick={() => navigate("/student/my-courses")}
-        >
+        <p>Không tìm thấy thông tin đăng ký.</p>
+        <button onClick={() => navigate("/student/my-courses")}>
           Quay lại
         </button>
       </div>
@@ -158,6 +185,7 @@ const Learning = () => {
 
   return (
     <div className={styles.learningContainer}>
+      {/* HEADER */}
       <div className={styles.learningHeader}>
         <button
           className={styles.backButton}
@@ -165,7 +193,9 @@ const Learning = () => {
         >
           ← Quay lại
         </button>
+
         <h2 className={styles.courseTitle}>{structure.title}</h2>
+
         {progress && (
           <div className={styles.progressInfo}>
             <span>Tiến độ: {progressPercentage.toFixed(1)}%</span>
@@ -179,41 +209,44 @@ const Learning = () => {
         )}
       </div>
 
+      {/* CONTENT */}
       <div className={styles.learningContent}>
-        {/* Video/Content Area */}
+        {/* VIDEO AREA */}
         <div className={styles.videoArea}>
-          {currentLesson.type === "VIDEO" && youtubeId ? (
-            <iframe
-              width="100%"
-              height="100%"
-              src={`https://www.youtube.com/embed/${youtubeId}`}
-              title={currentLesson.title}
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              className={styles.videoPlayer}
-            />
-          ) : currentLesson.type === "VIDEO" && currentLesson.urlVid ? (
-            <iframe
-              width="100%"
-              height="100%"
-              src={currentLesson.urlVid}
-              title={currentLesson.title}
-              frameBorder="0"
-              allowFullScreen
-              className={styles.videoPlayer}
-            />
+          {currentLesson.type === "VIDEO" &&
+          canAccessLesson(currentLesson) ? (
+            youtubeId ? (
+              <iframe
+                width="100%"
+                height="100%"
+                src={`https://www.youtube.com/embed/${youtubeId}`}
+                title={currentLesson.title}
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className={styles.videoPlayer}
+              />
+            ) : (
+              <div className={styles.contentPlaceholder}>
+                <p>Không tìm được video hợp lệ.</p>
+              </div>
+            )
+          ) : currentLesson.type === "VIDEO" ? (
+            <div className={styles.contentPlaceholder}>
+              <p>🔒 Bài học này đang bị khóa</p>
+            </div>
           ) : (
             <div className={styles.contentPlaceholder}>
-              <p>Nội dung dạng: {currentLesson.type}</p>
+              <p>Nội dung tài liệu</p>
               {currentLesson.urlVid && (
-                <a href={currentLesson.urlVid} target="_blank" rel="noopener noreferrer">
-                  Mở liên kết
-                </a>
+                <pre style={{ whiteSpace: "pre-wrap" }}>
+                  {currentLesson.urlVid}
+                </pre>
               )}
             </div>
           )}
 
+          {/* TITLE + COMPLETE BUTTON */}
           <div className={styles.lessonHeader}>
             <h3 className={styles.lessonTitle}>{currentLesson.title}</h3>
             <button
@@ -226,37 +259,49 @@ const Learning = () => {
           </div>
         </div>
 
-        {/* Sidebar with lessons */}
+        {/* SIDEBAR */}
         <div className={styles.lessonsSidebar}>
           <h3 className={styles.sidebarTitle}>Nội dung khóa học</h3>
-          <div className={styles.chaptersList}>
-            {structure.chapters.map((chapter, chapterIndex) => (
-              <div key={chapter.id} className={styles.chapterBlock}>
-                <div className={styles.chapterHeader}>
-                  Chương {chapterIndex + 1}: {chapter.title}
-                </div>
-                <ul className={styles.lessonsList}>
-                  {chapter.lessons.map((lesson, lessonIndex) => (
+
+          {structure.chapters.map((chapter, chapterIndex) => (
+            <div key={chapter.id} className={styles.chapterBlock}>
+              <div className={styles.chapterHeader}>
+                Chương {chapterIndex + 1}: {chapter.title}
+              </div>
+
+              <ul className={styles.lessonsList}>
+                {chapter.lessons.map((lesson, lessonIndex) => {
+                  const locked = !canAccessLesson(lesson);
+
+                  return (
                     <li
                       key={lesson.id}
                       className={`${styles.lessonItem} ${
-                        currentLesson.id === lesson.id ? styles.lessonItemActive : ""
-                      }`}
-                      onClick={() => setCurrentLesson(lesson)}
+                        currentLesson.id === lesson.id
+                          ? styles.lessonItemActive
+                          : ""
+                      } ${locked ? styles.lessonItemLocked : ""}`}
+                      onClick={() => {
+                        if (!locked) {
+                          setCurrentLesson(lesson);
+                        }
+                      }}
                     >
                       <span className={styles.lessonIndex}>
                         Bài {lessonIndex + 1}:
                       </span>
-                      <span className={styles.lessonTitleText}>{lesson.title}</span>
-                      {lesson.type && (
-                        <span className={styles.lessonType}>{lesson.type}</span>
-                      )}
+                      <span className={styles.lessonTitleText}>
+                        {lesson.title}
+                      </span>
+                      <span className={styles.lessonType}>
+                        {lesson.type}
+                      </span>
                     </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
+                  );
+                })}
+              </ul>
+            </div>
+          ))}
         </div>
       </div>
     </div>
