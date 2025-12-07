@@ -1,4 +1,3 @@
-// Match backend CertificateResponse structure
 export interface CertificateResponse {
   enrollmentId: number;
   studentId: number;

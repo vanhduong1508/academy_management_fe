@@ -1,4 +1,3 @@
-// src/pages/user/Profile.tsx
 import { useEffect, useState } from "react";
 import { getMyProfileApi, updateMyProfileApi } from "../../api/student/student.api";
 import type { StudentResponse, UpdateStudentPayload } from "../../types/student/student.types";

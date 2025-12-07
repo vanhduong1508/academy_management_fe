@@ -1,9 +1,8 @@
-// Match backend StudentResponse structure
 export interface StudentResponse {
   id: number;
   studentCode: string;
   fullName: string;
-  dob: string | null; // LocalDate
+  dob: string | null; 
   hometown: string | null;
   province: string | null;
   status: string;
@@ -13,7 +12,6 @@ export interface StudentResponse {
   updatedAt: string;
 }
 
-// Match backend StudentUpdateRequest structure
 export interface UpdateStudentPayload {
   fullName: string;
   dob: string; // LocalDate format: YYYY-MM-DD
