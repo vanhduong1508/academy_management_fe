@@ -9,11 +9,9 @@ export * from "./student/progress.types";
 export * from "./student/certificate.types";
 export * from "./student/student.types";
 
-// Admin types giữ nguyên
 export * from "./admin/admin-enrollment.types";
 export * from "./admin/admin-order.types";
 
-// Pagination
 export interface PaginationMeta {
   page: number;
   size: number;
@@ -21,7 +19,6 @@ export interface PaginationMeta {
   totalPages: number;
 }
 
-// CourseFormModal
 export interface CourseFormPayload {
   title: string;
   startDate: string;

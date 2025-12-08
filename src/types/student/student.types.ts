@@ -14,7 +14,7 @@ export interface StudentResponse {
 
 export interface UpdateStudentPayload {
   fullName: string;
-  dob: string; // LocalDate format: YYYY-MM-DD
+  dob: string; 
   hometown?: string | null;
   province?: string | null;
 }

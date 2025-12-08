@@ -87,7 +87,7 @@ export default function Orders() {
 
   const handleShowPaymentInfo = (order?: OrderResponse) => {
     if (order) setSelectedOrder(order);
-    else setSelectedOrder(null); // Reset nếu xem thông tin chung
+    else setSelectedOrder(null); 
     setShowPaymentModal(true);
   };
 
@@ -256,19 +256,18 @@ export default function Orders() {
             </div>
 
             <div className={styles.modalFooter}>
-              {/* Nút Xác nhận thanh toán (Mới thêm vào) */}
               {selectedOrder && selectedOrder.approvalStatus === "PENDING" && (
                 <button
                   onClick={() => handleRequestPaymentApproval(selectedOrder.id)}
                   disabled={perOrderLoadingId === selectedOrder.id}
                   style={{
-                    backgroundColor: "#28a745", // Màu xanh lá (hoặc thay bằng màu brand của bạn)
+                    backgroundColor: "#000", 
                     color: "white",
                     padding: "10px 20px",
                     border: "none",
                     borderRadius: "4px",
                     cursor: "pointer",
-                    marginRight: "10px", // Khoảng cách với nút Đóng
+                    marginRight: "10px", 
                     fontSize: "14px",
                     fontWeight: "500",
                     opacity: perOrderLoadingId === selectedOrder.id ? 0.7 : 1,

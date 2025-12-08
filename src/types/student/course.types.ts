@@ -1,4 +1,3 @@
-// Match backend CourseResponse structure
 export interface CourseResponse {
   id: number;
   code: string;
@@ -12,27 +11,23 @@ export interface CourseResponse {
   updatedAt: string;
 }
 
-// For backward compatibility
 export type CourseSimple = CourseResponse;
 export type CourseDetail = CourseResponse;
 export type CourseDetailResponse = CourseResponse;
 
-// Lesson structure matching backend LessonResponse
 export interface LessonResponse {
   id: number;
   title: string;
-  type: string; // "VIDEO" | "QUIZ" | "DOCUMENT" | ...
+  type: string; 
   urlVid: string | null;
 }
 
-// Chapter structure matching backend ChapterResponse
 export interface ChapterResponse {
   id: number;
   title: string;
   lessons: LessonResponse[];
 }
 
-// Course structure matching backend CourseStructureResponse
 export interface CourseStructureResponse {
   id: number;
   title: string;
@@ -40,13 +35,11 @@ export interface CourseStructureResponse {
   chapters: ChapterResponse[];
 }
 
-// Pagination response matching Spring Page<T>
-// Spring Page serializes with field 'number' for current page
 export interface CoursePageResponse {
   content: CourseResponse[];
   totalElements: number;
   totalPages: number;
-  number: number; // current page number (0-indexed)
+  number: number; 
   size: number;
   first?: boolean;
   last?: boolean;

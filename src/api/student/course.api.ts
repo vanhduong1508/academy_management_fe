@@ -7,26 +7,18 @@ import type {
 
 export const getAllCoursesApi = async (
   page = 0,
-  size = 5
+  size = 10
 ): Promise<CoursePageResponse> => {
-  const res = await axiosInstance.get<CoursePageResponse>("/courses", {
-    params: { page, size },
-  });
+  const res = await axiosInstance.get("/courses", { params: { page, size } });
   return res.data;
 };
 
-export const getCourseByIdApi = async (
-  id: number
-): Promise<CourseDetailResponse> => {
-  const res = await axiosInstance.get<CourseDetailResponse>(`/courses/${id}`);
+export const getCourseByIdApi = async (id: number): Promise<CourseDetailResponse> => {
+  const res = await axiosInstance.get(`/courses/${id}`);
   return res.data;
 };
 
-export const getCourseStructureApi = async (
-  id: number
-): Promise<CourseStructureResponse> => {
-  const res = await axiosInstance.get<CourseStructureResponse>(
-    `/courses/${id}/structure`
-  );
+export const getCourseStructureApi = async (id: number): Promise<CourseStructureResponse> => {
+  const res = await axiosInstance.get(`/courses/${id}/structure`);
   return res.data;
 };

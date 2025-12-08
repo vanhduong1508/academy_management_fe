@@ -32,15 +32,12 @@ const Learning = () => {
   const [completing, setCompleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  /* ========================
-     UTIL - giống ADMIN
-  ========================= */
   const extractYoutubeId = (url: string | null): string | null => {
     if (!url) return null;
     const trimmed = url.trim();
 
     if (!trimmed.startsWith("http://") && !trimmed.startsWith("https://")) {
-      return trimmed; // đã là videoId
+      return trimmed; 
     }
 
     try {
@@ -65,9 +62,6 @@ const Learning = () => {
     }
   };
 
-  /* ========================
-        FETCH DATA
-  ========================= */
   useEffect(() => {
     if (courseId) {
       const id = Number(courseId);
@@ -76,7 +70,6 @@ const Learning = () => {
         fetchProgress(enrollmentId);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [courseId, enrollmentId]);
 
   const fetchStructure = async (id: number) => {
@@ -107,9 +100,6 @@ const Learning = () => {
     }
   };
 
-  /* ==========================
-       LOCK LESSON LOGIC
-  =========================== */
   const canAccessLesson = (lesson: LessonResponse): boolean => {
     if (!structure || !progress) return false;
 
@@ -148,7 +138,6 @@ const Learning = () => {
     }
   };
 
-  /* ========================= */
   if (loading) {
     return (
       <div className={styles.page}>
@@ -184,7 +173,6 @@ const Learning = () => {
 
   return (
     <div className={styles.learningContainer}>
-      {/* HEADER */}
       <div className={styles.learningHeader}>
         <button
           className={styles.backButton}
@@ -208,9 +196,7 @@ const Learning = () => {
         )}
       </div>
 
-      {/* CONTENT */}
       <div className={styles.learningContent}>
-        {/* VIDEO AREA */}
         <div className={styles.videoArea}>
           {currentLesson.type === "VIDEO" &&
           canAccessLesson(currentLesson) ? (
@@ -245,7 +231,6 @@ const Learning = () => {
             </div>
           )}
 
-          {/* TITLE + COMPLETE BUTTON */}
           <div className={styles.lessonHeader}>
             <h3 className={styles.lessonTitle}>{currentLesson.title}</h3>
             <button
@@ -258,7 +243,6 @@ const Learning = () => {
           </div>
         </div>
 
-        {/* SIDEBAR */}
         <div className={styles.lessonsSidebar}>
           <h3 className={styles.sidebarTitle}>Nội dung khóa học</h3>
 
