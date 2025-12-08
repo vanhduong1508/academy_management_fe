@@ -1,32 +1,47 @@
-// src/api/admin/admin-statistics.api.ts
-import { api } from "../index";
+import { axiosInstance } from "../index";
 
 import type {
   LocationStat,
   CourseYearStatistic,
 } from "../../types/admin/admin-statistics.types";
 
-// BE: @RequestMapping("/api/admin/statistics")
+import type {
+  StudentLearningHistory,
+} from "../../types/admin/admin-enrollment.types";
 
-// GET /api/admin/statistics/by-hometown
-export async function getStudentStatsByHometownApi(): Promise<LocationStat[]> {
-  const res = await api.get("/admin/statistics/by-hometown");
+
+export const getStudentStatsByHometownApi = async (): Promise<LocationStat[]> => {
+  const res = await axiosInstance.get<LocationStat[]>(
+    "/admin/statistics/by-hometown"
+  );
   return res.data;
-}
+};
 
-// GET /api/admin/statistics/students/by-province
-export async function getStudentStatsByProvinceApi(): Promise<LocationStat[]> {
-  const res = await api.get("/admin/statistics/students/by-province");
+export const getStudentStatsByProvinceApi = async (): Promise<LocationStat[]> => {
+  const res = await axiosInstance.get<LocationStat[]>(
+    "/admin/statistics/students/by-province"
+  );
   return res.data;
-}
+};
 
-// GET /api/admin/statistics/courses/by-year?year=2025
-export async function getCourseStatisticsByYearApi(
+
+export const getCourseStatisticsByYearApi = async (
   year: number
-): Promise<CourseYearStatistic[]> {
-  const res = await api.get("/admin/statistics/courses/by-year", {
-    params: { year },
-  });
-  // BE trả List<CourseYearStatisticResponse> → res.data là array
+): Promise<CourseYearStatistic[]> => {
+  const res = await axiosInstance.get<CourseYearStatistic[]>(
+    "/admin/statistics/courses/by-year",
+    {
+      params: { year },
+    }
+  );
   return res.data;
-}
+};
+
+export const getStudentLearningHistoryApi = async (
+  studentId: number
+): Promise<StudentLearningHistory> => {
+  const res = await axiosInstance.get<StudentLearningHistory>(
+    `/admin/students/${studentId}/learning-history`
+  );
+  return res.data;
+};

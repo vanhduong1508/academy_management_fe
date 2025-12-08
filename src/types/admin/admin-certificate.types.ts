@@ -20,7 +20,6 @@ export interface CertificateResponse {
   result: CertificateResult;
 }
 
-// payload cho POST /api/admin/certificates/enrollment/{id}
 export interface IssueCertificatePayload {
   result: CertificateResult;
 }
