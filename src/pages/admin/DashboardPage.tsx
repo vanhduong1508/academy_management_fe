@@ -82,6 +82,8 @@ export default function DashboardPage() {
   const recentCourses = coursesPage?.content.slice(0, 5) ?? [];
   const recentCertificates = certificates.slice(0, 10);
 
+  
+
   const courseStats = buildCourseStats(allProgress);
 
   return (
@@ -186,7 +188,6 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          {/* CHỨNG CHỈ MỚI CẤP GẦN ĐÂY */}
           <div className={styles.card}>
             <div className={styles.cardHeader}>
               <h3 className={styles.cardTitle}>Chứng chỉ mới cấp gần đây</h3>
@@ -209,7 +210,6 @@ export default function DashboardPage() {
                   <tbody>
                     {recentCertificates.map((c) => (
                       <tr key={c.id}>
-                        {/* bỏ c.code vì type không có */}
                         <td>{c.certificateCode || c.id}</td>
                         <td>{c.studentName}</td>
                         <td>{c.courseTitle}</td>
@@ -229,7 +229,6 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      {/* ====== HÀNG 3: TÌNH HÌNH HỌC TẬP (THEO KHÓA) ====== */}
       <section className={styles.section}>
         <h3 className={styles.sectionTitle}>Tình hình hoàn thành theo khóa học</h3>
         <div className={styles.card}>
@@ -249,7 +248,6 @@ export default function DashboardPage() {
                   {courseStats.map((c) => (
                     <tr key={c.courseId}>
                       <td>{c.courseTitle}</td>
-
                       <td>{c.inProgress}</td>
                       <td>{c.completed}</td>
                     </tr>
@@ -276,14 +274,6 @@ export default function DashboardPage() {
                     <li key={s.id} className={styles.simpleListItem}>
                       <div className={styles.simpleListMain}>
                         {s.fullName || s.name}
-                      </div>
-                      <div className={styles.simpleListSub}>
-                        {(s.code || s.studentCode) && (
-                          <>
-                            {s.code || s.studentCode}
-                          </>
-                        )}
-                        {s.email}
                       </div>
                     </li>
                   ))}

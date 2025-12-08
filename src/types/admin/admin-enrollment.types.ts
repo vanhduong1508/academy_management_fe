@@ -1,17 +1,10 @@
-// src/types/admin/admin-enrollment.types.ts
-
-// ===== ENUMS =====
 export type EnrollmentStatus = "ENROLLED" | "COMPLETED" | "NOT_COMPLETED";
 
-export type CompletionResult =
-  | "NOT_REVIEWED"
-  | "PASSED"
-  | "FAILED";
+export type CompletionResult =  "NOT_REVIEWED" | "PASSED"  | "FAILED";
 
-export type CertificateResult = "PASS" | "FAIL"; // từ CertificateResult enum
+export type CertificateResult = "PASS" | "FAIL"; 
 
-// ===== EnrollmentResponse =====
-// (trả về ở các API enrollments dùng dto.response.EnrollmentResponse)
+
 export interface Enrollment {
   id: number;
 
@@ -26,17 +19,15 @@ export interface Enrollment {
   status: EnrollmentStatus;
   progressPercentage: number | null;
 
-  enrolledAt: string;   // LocalDateTime
+  enrolledAt: string;   
   createdAt: string;
   updatedAt: string;
 
-  // info certificate nếu đã có
-  result: CertificateResult | null; // PASSED / FAILED or null
+  result: CertificateResult | null; 
   certificateCode: string | null;
 }
 
-// ===== EnrollmentCompletionResponse =====
-// (dto.enrollment.EnrollmentCompletionResponse)
+
 export interface EnrollmentCompletion {
   enrollmentId: number;
 
@@ -52,8 +43,6 @@ export interface EnrollmentCompletion {
   completedAt: string | null;
 }
 
-// ===== EnrollmentProgressResponse =====
-// (dto.response.EnrollmentProgressResponse)
 export interface EnrollmentProgress {
   enrollmentId: number;
 
@@ -67,10 +56,27 @@ export interface EnrollmentProgress {
 
   completedVideoLessons: number;
   totalVideoLessons: number;
-  progressPercentage: number; // ✅ TRÙNG BE
+  progressPercentage: number; 
 
   eligibleForCertificate: boolean;
   completionResult: CompletionResult | null;
 
   enrolledAt: string | null;
+}
+
+export interface StudentLearningHistory {
+  studentId: number;
+  studentCode: string;
+  studentName: string;
+
+  totalEnrollments: number;
+  completedEnrollments: number;
+
+  certificateCount: number;
+  passedCount: number;
+  failedCount: number;
+
+  averageProgress: number;
+
+  enrollments: Enrollment[];
 }

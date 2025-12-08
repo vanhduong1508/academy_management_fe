@@ -65,20 +65,19 @@ export interface CourseStructureResponse {
   chapters: ChapterResponse[];   
 }
 
-// ============= PAYLOAD CHAPTER / LESSON =============
 export interface ChapterCreatePayload {
   title: string;
 }
 
 export interface LessonCreatePayload {
   title: string;
-  type: string;          // VIDEO / QUIZ / DOCUMENT...
+  type: string;         
   urlVid: string | null;
 }
 
 export interface LessonUpdatePayload {
   title: string;
-  type: string;          // VIDEO / QUIZ / DOCUMENT...
+  type: string;        
   urlVid: string | null;
 }
 

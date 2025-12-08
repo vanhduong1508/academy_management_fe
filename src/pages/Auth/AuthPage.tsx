@@ -17,7 +17,6 @@ const AuthPage: React.FC = () => {
     location.pathname === "/register"
   );
 
-  // --- LOGIN ---
   const [loginUsername, setLoginUsername] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [loginLoading, setLoginLoading] = useState(false);
@@ -29,16 +28,14 @@ const AuthPage: React.FC = () => {
     setLoginLoading(true);
 
     try {
-      // Gửi username + password cho cả admin & student
       const authResponse = await loginApi({
         username: loginUsername,
         password: loginPassword,
       });
 
-      // Lưu token + user vào redux (map trong auth.slice)
       dispatch(setCredentials(authResponse));
 
-      // LẤY ROLE TỪ authResponse.user.role (theo BE: AuthResponse { token, user, studentId })
+
       const redirectPath =
         authResponse.user.role === "ADMIN" ? "/admin" : "/student";
 
@@ -52,7 +49,6 @@ const AuthPage: React.FC = () => {
     }
   };
 
-  // --- REGISTER STUDENT ---
   const [registerForm, setRegisterForm] = useState({
     fullName: "",
     username: "",
@@ -80,8 +76,6 @@ const AuthPage: React.FC = () => {
 
     try {
       const { username, email, password, fullName, phone, dob } = registerForm;
-
-      // BE StudentRegisterRequest: username, email, password, fullName, phone, dob, ...
       await registerStudentApi({
         username,
         email,
@@ -224,7 +218,6 @@ const AuthPage: React.FC = () => {
           </form>
         </div>
 
-        {/* --- LOGIN (ADMIN + STUDENT) --- */}
         <div
           className={`${styles["form-container"]} ${styles["sign-in-container"]}`}
         >

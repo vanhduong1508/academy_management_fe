@@ -125,16 +125,14 @@ export default function CourseManagementPage() {
         if (!hay.includes(q)) return false;
       }
 
-      // date range filters (compare only yyyy-mm-dd)
       const s = normalizeDateInput(c.startDate);
       const e = normalizeDateInput(c.endDate);
 
       if (filterStartDate) {
-        // course must end on/after filterStartDate to be visible
         if (e && e < filterStartDate) return false;
       }
       if (filterEndDate) {
-        // course must start on/before filterEndDate to be visible
+
         if (s && s > filterEndDate) return false;
       }
 
@@ -265,7 +263,6 @@ export default function CourseManagementPage() {
     }
   };
 
-  // ====== XEM CHI TIẾT: GỌI getCourseStructureApi ======
   const handleOpenView = async (course: CourseResponse) => {
     setViewingCourse(course);
     setIsViewModalOpen(true);
@@ -351,7 +348,6 @@ export default function CourseManagementPage() {
         </div>
       </div>
 
-      {/* SEARCH / FILTER UI */}
       <div className={styles.filterRow}>
         <input
           className={styles.searchInput}
@@ -426,7 +422,7 @@ export default function CourseManagementPage() {
                         className={`${styles.actionButton} ${styles.actionView}`}
                         onClick={() => handleOpenView(course)}
                       >
-                        👁 Xem
+                        Xem
                       </button>
 
                       <button
@@ -449,7 +445,6 @@ export default function CourseManagementPage() {
               </tbody>
             </table>
 
-            {/* PAGINATION (keeps original page control) */}
             <div className={styles.pagination}>
               <span>
                 Trang {page + 1}/{totalPages || 1}
@@ -477,7 +472,6 @@ export default function CourseManagementPage() {
         )}
       </div>
 
-      {/* MODAL CREATE/EDIT */}
       {isModalOpen && (
         <div className={styles.modalOverlay}>
           <div className={styles.modal}>
@@ -551,7 +545,6 @@ export default function CourseManagementPage() {
                   disabled={saving}
                 />
 
-                {/* Hiển thị helper / preview format */}
                 <div className={styles.helpRow}>
                   <small className={styles.helpText}>
                     {modalMode === "edit"
@@ -592,7 +585,6 @@ export default function CourseManagementPage() {
         </div>
       )}
 
-      {/* MODAL VIEW COURSE DETAIL + STRUCTURE */}
       {isViewModalOpen && viewingCourse && (
         <div className={styles.modalOverlay}>
           <div className={styles.modal}>
