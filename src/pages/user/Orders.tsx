@@ -53,37 +53,44 @@ export default function Orders() {
   };
 
   const renderStatusBadge = (order: OrderResponse) => {
-    const paymentStatus = order.paymentStatus;
-    const approvalStatus = order.approvalStatus;
-
-    if (approvalStatus === "REJECTED") {
-      return (
-        <span className={`${styles.badge} ${styles.badgeRejected}`}>Đã từ chối</span>
-      );
-    }
-
-    if (approvalStatus === "APPROVED" && paymentStatus === "PAID") {
-      return (
-        <span className={`${styles.badge} ${styles.badgeSuccess}`}>Thanh toán thành công</span>
-      );
-    }
-
-    if (approvalStatus === "APPROVED" && paymentStatus !== "PAID") {
-      return (
-        <span className={`${styles.badge} ${styles.badgeInfo}`}>Đã duyệt - chờ xác nhận thanh toán</span>
-      );
-    }
-
-    if (paymentStatus === "FAILED") {
-      return (
-        <span className={`${styles.badge} ${styles.badgeFailed}`}>Thanh toán thất bại</span>
-      );
-    }
-
+  const { paymentStatus, approvalStatus } = order;
+  if (paymentStatus === "FAILED") {
     return (
-      <span className={`${styles.badge} ${styles.badgePending}`}>Đang chờ xác nhận </span>
+      <span className={`${styles.badge} ${styles.badgeFailed}`}>
+        Thanh toán thất bại
+      </span>
     );
-  };
+  }
+
+  if (approvalStatus === "REJECTED") {
+    return (
+      <span className={`${styles.badge} ${styles.badgeRejected}`}>
+        Đã từ chối
+      </span>
+    );
+  }
+
+  if (approvalStatus === "APPROVED" && paymentStatus === "PAID") {
+    return (
+      <span className={`${styles.badge} ${styles.badgeSuccess}`}>
+        Thanh toán thành công
+      </span>
+    );
+  }
+  if (approvalStatus === "APPROVED" && paymentStatus !== "PAID") {
+    return (
+      <span className={`${styles.badge} ${styles.badgeInfo}`}>
+        Thanh toán thành công
+      </span>
+    );
+  }
+  return (
+    <span className={`${styles.badge} ${styles.badgePending}`}>
+      Đang chờ xác nhận
+    </span>
+  );
+};
+
 
   const handleShowPaymentInfo = (order?: OrderResponse) => {
     if (order) setSelectedOrder(order);
