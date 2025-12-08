@@ -273,8 +273,8 @@ export default function Orders() {
                     opacity: perOrderLoadingId === selectedOrder.id ? 0.7 : 1,
                     transition: "background 0.3s ease"
                   }}
-                  onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#218838")}
-                  onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#28a745")}
+                  onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#000")}
+                  onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#000")}
                 >
                   {perOrderLoadingId === selectedOrder.id ? "Đang xử lý..." : "Xác nhận đã chuyển khoản"}
                 </button>

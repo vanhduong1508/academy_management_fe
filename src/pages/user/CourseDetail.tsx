@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getCourseByIdApi, getCourseStructureApi } from "../../api/student/course.api";
-import { createOrderApi } from "../../api/student/order.api";
+import { createOrderApi, getMyOrdersApi } from "../../api/student/order.api";
 import type { CourseResponse, CourseStructureResponse } from "../../types/student/course.types";
 import styles from "../../styles/user/UserCourseDetail.module.css";
 
@@ -16,6 +16,7 @@ const CourseDetail = () => {
   const [loading, setLoading] = useState(false);
   const [creatingOrder, setCreatingOrder] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [alreadyEnrolled, setAlreadyEnrolled] = useState(false);
 
   const fetchCourseData = useCallback(async () => {
     if (!id) return;
@@ -25,13 +26,17 @@ const CourseDetail = () => {
       setError(null);
 
       const courseId = Number(id);
-      const [courseData, structureData] = await Promise.all([
+
+      const [courseData, structureData, orders] = await Promise.all([
         getCourseByIdApi(courseId),
         getCourseStructureApi(courseId).catch(() => null),
+        getMyOrdersApi()
       ]);
 
       setCourse(courseData);
       setStructure(structureData);
+
+      setAlreadyEnrolled(orders.some((o) => o.courseId === courseId));
     } catch (err: any) {
       setError(err?.response?.data?.message || "Không tải được thông tin khóa học.");
     } finally {
@@ -44,20 +49,28 @@ const CourseDetail = () => {
   }, [fetchCourseData]);
 
   const handleEnroll = async () => {
-    if (!course || !id) return;
+    if (!course || !id) {
+      alert("Không thể đăng ký.");
+      return;
+    }
+
+    if (alreadyEnrolled) {
+      alert("Bạn đã đăng ký khóa học này rồi!");
+      return;
+    }
 
     if (course.status !== "ACTIVE") {
       alert("Khóa học hiện không khả dụng.");
       return;
     }
 
-    if (!window.confirm(`Bạn có muốn đăng ký khóa học "${course.title}"?`)) return;
+    const confirmEnroll = window.confirm(`Bạn có muốn đăng ký khóa học "${course.title}"?`);
+    if (!confirmEnroll) return;
 
     setCreatingOrder(true);
 
     try {
       await createOrderApi({ courseId: Number(id) });
-
       alert("Đăng ký thành công! Vui lòng kiểm tra đơn hàng.");
       navigate("/student/orders");
     } catch (err: any) {
@@ -102,24 +115,24 @@ const CourseDetail = () => {
             <p className={styles.description}>{course.content || "Chưa có mô tả."}</p>
           </section>
 
-          {structure?.chapters && structure.chapters.length > 0 && (
+          {structure?.chapters?.length ? (
             <section className={styles.section}>
               <h2 className={styles.sectionTitle}>Lộ trình học</h2>
 
               <div className={styles.structureWrapper}>
-                {structure?.chapters?.map((chapter, idx) => (
+                {structure.chapters.map((chapter, idx) => (
                   <div key={chapter.id} className={styles.chapterBlock}>
                     <div className={styles.chapterHeader}>
                       <span>Chương {idx + 1}</span>
                       <span>{chapter.title}</span>
                     </div>
 
-                    {chapter.lessons?.length > 0 ? (
+                    {chapter.lessons?.length ? (
                       <ul className={styles.lessonList}>
                         {chapter.lessons.map((lesson, lIdx) => (
                           <li key={lesson.id} className={styles.lessonItem}>
-                            <span>Bài {lIdx + 1}: </span>
-                            <span>{lesson.title}</span>
+                            <span>Bài {lIdx + 1}:</span>
+                            <span> {lesson.title}</span>
                             {lesson.type && <span> – {lesson.type}</span>}
                           </li>
                         ))}
@@ -131,7 +144,7 @@ const CourseDetail = () => {
                 ))}
               </div>
             </section>
-          )}
+          ) : null}
         </div>
 
         <aside className={styles.sidebar}>
@@ -142,8 +155,7 @@ const CourseDetail = () => {
 
           <div className={styles.infoCard}>
             <p>
-              <strong>Thời gian:</strong> {normalizeDate(course.startDate)} →
-              {normalizeDate(course.endDate)}
+              <strong>Thời gian:</strong> {normalizeDate(course.startDate)} → {normalizeDate(course.endDate)}
             </p>
             <p>
               <strong>Trạng thái:</strong> {course.status === "ACTIVE" ? "Đang mở" : "Đã ẩn"}
@@ -152,12 +164,16 @@ const CourseDetail = () => {
 
           <button
             className={`${styles.enrollButton} ${
-              course.status !== "ACTIVE" ? styles.enrollButtonDisabled : ""
+              course.status !== "ACTIVE" || alreadyEnrolled ? styles.enrollButtonDisabled : ""
             }`}
             onClick={handleEnroll}
-            disabled={creatingOrder || course.status !== "ACTIVE"}
+            disabled={creatingOrder || course.status !== "ACTIVE" || alreadyEnrolled}
           >
-            {creatingOrder ? "Đang xử lý..." : "Đăng ký ngay"}
+            {alreadyEnrolled
+              ? "Đã đăng ký"
+              : creatingOrder
+              ? "Đang xử lý..."
+              : "Đăng ký ngay"}
           </button>
         </aside>
       </div>
