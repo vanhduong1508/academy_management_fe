@@ -8,6 +8,12 @@ import Button from "../../components/common/Button/Button";
 import Input from "../../components/common/Input/Input";
 import styles from "../../styles/AuthStyle.module.css";
 
+
+const USERNAME_REGEX = /^[a-zA-Z0-9_-]+$/; 
+const PHONE_REGEX = /^0\d{9}$/; 
+const GMAIL_REGEX = /^[A-Za-z0-9._%+-]+@gmail\.com$/i;
+const PASSWORD_REGEX = /^.{8,}$/;
+
 const AuthPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -17,6 +23,7 @@ const AuthPage: React.FC = () => {
     location.pathname === "/register"
   );
 
+  /* ---------- Login state ---------- */
   const [loginUsername, setLoginUsername] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [loginLoading, setLoginLoading] = useState(false);
@@ -35,9 +42,8 @@ const AuthPage: React.FC = () => {
 
       dispatch(setCredentials(authResponse));
 
-
       const redirectPath =
-        authResponse.user.role === "ADMIN" ? "/admin" : "/student";
+        authResponse.user?.role === "ADMIN" ? "/admin" : "/student";
 
       navigate(redirectPath, { replace: true });
     } catch (err: any) {
@@ -49,6 +55,7 @@ const AuthPage: React.FC = () => {
     }
   };
 
+  /* ---------- Register state ---------- */
   const [registerForm, setRegisterForm] = useState({
     fullName: "",
     username: "",
@@ -67,28 +74,76 @@ const AuthPage: React.FC = () => {
     const { name, value } = e.target;
     setRegisterForm((prev) => ({ ...prev, [name]: value }));
     setRegError("");
+    setRegSuccess("");
+  };
+
+  // Kiểm tra phía client theo ràng buộc BE
+  const validateRegister = () => {
+    const { username, email, password, phone, dob } = registerForm;
+
+    if (!username || !USERNAME_REGEX.test(username)) {
+      return "Username chỉ được chứa chữ, số, '_' hoặc '-', không có khoảng trắng hoặc dấu.";
+    }
+
+    if (!phone || !PHONE_REGEX.test(phone)) {
+      return "Số điện thoại phải bắt đầu bằng 0 và có đúng 10 chữ số.";
+    }
+
+    if (!email || !GMAIL_REGEX.test(email)) {
+      return "Email phải là địa chỉ Gmail hợp lệ (kết thúc bằng @gmail.com).";
+    }
+
+    if (!dob) {
+      return "Vui lòng chọn ngày sinh.";
+    }
+
+    if (!password || !PASSWORD_REGEX.test(password)) {
+      return "Mật khẩu phải có ít nhất 8 ký tự.";
+    }
+
+    return ""; // hợp lệ
   };
 
   const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setRegError("");
+    setRegSuccess("");
+
+    const clientValidationError = validateRegister();
+    if (clientValidationError) {
+      setRegError(clientValidationError);
+      return;
+    }
+
     setRegLoading(true);
 
     try {
-      const { username, email, password, fullName, phone, dob } = registerForm;
-      await registerStudentApi({
+      const {
         username,
         email,
         password,
         fullName,
         phone,
         dob,
-        hometown: registerForm.hometown,
-        province: registerForm.province,
+        hometown,
+        province,
+      } = registerForm;
+
+    
+      await registerStudentApi({
+        username,
+        email,
+        password,
+        fullName,
+        phone,
+        dob, 
+        hometown,
+        province,
       });
 
       setRegSuccess("Đăng ký thành công! Vui lòng đăng nhập.");
 
+      // reset form và chuyển sang panel đăng nhập
       setTimeout(() => {
         setIsRightPanelActive(false);
         setRegSuccess("");
@@ -102,8 +157,9 @@ const AuthPage: React.FC = () => {
           hometown: "",
           province: "",
         });
-      }, 1500);
+      }, 1200);
     } catch (err: any) {
+      // lấy message chi tiết từ BE (nếu có)
       const errorMsg =
         err?.response?.data?.message || "Đăng ký thất bại. Vui lòng thử lại!";
       setRegError(errorMsg);
@@ -170,6 +226,7 @@ const AuthPage: React.FC = () => {
                 id="reg_phone"
                 value={registerForm.phone}
                 onChange={handleRegisterChange}
+                required
               />
             </div>
 
@@ -182,6 +239,16 @@ const AuthPage: React.FC = () => {
                 value={registerForm.dob}
                 onChange={handleRegisterChange}
                 required
+              />
+            </div>
+
+            <div className={styles["input-group"]}>
+              <Input
+                placeholder="Quê quán"
+                name="hometown"
+                id="reg_hometown"
+                value={registerForm.hometown}
+                onChange={handleRegisterChange}
               />
             </div>
 
@@ -247,11 +314,6 @@ const AuthPage: React.FC = () => {
                 required
               />
             </div>
-
-            <a href="#" className="forgot-pass">
-              Quên mật khẩu?
-            </a>
-
             {loginError && (
               <div className={styles["msg-error"]}>{loginError}</div>
             )}
@@ -267,7 +329,7 @@ const AuthPage: React.FC = () => {
           </form>
         </div>
 
-        {/* --- overlay --- */}
+
         <div className={styles["overlay-container"]}>
           <div className={styles.overlay}>
             <div

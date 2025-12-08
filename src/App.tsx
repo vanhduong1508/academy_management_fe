@@ -26,15 +26,16 @@ import NotFoundPage from "./pages/public/NotFoundPage";
 // Auth
 import AuthPage from "./pages/Auth/AuthPage";
 
-const App: React.FC = () => {
+const App= () => {
   return (
+    
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<AuthPage />} />
       <Route path="/register" element={<AuthPage />} />
 
 
-      <Route path="/*" element={<AdminRoutes />} />
+      <Route path="/admin/*" element={<AdminRoutes />} />
 
 
       <Route path="/student" element={<StudentLayout />}>
@@ -47,6 +48,7 @@ const App: React.FC = () => {
         <Route path="profile" element={<Profile />} />
         <Route path="certificates" element={<MyCertificates />} />
       </Route>
+
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
