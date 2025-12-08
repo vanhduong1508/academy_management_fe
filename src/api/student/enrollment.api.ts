@@ -25,7 +25,7 @@ export const getAllEnrollmentsApi = async (
   return res.data;
 };
 
-export const getMyEnrollmentsApi = async (): Promise<EnrollmentResponse[]> => {
+export const  getMyEnrollmentsApi = async (): Promise<EnrollmentResponse[]> => {
   const res =
     await axiosInstance.get<EnrollmentResponse[]>("/enrollments/me");
   return res.data;

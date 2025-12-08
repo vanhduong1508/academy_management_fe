@@ -2,14 +2,13 @@ export interface OrderPayload {
   courseId: number;
 }
 
-// Match backend OrderResponse structure
 export interface OrderResponse {
   id: number;
   studentId: number;
   studentName: string;
   courseId: number;
   courseTitle: string;
-  totalAmount: number | null;
+  price: number | null;
   paymentStatus: "PENDING" | "PAID" | "FAILED";
   approvalStatus: "PENDING" | "APPROVED" | "REJECTED";
   createdAt: string;
@@ -18,7 +17,6 @@ export interface OrderResponse {
   transferNote: string | null;
 }
 
-// Match backend PaymentInfoResponse structure
 export interface PaymentInfoResponse {
   bankAccountNumber: string;
   bankAccountName: string;

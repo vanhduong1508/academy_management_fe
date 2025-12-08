@@ -1,9 +1,7 @@
-// Match backend LessonCompleteRequest
 export interface CompleteLessonPayload {
   enrollmentId: number;
 }
 
-// Match backend LessonProgressResponse
 export interface LessonProgressResponse {
   enrollmentId: number;
   lessonId: number;
@@ -13,7 +11,6 @@ export interface LessonProgressResponse {
   completedAt: string | null;
 }
 
-// Match backend EnrollmentProgressResponse
 export interface EnrollmentProgressResponse {
   enrollmentId: number;
   studentId: number;

@@ -5,7 +5,7 @@ export const getMyCertificatesApi = async (): Promise<CertificateResponse[]> => 
   const res =
     await axiosInstance.get<CertificateResponse[]>("/student/me/certificates");
   return res.data;
-};
+}; 
 
 export const getCertificateDetailApi = async (
   enrollmentId: number
