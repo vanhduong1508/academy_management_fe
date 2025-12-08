@@ -152,7 +152,7 @@ export default function OrderManagementPage() {
                     ? `Course #${order.courseId}`
                     : "Không rõ khóa học");
 
-                const amount = order.totalAmount ?? 0;
+                const amount = order.price ?? 0;
 
                 return (
                   <tr key={order.id} className={styles.tr}>

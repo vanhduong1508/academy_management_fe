@@ -14,11 +14,12 @@ import AdminStatisticsPage from "./AdminStatisticsPage";
 const AdminRoutes = () => {
   return (
     <Routes>
-      <Route path="/admin" element={<AdminLayout />}>
+      <Route path="/" element={<AdminLayout />}>
         <Route index element={<DashboardPage />} />
         <Route path="courses" element={<CourseManagementPage />} />
         <Route path="students" element={<StudentManagementPage />} />
         <Route path="enrollments" element={<EnrollmentAdminPage />} />
+        <Route path="course-structure" element={<CourseManagementPage />} />
         <Route path="orders" element={<OrderManagementPage />} />
         <Route path="certificates" element={<CertificateManagementPage />} />
         <Route path="statistics" element={<AdminStatisticsPage />} />

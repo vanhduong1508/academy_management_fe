@@ -82,6 +82,20 @@ export default function DashboardPage() {
   const recentCourses = coursesPage?.content.slice(0, 5) ?? [];
   const recentCertificates = certificates.slice(0, 10);
 
+    const renderResultVi = (result: string | null) => {
+    switch (result) {
+      case "PASS":
+      case "PASSED":
+        return "Đạt";
+      case "FAIL":
+      case "FAILED":
+        return "Không đạt";
+      case "NOT_REVIEWED":
+        return "Chưa duyệt";
+      default:
+        return "-";
+    }
+  };
   
 
   const courseStats = buildCourseStats(allProgress);
@@ -172,9 +186,9 @@ export default function DashboardPage() {
                     {pendingOrders.map((order: any) => (
                       <tr key={order.id}>
                         <td>{order.code || order.id}</td>
-                        <td>{order.studentName || order.student?.fullName}</td>
-                        <td>{order.courseTitle || order.course?.title}</td>
-                        <td>{order.totalAmount ?? order.amount}</td>
+                        <td>{order.studentName}</td>
+                        <td>{order.courseTitle}</td>
+                        <td>{order.price}</td>
                         <td>
                           {order.createdAt
                             ? new Date(order.createdAt).toLocaleString()
@@ -213,7 +227,7 @@ export default function DashboardPage() {
                         <td>{c.certificateCode || c.id}</td>
                         <td>{c.studentName}</td>
                         <td>{c.courseTitle}</td>
-                        <td>{c.result}</td>
+                        <td>{renderResultVi(c.result)}</td>
                         <td>
                           {c.issuedAt
                             ? new Date(c.issuedAt).toLocaleString()
