@@ -13,3 +13,4 @@ export interface CourseYearStatistic {
   passedCount: number;
   failedCount: number;
 }
+

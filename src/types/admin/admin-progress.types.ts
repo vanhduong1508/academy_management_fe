@@ -20,7 +20,7 @@ export interface EnrollmentProgressResponse {
   completionResult: CompletionResult | null;
   eligibleForCertificate: boolean;
 
-  enrolledAt: string | null;      // LocalDateTime -> string
+  enrolledAt: string | null;     
 }
 
 // alias cho các import cũ

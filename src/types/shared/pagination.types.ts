@@ -1,5 +1,6 @@
 // src/types/shared/pagination.types.ts
 export interface PageResponse<T> {
+  length: any;
   content: T[];
   totalElements: number;
   totalPages: number;
