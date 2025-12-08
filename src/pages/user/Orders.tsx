@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
-import { getMyOrdersApi, getPaymentInfoApi } from "../../api/student/order.api";
+import { getMyOrdersApi, getPaymentInfoApi, requestPaymentApprovalApi } from "../../api/student/order.api";
 import type { OrderResponse, PaymentInfoResponse } from "../../types/student/order.types";
 import styles from "../../styles/user/UserPaymentHistory.module.css";
 
 const normalizeDate = (dateString: string | null): string => {
   if (!dateString) return "-";
-  return new Date(dateString).toLocaleString("vi-VN");
+  const d = new Date(dateString);
+  if (isNaN(d.getTime())) return "-";
+  return d.toLocaleString("vi-VN");
 };
 
 export default function Orders() {
@@ -14,8 +16,10 @@ export default function Orders() {
   const [loading, setLoading] = useState(false);
   const [loadingPaymentInfo, setLoadingPaymentInfo] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<OrderResponse | null>(null);
+  const [perOrderLoadingId, setPerOrderLoadingId] = useState<number | null>(null);
 
   useEffect(() => {
     fetchOrders();
@@ -49,50 +53,61 @@ export default function Orders() {
   };
 
   const renderStatusBadge = (order: OrderResponse) => {
-    const { paymentStatus, approvalStatus } = order;
-
-    if (approvalStatus === "APPROVED") {
-      return (
-        <span className={`${styles.badge} ${styles.badgeSuccess}`}>
-          Thanh toán thành công
-        </span>
-      );
-    }
-
-    if (approvalStatus === "PENDING") {
-      return (
-        <span className={`${styles.badge} ${styles.badgePending}`}>
-          Đang xử lý
-        </span>
-      );
-    }
+    const paymentStatus = order.paymentStatus;
+    const approvalStatus = order.approvalStatus;
 
     if (approvalStatus === "REJECTED") {
       return (
-        <span className={`${styles.badge} ${styles.badgeRejected}`}>
-          Đã từ chối
-        </span>
+        <span className={`${styles.badge} ${styles.badgeRejected}`}>Đã từ chối</span>
+      );
+    }
+
+    if (approvalStatus === "APPROVED" && paymentStatus === "PAID") {
+      return (
+        <span className={`${styles.badge} ${styles.badgeSuccess}`}>Thanh toán thành công</span>
+      );
+    }
+
+    if (approvalStatus === "APPROVED" && paymentStatus !== "PAID") {
+      return (
+        <span className={`${styles.badge} ${styles.badgeInfo}`}>Đã duyệt - chờ xác nhận thanh toán</span>
       );
     }
 
     if (paymentStatus === "FAILED") {
       return (
-        <span className={`${styles.badge} ${styles.badgeFailed}`}>
-          Thanh toán thất bại
-        </span>
+        <span className={`${styles.badge} ${styles.badgeFailed}`}>Thanh toán thất bại</span>
       );
     }
 
     return (
-      <span className={`${styles.badge} ${styles.badgePending}`}>
-        Đang xử lý
-      </span>
+      <span className={`${styles.badge} ${styles.badgePending}`}>Đang chờ xác nhận </span>
     );
   };
 
   const handleShowPaymentInfo = (order?: OrderResponse) => {
     if (order) setSelectedOrder(order);
+    else setSelectedOrder(null); // Reset nếu xem thông tin chung
     setShowPaymentModal(true);
+  };
+
+  const handleRequestPaymentApproval = async (orderId: number) => {
+    if (!window.confirm("Bạn xác nhận rằng bạn đã chuyển khoản đúng số tiền và ghi chính xác nội dung chuyển khoản?")) return;
+    try {
+      setPerOrderLoadingId(orderId);
+      await requestPaymentApprovalApi(orderId);
+      alert("Yêu cầu xác nhận thanh toán đã được gửi đến quản trị viên.");
+      
+      // Đóng modal và tải lại danh sách sau khi thành công
+      setShowPaymentModal(false); 
+      setSelectedOrder(null);
+      await fetchOrders();
+    } catch (err: any) {
+      console.error(err);
+      alert(err?.response?.data?.message || "Không gửi được yêu cầu xác nhận.");
+    } finally {
+      setPerOrderLoadingId(null);
+    }
   };
 
   return (
@@ -100,23 +115,15 @@ export default function Orders() {
       <div className={styles.headerRow}>
         <div>
           <h2 className={styles.title}>Lịch sử đơn hàng</h2>
-          <p className={styles.subtitle}>
-            Xem danh sách các đơn hàng và trạng thái thanh toán của bạn.
-          </p>
+          <p className={styles.subtitle}>Xem danh sách các đơn hàng và trạng thái thanh toán của bạn.</p>
         </div>
+
         <div className={styles.actions}>
-          <button
-            className={styles.button}
-            onClick={() => handleShowPaymentInfo()}
-            disabled={loadingPaymentInfo}
-          >
+          <button className={styles.button} onClick={() => handleShowPaymentInfo()} disabled={loadingPaymentInfo}>
             Thông tin thanh toán chung
           </button>
-          <button
-            className={styles.button}
-            onClick={fetchOrders}
-            disabled={loading}
-          >
+
+          <button className={styles.button} onClick={fetchOrders} disabled={loading}>
             {loading ? "Đang tải..." : "Tải lại"}
           </button>
         </div>
@@ -138,46 +145,53 @@ export default function Orders() {
                 <th className={styles.th}>Số tiền</th>
                 <th className={styles.th}>Trạng thái</th>
                 <th className={styles.th}>Ngày tạo</th>
-                <th className={styles.th}>Thanh toán</th>
+                <th className={styles.th}>Hành động</th>
               </tr>
             </thead>
+
             <tbody>
-              {orders.map((order) => (
-                <tr key={order.id} className={styles.tr}>
-                  <td className={styles.td}>
-                    <div className={styles.cellMain}>
-                      <span className={styles.cellTitle}>#{order.id}</span>
-                      <span className={styles.cellSub}>
-                        {normalizeDate(order.createdAt)}
+              {orders.map((order) => {
+                const priceNumber = order.price != null ? Number(order.price) : null;
+                
+                return (
+                  <tr key={order.id} className={styles.tr}>
+                    <td className={styles.td}>
+                      <div className={styles.cellMain}>
+                        <span className={styles.cellTitle}>#{order.id}</span>
+                        <span className={styles.cellSub}>{normalizeDate(order.createdAt)}</span>
+                      </div>
+                    </td>
+
+                    <td className={styles.td}>
+                      <span className={styles.cellTitle}>{order.courseTitle}</span>
+                    </td>
+
+                    <td className={styles.td}>
+                      <span className={styles.amount}>
+                        {priceNumber != null ? `${priceNumber.toLocaleString("vi-VN")} VNĐ` : "-"}
                       </span>
-                    </div>
-                  </td>
-                  <td className={styles.td}>
-                    <span className={styles.cellTitle}>{order.courseTitle}</span>
-                  </td>
-                  <td className={styles.td}>
-                    <span className={styles.amount}>
-                      {order.price != null
-                        ? `${order.price.toLocaleString("vi-VN")} VNĐ`
-                        : "-"}
-                    </span>
-                  </td>
-                  <td className={styles.td}>{renderStatusBadge(order)}</td>
-                  <td className={styles.td}>
-                    <span className={styles.cellSub}>
-                      {normalizeDate(order.createdAt)}
-                    </span>
-                  </td>
-                  <td className={styles.td}>
-                    <button
-                      className={styles.button}
-                      onClick={() => handleShowPaymentInfo(order)}
-                    >
-                      Thanh toán
-                    </button>
-                  </td>
-                </tr>
-              ))}
+                    </td>
+
+                    <td className={styles.td}>{renderStatusBadge(order)}</td>
+
+                    <td className={styles.td}>
+                      <span className={styles.cellSub}>{normalizeDate(order.createdAt)}</span>
+                    </td>
+
+                    <td className={styles.td}>
+                      {order.approvalStatus === "PENDING" ? (
+                        <button className={styles.button} onClick={() => handleShowPaymentInfo(order)}>
+                          Thanh toán
+                        </button>
+                      ) : order.approvalStatus === "APPROVED" ? (
+                        <span className={styles.successText}>Đã thanh toán</span>
+                      ) : (
+                        <span className={styles.failText}>Đã từ chối</span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         )}
@@ -189,17 +203,25 @@ export default function Orders() {
           <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
             <h3 className={styles.modalTitle}>Thông tin thanh toán</h3>
             <div className={styles.modalBody}>
+
               {selectedOrder && (
                 <div className={styles.paymentOrder}>
+                  <p>
+                    <strong>Mã đơn hàng:</strong> #{selectedOrder.id}
+                  </p>
                   <p>
                     <strong>Khóa học:</strong> {selectedOrder.courseTitle}
                   </p>
                   <p>
-                    <strong>Số tiền phải trả:</strong>{" "}
-                    {selectedOrder.price?.toLocaleString("vi-VN")} VNĐ
+                    <strong>Số tiền phải trả:</strong> {Number(selectedOrder.price || 0).toLocaleString("vi-VN")} VNĐ
+                  </p>
+                  <p>
+                    <strong>Nội dung chuyển khoản:</strong>{" "}
+                    <span className={styles.transferNote}>{selectedOrder.transferNote ?? `ORDER-${selectedOrder.id}`}</span>
                   </p>
                 </div>
               )}
+
               {loadingPaymentInfo ? (
                 <p className={styles.infoText}>Đang tải thông tin...</p>
               ) : paymentInfo ? (
@@ -208,33 +230,58 @@ export default function Orders() {
                     <span className={styles.paymentLabel}>Ngân hàng:</span>
                     <span>{paymentInfo.bankName}</span>
                   </div>
+
                   <div className={styles.paymentRow}>
                     <span className={styles.paymentLabel}>Tên tài khoản:</span>
                     <span>{paymentInfo.bankAccountName}</span>
                   </div>
+
                   <div className={styles.paymentRow}>
                     <span className={styles.paymentLabel}>Số tài khoản:</span>
                     <span className={styles.accountNumber}>{paymentInfo.bankAccountNumber}</span>
                   </div>
+
                   {paymentInfo.transferGuide && (
                     <div className={styles.paymentRow}>
                       <span className={styles.paymentLabel}>Hướng dẫn:</span>
                       <span>{paymentInfo.transferGuide}</span>
                     </div>
                   )}
-                  <p className={styles.paymentNote}>
-                    Vui lòng chuyển khoản đúng số tiền và ghi chú mã đơn hàng khi thanh toán.
-                  </p>
+
+                  <p className={styles.paymentNote}>Vui lòng chuyển khoản đúng số tiền và ghi chính xác nội dung chuyển khoản.</p>
                 </div>
               ) : (
                 <p className={styles.error}>Không thể tải thông tin thanh toán.</p>
               )}
             </div>
+
             <div className={styles.modalFooter}>
-              <button
-                className={styles.button}
-                onClick={() => setShowPaymentModal(false)}
-              >
+              {/* Nút Xác nhận thanh toán (Mới thêm vào) */}
+              {selectedOrder && selectedOrder.approvalStatus === "PENDING" && (
+                <button
+                  onClick={() => handleRequestPaymentApproval(selectedOrder.id)}
+                  disabled={perOrderLoadingId === selectedOrder.id}
+                  style={{
+                    backgroundColor: "#28a745", // Màu xanh lá (hoặc thay bằng màu brand của bạn)
+                    color: "white",
+                    padding: "10px 20px",
+                    border: "none",
+                    borderRadius: "4px",
+                    cursor: "pointer",
+                    marginRight: "10px", // Khoảng cách với nút Đóng
+                    fontSize: "14px",
+                    fontWeight: "500",
+                    opacity: perOrderLoadingId === selectedOrder.id ? 0.7 : 1,
+                    transition: "background 0.3s ease"
+                  }}
+                  onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#218838")}
+                  onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#28a745")}
+                >
+                  {perOrderLoadingId === selectedOrder.id ? "Đang xử lý..." : "Xác nhận đã chuyển khoản"}
+                </button>
+              )}
+
+              <button className={styles.button} onClick={() => setShowPaymentModal(false)}>
                 Đóng
               </button>
             </div>

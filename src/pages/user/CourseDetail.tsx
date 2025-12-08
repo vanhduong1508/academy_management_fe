@@ -1,7 +1,7 @@
+
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getCourseByIdApi, getCourseStructureApi } from "../../api/student/course.api";
-import { createOrderApi } from "../../api/student/order.api";
 import type { CourseResponse, CourseStructureResponse } from "../../types/student/course.types";
 import styles from "../../styles/user/UserCourseDetail.module.css";
 
@@ -32,7 +32,7 @@ const CourseDetail = () => {
       setError(null);
       const [courseData, structureData] = await Promise.all([
         getCourseByIdApi(courseId),
-        getCourseStructureApi(courseId).catch(() => null), // Structure có thể không có
+        getCourseStructureApi(courseId).catch(() => null),
       ]);
       setCourse(courseData);
       setStructure(structureData);
@@ -56,14 +56,12 @@ const CourseDetail = () => {
       return;
     }
 
+    // NEW BEHAVIOR: do NOT call createOrderApi; just inform user and redirect to orders page
+    setCreatingOrder(true);
     try {
-      setCreatingOrder(true);
-      await createOrderApi({ courseId: Number(id) });
-      alert("Đăng ký thành công! Vui lòng thanh toán để kích hoạt khóa học.");
+      // show a success popup (we mimic immediate UX) then redirect to orders
+      alert("Đăng ký thành công! Yêu cầu xét duyệt sẽ được tạo khi bạn xác nhận đã thanh toán trên trang Đơn hàng.");
       navigate("/student/orders");
-    } catch (err: any) {
-      console.error(err);
-      alert(err?.response?.data?.message || "Đăng ký thất bại. Vui lòng thử lại.");
     } finally {
       setCreatingOrder(false);
     }
@@ -81,24 +79,14 @@ const CourseDetail = () => {
     return (
       <div className={styles.page}>
         <p className={styles.error}>{error || "Không tìm thấy khóa học."}</p>
-        <button
-          className={styles.button}
-          onClick={() => navigate("/student/courses")}
-        >
-          Quay lại danh sách
-        </button>
+        <button className={styles.button} onClick={() => navigate("/student/courses")}>Quay lại danh sách</button>
       </div>
     );
   }
 
   return (
     <div className={styles.page}>
-      <button
-        className={styles.backButton}
-        onClick={() => navigate("/student/courses")}
-      >
-        ← Quay lại
-      </button>
+      <button className={styles.backButton} onClick={() => navigate("/student/courses")}>← Quay lại</button>
 
       <div className={styles.header}>
         <h1 className={styles.title}>{course.title}</h1>
@@ -109,9 +97,7 @@ const CourseDetail = () => {
         <div className={styles.mainContent}>
           <div className={styles.section}>
             <h2 className={styles.sectionTitle}>Mô tả khóa học</h2>
-            <p className={styles.description}>
-              {course.content || "Chưa có mô tả chi tiết."}
-            </p>
+            <p className={styles.description}>{course.content || "Chưa có mô tả chi tiết."}</p>
           </div>
 
           {structure && structure.chapters.length > 0 && (
@@ -121,25 +107,16 @@ const CourseDetail = () => {
                 {structure.chapters.map((chapter, chapterIndex) => (
                   <div key={chapter.id} className={styles.chapterBlock}>
                     <div className={styles.chapterHeader}>
-                      <span className={styles.chapterIndex}>
-                        Chương {chapterIndex + 1}
-                      </span>
+                      <span className={styles.chapterIndex}>Chương {chapterIndex + 1}</span>
                       <span className={styles.chapterTitle}>{chapter.title}</span>
                     </div>
                     {chapter.lessons.length > 0 ? (
                       <ul className={styles.lessonList}>
                         {chapter.lessons.map((lesson, lessonIndex) => (
                           <li key={lesson.id} className={styles.lessonItem}>
-                            <span className={styles.lessonIndex}>
-                              Bài {lessonIndex + 1}:
-                            </span>
+                            <span className={styles.lessonIndex}>Bài {lessonIndex + 1}:</span>
                             <span className={styles.lessonTitle}>{lesson.title}</span>
-                            {lesson.type && (
-                              <span className={styles.lessonType}>
-                                {" "}
-                                – {lesson.type}
-                              </span>
-                            )}
+                            {lesson.type && <span className={styles.lessonType}> – {lesson.type}</span>}
                           </li>
                         ))}
                       </ul>
@@ -156,31 +133,22 @@ const CourseDetail = () => {
         <div className={styles.sidebar}>
           <div className={styles.priceCard}>
             <p className={styles.priceLabel}>Học phí</p>
-            <p className={styles.priceValue}>
-              {course.price?.toLocaleString("vi-VN")} VNĐ
-            </p>
+            <p className={styles.priceValue}>{Number(course.price || 0).toLocaleString("vi-VN")} VNĐ</p>
           </div>
 
           <div className={styles.infoCard}>
             <p className={styles.infoRow}>
               <span className={styles.infoLabel}>Thời gian:</span>
-              <span>
-                {normalizeDateInput(course.startDate)} →{" "}
-                {normalizeDateInput(course.endDate)}
-              </span>
+              <span>{normalizeDateInput(course.startDate)} → {normalizeDateInput(course.endDate)}</span>
             </p>
             <p className={styles.infoRow}>
               <span className={styles.infoLabel}>Trạng thái:</span>
-              <span>
-                {course.status === "ACTIVE" ? "Đang mở" : "Đã ẩn"}
-              </span>
+              <span>{course.status === "ACTIVE" ? "Đang mở" : "Đã ẩn"}</span>
             </p>
           </div>
 
           <button
-            className={`${styles.enrollButton} ${
-              course.status !== "ACTIVE" ? styles.enrollButtonDisabled : ""
-            }`}
+            className={`${styles.enrollButton} ${course.status !== "ACTIVE" ? styles.enrollButtonDisabled : ""}`}
             onClick={handleEnroll}
             disabled={creatingOrder || course.status !== "ACTIVE"}
           >
@@ -193,3 +161,4 @@ const CourseDetail = () => {
 };
 
 export default CourseDetail;
+
