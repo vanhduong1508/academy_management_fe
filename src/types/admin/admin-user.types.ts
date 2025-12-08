@@ -7,7 +7,7 @@ export interface AdminUser {
   username: string;
   fullName: string | null;
   isActive: boolean;
-  createdAt: string; // BE đang để String
+  createdAt: string; 
 }
 
 export interface UserSimple {

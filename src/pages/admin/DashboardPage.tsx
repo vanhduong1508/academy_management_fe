@@ -106,9 +106,6 @@ export default function DashboardPage() {
       <div className={styles.headerRow}>
         <div>
           <h2 className={styles.title}>Tổng quan hệ thống</h2>
-          <p className={styles.subtitle}>
-            Học viên, khóa học, tiến độ học tập, chứng chỉ và đơn hàng chờ duyệt.
-          </p>
         </div>
         <button
           onClick={fetchDashboard}

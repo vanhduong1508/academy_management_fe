@@ -12,7 +12,7 @@ export interface Order {
   courseId: number | null;
   courseTitle: string | null;
 
-  price: number;       // BigDecimal -> number
+  price: number;      
   paymentStatus: PaymentStatus;
   approvalStatus: ApprovalStatus;
 

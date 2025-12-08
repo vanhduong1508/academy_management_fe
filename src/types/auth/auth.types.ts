@@ -31,7 +31,7 @@ export interface RegisterStudentPayload {
   email: string;
   password: string;
   fullName: string;
-  dob: string;    // yyyy-MM-dd
+  dob: string;    
   phone?: string;
   hometown?: string;
   province?: string;

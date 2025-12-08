@@ -116,11 +116,6 @@ export default function CertificateManagementPage() {
       <div className={styles.headerRow}>
         <div>
           <h2 className={styles.title}>Quản lý chứng chỉ</h2>
-          <p className={styles.subtitle}>
-            Danh sách học viên đã hoàn thành 100% khóa học và đủ điều kiện để
-            cấp chứng chỉ. Bạn chọn kết quả (Đạt / Không đạt), hệ thống sẽ
-            cập nhật trạng thái và cấp chứng chỉ nếu Đạt.
-          </p>
         </div>
         <button
           onClick={fetchData}

@@ -165,9 +165,6 @@ export default function EnrollmentAdminPage() {
       <div className={styles.headerRow}>
         <div>
           <h2 className={styles.title}>Quản lý quá trình học</h2>
-          <p className={styles.subtitle}>
-            Theo dõi tiến độ học tập và trạng thái chứng chỉ của các học viên.
-          </p>
         </div>
 
         <div style={{ display: "flex", gap: 10, alignItems: "center" }}>

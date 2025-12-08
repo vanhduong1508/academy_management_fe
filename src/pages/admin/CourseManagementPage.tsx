@@ -325,10 +325,6 @@ export default function CourseManagementPage() {
       <div className={styles.headerRow}>
         <div>
           <h2 className={styles.title}>Quản lý khóa học</h2>
-          <p className={styles.subtitle}>
-            Tạo, chỉnh sửa và xoá khóa học. Có thể xem nhanh lộ trình (chương /
-            bài học) ở popup chi tiết.
-          </p>
         </div>
 
         <div className={styles.actions}>

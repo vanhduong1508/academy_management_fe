@@ -21,7 +21,7 @@ export type CourseDetailResponse = CourseResponse;
 export interface LessonResponse {
   id: number;
   title: string;
-  type: string; // "VIDEO" | "QUIZ" | "DOCUMENT" | ...
+  type: string; 
   urlVid: string | null;
 }
 

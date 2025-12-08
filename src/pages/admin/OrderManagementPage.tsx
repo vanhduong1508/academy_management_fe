@@ -92,7 +92,10 @@ export default function OrderManagementPage() {
     if (approvalStatus === "APPROVED") {
       return <span className={`${base} ${styles.badgeSuccess}`}>Đã duyệt</span>;
     }
-    return <span className={`${base} ${styles.badgeDanger}`}>Đã từ chối</span>;
+    if (approvalStatus === "REJECTED") {
+      return <span className={`${base} ${styles.badgeDanger}`}>Đã từ chối</span>;
+    }
+    return <span className={base}>{approvalStatus}</span>;
   };
 
   return (
@@ -100,10 +103,6 @@ export default function OrderManagementPage() {
       <div className={styles.headerRow}>
         <div>
           <h2 className={styles.title}>Quản lý thanh toán khóa học</h2>
-          <p className={styles.subtitle}>
-            Duyệt các đơn hàng đã thanh toán. Sau khi được duyệt, hệ thống sẽ tự
-            động tạo Enrollment cho học viên.
-          </p>
         </div>
         <button
           onClick={fetchOrders}
@@ -200,13 +199,15 @@ export default function OrderManagementPage() {
 
                     <td className={styles.td}>
                       {order.createdAt
-                        ? new Date(order.createdAt).toLocaleString("vi-VN")
+                        ? new Date(order.createdAt).toLocaleDateString("vi-VN")
                         : "-"}
                     </td>
 
                     <td className={styles.td}>
-                      {order.transferNote ?? "-"}
-                    </td>
+                      <span className={styles.transferNote}>
+                        {order.transferNote ?? "-"}
+                      </span>
+                    </td>
 
                     <td className={styles.tdRight}>
                       <button
