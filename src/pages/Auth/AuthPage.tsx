@@ -182,8 +182,8 @@ const AuthPage: React.FC = () => {
             className={styles["form-content"]}
             onSubmit={handleRegisterSubmit}
           >
-            <h1>Tạo Tài Khoản Học Viên</h1>
-            <span>Đây là tài khoản STUDENT, admin không đăng ký ở đây.</span>
+            <h1>Đăng ký</h1>
+            <span>Thành công đang chờ đợi bạn</span>
 
             <div className={styles["input-group"]}>
               <Input
@@ -244,16 +244,6 @@ const AuthPage: React.FC = () => {
 
             <div className={styles["input-group"]}>
               <Input
-                placeholder="Quê quán"
-                name="hometown"
-                id="reg_hometown"
-                value={registerForm.hometown}
-                onChange={handleRegisterChange}
-              />
-            </div>
-
-            <div className={styles["input-group"]}>
-              <Input
                 placeholder="Tỉnh / Thành phố"
                 name="province"
                 id="reg_province"
@@ -291,7 +281,7 @@ const AuthPage: React.FC = () => {
           <form className={styles["form-content"]} onSubmit={handleLoginSubmit}>
             <h1>Đăng Nhập</h1>
             <span>
-              Admin dùng tài khoản cố định, học viên dùng tài khoản đã đăng ký.
+              Học, học nữa, học mãi 
             </span>
 
             <div className={styles["input-group"]} style={{ marginTop: 30 }}>
@@ -335,8 +325,8 @@ const AuthPage: React.FC = () => {
             <div
               className={`${styles["overlay-panel"]} ${styles["overlay-left"]}`}
             >
-              <h1>Đã có tài khoản?</h1>
-              <p>Đăng nhập để tiếp tục học hoặc quản lý hệ thống.</p>
+              <h1>Bạn đã sẵn sàng?</h1>
+              <p>Hãy đăng nhập để bắt đầu theo đuổi đam mê.</p>
               <button
                 className={styles.ghost}
                 type="button"
@@ -349,10 +339,9 @@ const AuthPage: React.FC = () => {
             <div
               className={`${styles["overlay-panel"]} ${styles["overlay-right"]}`}
             >
-              <h1>Học viên mới?</h1>
+              <h1>Đam mê của bạn là gì?</h1>
               <p>
-                Tạo tài khoản STUDENT, sau đó sử dụng form Đăng nhập để vào hệ
-                thống.
+                Hãy chuẩn bị cho mình hành trang kiến thức
               </p>
               <button
                 className={styles.ghost}

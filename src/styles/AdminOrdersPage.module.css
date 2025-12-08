@@ -1,126 +1,173 @@
-/* AdminOrdersPage.module.css
-   Styles for OrderManagementPage.tsx
-   - clean, modern admin table
-   - colored badges for payment/approval
-   - primary/confirm/reject button styles
-   - responsive
-*/
+/* Vercel-like Admin Order Table (Ultra Clean & Compact) */
 
-:root{
-  --bg: #f6fbfb;
-  --card: #ffffff;
-  --muted: #6b7280;
-  --text: #081227;
-  --primary: #0891b2;   /* teal-ish */
-  --success: #16a34a;   /* green */
-  --warning: #f59e0b;   /* amber */
-  --danger: #ef4444;    /* red */
-  --surface-shadow: 0 10px 30px rgba(2,6,23,0.06);
-  --radius: 12px;
-  --ui-font: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+:root {
+  --text: #111;
+  --subtle: #777;
+  --border: #e8e8e8;
+  --bgRow: #fafafa;
+  --white: #fff;
+
+  --success: #0c0;
+  --danger: #e00;
+  --warning: #ffb400;
+
+  --radius: 8px;
 }
 
-/* Page wrapper */
-.page{
-  max-width:1200px;
-  margin:24px auto;
-  padding:20px;
-  font-family:var(--ui-font);
-  color:var(--text);
-  background:linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.4));
+/* PAGE */
+.page {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 24px;
+  background: var(--white);
+  font-family: system-ui, sans-serif;
+  color: var(--text);
 }
 
-/* Header */
-.headerRow{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:14px;
-  margin-bottom:16px;
-}
-.title{font-size:20px;margin:0;font-weight:700}
-.subtitle{margin:0;color:var(--muted);font-size:13px}
-
-/* Controls */
-.refreshButton{
-  padding:9px 12px;border-radius:10px;border:1px solid rgba(15,23,42,0.06);
-  background:var(--card);cursor:pointer;font-weight:600;
-}
-.refreshButton[disabled]{opacity:.6;cursor:not-allowed}
-
-/* Table */
-.tableWrapper{margin-top:12px;border-radius:10px;padding:6px;background:transparent}
-.table{width:100%;border-collapse:collapse;background:transparent}
-.th,.td{padding:12px 12px;text-align:left;border-bottom:1px solid rgba(15,23,42,0.04);vertical-align:middle}
-.th{font-size:13px;color:var(--muted);font-weight:700}
-.thRight{text-align:right}
-.tdRight{text-align:right}
-.tr{transition:background .12s ease}
-.tr:hover{background:rgba(6,95,115,0.03)}
-
-.cellMain{display:flex;flex-direction:column}
-.cellTitle{font-weight:700}
-.cellSub{font-size:12px;color:var(--muted);margin-top:6px}
-
-/* Amount formatting small helper (if needed) */
-.amount{font-weight:700;color:var(--text)}
-
-/* Badges */
-.badge{
-  display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;font-weight:700;font-size:12px;
+/* HEADER */
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px; /* ↓ gần hơn */
 }
 
-/* payment status */
-.badgeWarning{background:rgba(245,158,11,0.12);color:var(--warning)}
-.badgeSuccess{background:rgba(16,185,129,0.12);color:var(--success)}
-.badgeDanger{background:rgba(239,68,68,0.10);color:var(--danger)}
-
-/* approval badges */
-.badgeInfo{background:rgba(8,145,178,0.10);color:var(--primary)}
-
-/* Action buttons */
-.actionButton{
-  padding:8px 10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06);
-  cursor:pointer;font-weight:700;font-size:13px;margin-left:8px;
-  transition:transform .08s ease, box-shadow .12s ease, background .12s ease;
-}
-.actionButton:active{transform:translateY(1px)}
-.actionApprove{
-  background:linear-gradient(90deg,var(--primary), #06b6d4); color:white; border:none; box-shadow:var(--surface-shadow);
-}
-.actionReject{
-  background:transparent; color:var(--danger); border:1px solid rgba(239,68,68,0.12);
+.title {
+  font-size: 21px;
+  font-weight: 700;
+  margin-bottom: 2px;
 }
 
-/* Small visual hint when processing */
-.actionButton[disabled]{opacity:.7;cursor:not-allowed;transform:none;box-shadow:none}
-
-/* Note / transfer note cell */
-.transferNote{
-  max-width:280px;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-  color:var(--muted);
-  font-size:13px;
+.subtitle {
+  font-size: 13px;
+  color: var(--subtle);
 }
 
-/* Dates */
-.dateText{font-size:13px;color:var(--muted)}
+.refreshButton {
+  padding: 6px 12px;
+  font-size: 14px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-weight: 550;
+}
 
-/* Empty / loading states */
-.infoText{padding:28px;text-align:center;color:var(--muted)}
-.error{padding:12px;background:#fff5f5;color:var(--danger);border-left:4px solid rgba(239,68,68,0.12);border-radius:8px}
+/* TABLE WRAPPER */
+.tableWrapper {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
 
-/* Pagination helper (kept if needed) */
-.pagination{display:flex;gap:10px;align-items:center;justify-content:flex-end;margin-top:12px}
-.pageButton{padding:8px 12px;border-radius:10px;border:1px solid rgba(15,23,42,0.06);background:var(--card);cursor:pointer}
-.pageButton[disabled]{opacity:.6;cursor:not-allowed}
+/* TABLE */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
 
-/* Responsive */
-@media (max-width:920px){
-  .headerRow{flex-direction:column;align-items:flex-start;gap:10px}
-  .table{font-size:13px}
-  .transferNote{max-width:140px}
-  .th:nth-child(9), .td:nth-child(9) { /* hide notes on tiny screens if needed */ display:none; }
+.th,
+.td {
+  padding: 6px 12px; /* ↓ Slim spacing */
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+  vertical-align: middle;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.th {
+  color: var(--subtle);
+  font-weight: 600;
+}
+
+.tr {
+  background: var(--white);
+}
+
+.tr:hover {
+  background: var(--bgRow);
+}
+
+/* Columns */
+.cellMain {
+  display: flex;
+  flex-direction: column;
+}
+
+.cellTitle {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.cellSub {
+  font-size: 11px;
+  color: var(--subtle);
+  margin-top: 2px;
+}
+
+/* BADGES – nhỏ gọn */
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 50px;
+}
+
+.badgeWarning {
+  background: #fff3d6;
+  color: #c98500;
+}
+.badgeSuccess {
+  background: #e8ffe8;
+  color: var(--success);
+}
+.badgeDanger {
+  background: #ffe8e8;
+  color: var(--danger);
+}
+
+/* ACTIONS */
+.tdRight {
+  white-space: nowrap;
+  text-align: right;
+}
+
+.actionButton {
+  padding: 6px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--white);
+  margin-left: 6px;
+  cursor: pointer;
+}
+
+.actionApprove {
+  background: #000;
+  color: white;
+  border: none;
+}
+
+.actionReject {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+/* NOTE */
+.transferNote {
+  font-size: 12px;
+  color: var(--subtle);
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .headerRow {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
 }

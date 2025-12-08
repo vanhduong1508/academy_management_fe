@@ -131,7 +131,6 @@ export default function StudentManagementPage() {
     try {
       setDeletingId(id);
       await deleteStudentApi(id);
-      // optimistic local update
       setStudentsPage((prev) =>
         prev
           ? { ...prev, content: prev.content.filter((s) => s.id !== id) }
@@ -146,7 +145,6 @@ export default function StudentManagementPage() {
       setDeletingId(null);
     }
   };
-  // client-side filtered students for the current page
   const filteredStudents = useMemo(() => {
     const list = studentsPage?.content ?? [];
     const q = debouncedSearch;
@@ -165,10 +163,6 @@ export default function StudentManagementPage() {
       <div className={styles.headerRow}>
         <div>
           <h2 className={styles.title}>Quản lý học viên</h2>
-          <p className={styles.subtitle}>
-            Danh sách học viên trong hệ thống. Bấm "👁" để xem chi tiết hồ sơ và
-            tiến độ học tập.
-          </p>
         </div>
 
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
@@ -330,15 +324,17 @@ export default function StudentManagementPage() {
                       </p>
 
                       <div className={styles.enrollMeta}>
-                        <span>
-                          Tiến độ: {e.progressPercentage?.toFixed(1) ?? 0}%
-                        </span>
-                        <span>
-                          {e.eligibleForCertificate
-                            ? "Đủ điều kiện cấp chứng chỉ"
-                            : "Chưa đủ điều kiện"}
-                        </span>
-                      </div>
+                        <span>
+                          Tiến độ: {e.progressPercentage?.toFixed(1) ?? 0}%
+                        </span>
+                        <span
+                          data-eligible={e.eligibleForCertificate ? "true" : "false"}
+                        >
+                          {e.eligibleForCertificate
+                            ? "Đủ điều kiện cấp chứng chỉ"
+                            : "Chưa đủ điều kiện"}
+                        </span>
+                      </div>
 
                       <div className={styles.enrollProgressBar}>
                         <div

@@ -5,6 +5,7 @@ import AdminLayout from "../../components/layout/AdminLayout";
 
 import DashboardPage from "./DashboardPage";
 import CourseManagementPage from "./CourseManagementPage";
+import CourseStructureAdminPage from "./CourseStructureAdminPage";
 import StudentManagementPage from "./StudentManagementPage";
 import EnrollmentAdminPage from "./EnrollmentAdminPage";
 import OrderManagementPage from "./OrderManagementPage";
@@ -19,7 +20,7 @@ const AdminRoutes = () => {
         <Route path="courses" element={<CourseManagementPage />} />
         <Route path="students" element={<StudentManagementPage />} />
         <Route path="enrollments" element={<EnrollmentAdminPage />} />
-        <Route path="course-structure" element={<CourseManagementPage />} />
+        <Route path="course-structure" element={<CourseStructureAdminPage />} />
         <Route path="orders" element={<OrderManagementPage />} />
         <Route path="certificates" element={<CertificateManagementPage />} />
         <Route path="statistics" element={<AdminStatisticsPage />} />

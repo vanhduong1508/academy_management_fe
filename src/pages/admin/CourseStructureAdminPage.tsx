@@ -687,11 +687,6 @@ export default function CourseStructureAdminPage() {
       <div className={styles.headerRow}>
         <div>
           <h2 className={styles.title}>Lộ trình khóa học</h2>
-          <p className={styles.subtitle}>
-            Chọn khóa học bên trái, sau đó thêm chương / bài học. Nếu chọn VIDEO
-            sẽ nhập link YouTube; nếu chọn DOCUMENT sẽ nhập nội dung tài liệu
-            (hoặc link).
-          </p>
         </div>
       </div>
 

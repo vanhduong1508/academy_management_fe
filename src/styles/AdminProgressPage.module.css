@@ -1,148 +1,277 @@
-/* AdminProgressPage.module.css
-   Clean, modern styles for Enrollment / Progress admin page
-   - colored badges for status & certificate
-   - animated progress bar
-   - responsive and accessible
-*/
+/* ===============================
+   GLOBAL THEME (Monochrome Only)
+================================= */
+:root {
+  --bg: #ffffff;
+  --bg-soft: #f5f5f5;
+  --bg-hover: #f0f0f0;
 
-:root{
-  --bg: #f6fbfb;
-  --card: #ffffff;
-  --muted: #6b7280;
-  --text: #0b1220;
-  --primary: #0ea5a4;
-  --accent: #06b6d4;
-  --info-blue: #3b82f6;
-  --warning: #f59e0b;
-  --danger: #ef4444;
-  --shadow-sm: 0 6px 18px rgba(16,24,40,0.06);
-  --shadow-md: 0 18px 40px rgba(2,6,23,0.08);
-  --radius: 12px;
-  --ui-font: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  --border: #e5e5e5;
+  --text: #111111;
+  --text-muted: #6b6b6b;
+
+  --black: #000000;
+  --white: #ffffff;
+
+  --radius: 10px;
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 6px 15px rgba(0, 0, 0, 0.08);
+
+  --ui-font: Inter, ui-sans-serif, system-ui, Arial;
 }
 
-/* Page wrapper */
-.page{
-  max-width:1200px;
-  margin:28px auto;
-  padding:22px;
-  font-family:var(--ui-font);
-  color:var(--text);
-  background:linear-gradient(180deg,rgba(255,255,255,0.6),rgba(255,255,255,0.4));
+/* ===============================
+   PAGE WRAPPER
+================================= */
+.page {
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 24px;
+  font-family: var(--ui-font);
+  color: var(--text);
+  background: var(--bg);
 }
 
-/* Header */
-.headerRow{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:14px;
-  margin-bottom:16px;
-}
-.title{font-size:20px;margin:0;font-weight:700}
-.subtitle{margin:0;color:var(--muted);font-size:13px}
-
-/* Controls */
-.searchInput{flex:1;padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06);font-size:14px}
-.select{padding:9px;border-radius:10px;border:1px solid rgba(15,23,42,0.06);background:var(--card)}
-.refreshButton{
-  padding:9px 12px;border-radius:10px;border:1px solid rgba(15,23,42,0.06);background:var(--card);cursor:pointer;font-weight:600;
-}
-.refreshButton[disabled]{opacity:.6;cursor:not-allowed}
-
-/* Table */
-.tableWrapper{margin-top:12px;background:transparent;border-radius:10px;padding:6px}
-.table{width:100%;border-collapse:collapse;background:transparent}
-.th,.td{padding:12px 12px;text-align:left;border-bottom:1px solid rgba(15,23,42,0.04);vertical-align:middle}
-.th{font-size:13px;color:var(--muted);font-weight:700}
-.thRight{text-align:right}
-.tdRight{text-align:right}
-.tr{transition:background .12s ease}
-.tr:hover{background:rgba(6,95,115,0.03)}
-
-.cellMain{display:flex;flex-direction:column}
-.cellTitle{font-weight:700}
-.cellSub{font-size:12px;color:var(--muted);margin-top:6px}
-
-/* Badges: status */
-.badge{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  padding:6px 10px;
-  border-radius:999px;
-  font-weight:700;
-  font-size:12px;
+/* ===============================
+   HEADER
+================================= */
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
 }
 
-/* completion status */
-.badgeStatus{background:rgba(107,114,128,0.06);color:var(--muted)}
-.badgeStatusCompleted{background:rgba(34,197,94,0.12);color:#166534}
-.badgeStatusNotCompleted{background:rgba(239,68,68,0.10);color:#b91c1c}
-
-/* certificate badges */
-.badgeCertHas{padding:6px 10px;border-radius:999px;background:rgba(59,130,246,0.12);color:var(--info-blue);font-weight:700;font-size:12px}
-.badgeCertReady{padding:6px 10px;border-radius:999px;background:rgba(250,204,21,0.14);color:#92400e;font-weight:700;font-size:12px}
-.badgeCert{padding:6px 10px;border-radius:999px;background:rgba(107,114,128,0.12);color:#4b5563;font-weight:700;font-size:12px}
-
-/* Progress display */
-.progressWrapper{display:flex;align-items:center;gap:10px}
-.progressBar{
-  flex:1;
-  background:rgba(15,23,42,0.08);
-  height:12px;
-  border-radius:999px;
-  overflow:hidden;
-  box-shadow:inset 0 -2px 6px rgba(2,6,23,0.03);
+.title {
+  font-size: 24px;
+  font-weight: 800;
+  margin: 0;
+  color: var(--black);
 }
-.progressInner{
-  height:100%;
-  width:0%;
-  background:linear-gradient(90deg,var(--primary),var(--accent),var(--info-blue));
-  transition:width .6s cubic-bezier(.2,.8,.2,1);
-  box-shadow:inset 0 0 18px rgba(255,255,255,0.03);
+
+.subtitle {
+  font-size: 14px;
+  margin: 0;
+  color: var(--text-muted);
 }
-.progressText{font-size:13px;color:var(--muted);min-width:56px;text-align:right}
 
-/* Enrollment card (detail modal) */
-.detailEnrollList{display:flex;flex-direction:column;gap:12px;margin-top:8px}
-.enrollCard{
-  background:linear-gradient(180deg,#ffffff,#fbfdff);
-  padding:12px;border-radius:12px;border:1px solid rgba(15,23,42,0.03);
-  box-shadow:0 6px 18px rgba(2,6,23,0.03);
+/* ===============================
+   INPUTS & BUTTONS
+================================= */
+.searchInput,
+.select {
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--white);
+  box-shadow: var(--shadow-sm);
+  font-size: 14px;
 }
-.enrollTitle{font-weight:800;margin:0}
-.enrollSub{color:var(--muted);font-size:13px;margin:6px 0}
-.enrollMeta{display:flex;gap:12px;color:var(--muted);font-size:13px;margin-bottom:8px}
 
-/* Modal general */
-.modalOverlay{position:fixed;inset:0;background:rgba(2,6,23,0.45);display:flex;align-items:center;justify-content:center;padding:20px;z-index:60}
-.modal{width:100%;max-width:920px;background:linear-gradient(180deg,#ffffff,#fbfeff);border-radius:14px;padding:18px;box-shadow:var(--shadow-md)}
-.modalHeader{display:flex;justify-content:space-between;align-items:center}
-.detailTitle{margin:0;font-size:18px;font-weight:700}
-.modalCloseButton{background:transparent;border:none;font-size:18px;cursor:pointer}
-.modalBody{margin-top:12px;max-height:64vh;overflow:auto;padding-right:8px}
-.detailField{margin:8px 0;font-size:14px}
-.detailFieldLabel{font-weight:700;color:var(--muted);margin-right:8px}
-.detailSectionTitle{margin-top:14px;margin-bottom:8px}
-.detailEmpty{color:var(--muted);padding:8px}
+.searchInput {
+  max-width: 300px;
+}
 
-.pagination{display:flex;gap:10px;align-items:center;justify-content:flex-end;margin-top:14px}
-.pageButton{padding:8px 12px;border-radius:10px;border:1px solid rgba(15,23,42,0.06);background:var(--card);cursor:pointer}
-.pageButton[disabled]{opacity:.6;cursor:not-allowed}
+.refreshButton {
+  padding: 10px 18px;
+  background: var(--black);
+  color: var(--white);
+  border-radius: var(--radius);
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.15s;
+}
 
-/* Footer buttons */
-.modalFooter{display:flex;justify-content:flex-end;margin-top:12px}
-.buttonSecondary{padding:9px 12px;border-radius:10px;border:1px solid rgba(15,23,42,0.06);background:var(--card);cursor:pointer}
+.refreshButton:hover:not([disabled]) {
+  background: #333333;
+}
 
-/* Info / error */
-.infoText{padding:28px;text-align:center;color:var(--muted)}
-.error{padding:12px;background:#fff5f5;color:var(--danger);border-left:4px solid rgba(239,68,68,0.12);border-radius:8px}
+.refreshButton[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 
-/* Responsive */
-@media (max-width:920px){
-  .headerRow{flex-direction:column;align-items:flex-start;gap:10px}
-  .modal{max-width:98%;padding:14px}
-  .table{font-size:13px}
-  .pagination{justify-content:center}
+/* ===============================
+   TABLE
+================================= */
+.tableWrapper {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  margin-top: 20px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.th,
+.td {
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+
+.th {
+  background: var(--bg-soft);
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.tr:hover {
+  background: var(--bg-hover);
+}
+
+/* ===============================
+   CELL CONTENT
+================================= */
+.cellMain {
+  display: flex;
+  flex-direction: column;
+}
+
+.cellTitle {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.cellSub {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* ===============================
+   BADGE (Monochrome Only)
+================================= */
+.badge {
+  display: inline-flex;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  color: var(--text-muted);
+}
+
+/* Completed */
+.badgeStatusCompleted {
+  background: #e5e5e5;
+  color: #000000;
+}
+
+/* Not Completed */
+.badgeStatusNotCompleted {
+  background: #f0f0f0;
+  color: #111111;
+}
+
+/* Certificate */
+.badgeCertHas {
+  background: #dcdcdc;
+  color: #000000;
+}
+
+.badgeCertReady {
+  background: #e5e5e5;
+  color: #222222;
+}
+
+/* ===============================
+   PROGRESS BAR (BLACK/WHITE ONLY)
+================================= */
+.progressWrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.progressBar {
+  flex: 1;
+  background: #e5e5e5;
+  height: 8px;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progressInner {
+  height: 100%;
+  background: #000000; /* only black */
+  transition: width 0.5s ease;
+}
+
+.progressText {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--black);
+}
+
+/* ===============================
+   INFO
+================================= */
+.infoText {
+  padding: 30px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.error {
+  padding: 14px;
+  background: #f9f9f9;
+  border-left: 4px solid #222222;
+  color: #222222;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+/* ===============================
+   PAGINATION
+================================= */
+.pagination {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  padding: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.pageButton {
+  padding: 8px 14px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.15s;
+}
+
+.pageButton:hover:not([disabled]) {
+  background: var(--bg-soft);
+}
+
+.pageButton[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ===============================
+   RESPONSIVE
+================================= */
+@media (max-width: 800px) {
+  .headerRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pagination {
+    justify-content: center;
+  }
 }

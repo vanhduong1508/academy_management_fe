@@ -313,7 +313,7 @@ export default function AdminStatisticsPage() {
                   onClick={fetchHometowns}
                   disabled={hometownLoading}
                 >
-                  {hometownLoading ? "Đang tải..." : "Tải lại"}
+                  {hometownLoading ? "⟳" : "Tải lại"}
                 </button>
               </div>
             </div>
@@ -382,7 +382,7 @@ export default function AdminStatisticsPage() {
                   onClick={fetchProvinces}
                   disabled={provinceLoading}
                 >
-                  {provinceLoading ? "Đang tải..." : "Tải lại"}
+                  {provinceLoading ? "⟳" : "Tải lại"}
                 </button>
               </div>
             </div>
@@ -446,7 +446,7 @@ export default function AdminStatisticsPage() {
                   onClick={() => fetchCourses(courseYear)}
                   disabled={courseLoading}
                 >
-                  {courseLoading ? "Đang tải..." : "Tải lại"}
+                  {courseLoading ? "⟳" : "Tải lại"}
                 </button>
               </div>
             </div>
@@ -516,7 +516,7 @@ export default function AdminStatisticsPage() {
                   onClick={() => fetchHistory(historyStudentId)}
                   disabled={historyLoading}
                 >
-                  {historyLoading ? "Đang tải..." : "Tra cứu"}
+                  {historyLoading ? "⟳" : "Tra cứu"}
                 </button>
               </div>
             </div>
