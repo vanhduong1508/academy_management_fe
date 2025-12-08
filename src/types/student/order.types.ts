@@ -8,7 +8,7 @@ export interface OrderResponse {
   studentName: string;
   courseId: number;
   courseTitle: string;
-  price: number | null; 
+  price: number | null;
   paymentStatus: "PENDING" | "PAID" | "FAILED";
   approvalStatus: "PENDING" | "APPROVED" | "REJECTED";
   createdAt: string;
