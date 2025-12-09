@@ -64,12 +64,13 @@ export default function MyCertificates() {
                 <div className={styles.certificateHeader}>
                   <h3 className={styles.certificateTitle}>{cert.courseTitle}</h3>
                   <span className={styles.certificateBadge}>
-                    {cert.approvalStatus === "PENDING"
+                    {cert.result === "NOT_REVIEWED"
                       ? "Chờ duyệt"
                       : cert.result === "PASS"
                       ? "Đạt"
                       : "Không đạt"}
                   </span>
+
 
                 </div>
                 <div className={styles.certificateBody}>

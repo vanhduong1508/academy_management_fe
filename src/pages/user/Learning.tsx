@@ -190,7 +190,7 @@ const Learning = () => {
           <h3 className={styles.sidebarTitle}>Nội dung khóa học</h3>
           {structure.chapters.map((chapter, idx) => (
             <div key={chapter.id} className={styles.chapterBlock}>
-              <div className={styles.chapterHeader}>Chương {idx + 1}: {chapter.title}</div>
+              <div className={styles.chapterHeader}> {chapter.title}</div>
               <ul className={styles.lessonsList}>
                 {chapter.lessons.map((lesson, lessonIdx) => {
                   const locked = !canAccessLesson(lesson);
@@ -200,7 +200,6 @@ const Learning = () => {
                       className={`${styles.lessonItem} ${currentLesson.id === lesson.id ? styles.lessonItemActive : ""} ${locked ? styles.lessonItemLocked : ""}`}
                       onClick={() => !locked && setCurrentLesson(lesson)}
                     >
-                      <span className={styles.lessonIndex}>Bài {lessonIdx + 1}:</span>
                       <span className={styles.lessonTitleText}>{lesson.title}</span>
                       <span className={styles.lessonType}>{lesson.type}</span>
                     </li>

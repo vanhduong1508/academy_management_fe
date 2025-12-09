@@ -6,8 +6,7 @@ export interface CertificateResponse {
   courseId: number;
   courseCode: string;
   courseTitle: string;
-  result: string; 
+  result: "PASS" | "FAIL" | "NOT_REVIEWED";
   certificateCode: string | null;
   issuedAt: string;
-    approvalStatus: "PENDING" | "APPROVED";
 }
