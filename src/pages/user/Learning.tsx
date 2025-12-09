@@ -88,7 +88,6 @@ const Learning = () => {
     try {
       setCompleting(true);
 
-      // Gọi API hoàn thành bài học
       await completeLessonApi(currentLesson.id, { enrollmentId });
 
       // Tăng completedVideoLessons ngay lập tức
@@ -102,11 +101,10 @@ const Learning = () => {
         };
       });
 
-      // Mở bài tiếp theo ngay lập tức
       if (currentLessonIndex < allLessons.length - 1) {
         setCurrentLesson(allLessons[currentLessonIndex + 1]);
       } else {
-        alert("🎉 Hoàn thành khóa học!");
+        alert(" Hoàn thành khóa học!");
       }
     } catch (err: any) {
       console.error(err);

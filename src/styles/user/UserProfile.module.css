@@ -200,3 +200,12 @@
   }
 }
 
+.buttonLogout {
+  background-color: #000;
+  color: #fff;
+  margin-left: 10px;
+}
+.buttonLogout:hover {
+  background-color: #fff;
+  color: #000;
+}
