@@ -29,3 +29,18 @@ export async function issueCertificateApi(
   );
   return res.data;
 }
+
+export const getCertificateHistoryApi = async (
+  page = 0,
+  size = 10,
+  keyword?: string,
+  result?: "PASS" | "FAIL" | "NOT_REVIEWED" 
+): Promise<{ content: CertificateResponse[]; totalElements: number }> => {
+  const params: any = { page, size };
+  if (keyword) params.keyword = keyword;
+  if (result) params.result = result;
+
+  const res = await axiosInstance.get("/admin/certificates/history", { params });
+  return res.data;
+};
+

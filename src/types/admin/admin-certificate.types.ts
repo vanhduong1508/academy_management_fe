@@ -1,6 +1,4 @@
-// src/types/admin/admin-certificate.types.ts
-
-export type CertificateResult = "PASS" | "FAIL";
+export type CertificateResult = "PASS" | "FAIL" | "NOT_REVIEWED";
 
 export interface CertificateResponse {
   id?: number;            

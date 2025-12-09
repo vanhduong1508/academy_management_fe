@@ -1,4 +1,3 @@
-// src/pages/admin/AdminStatisticsPage.tsx
 import { useEffect, useMemo, useState, useRef } from "react";
 import {
   ResponsiveContainer,
@@ -66,7 +65,6 @@ export default function AdminStatisticsPage() {
   const [historyLoading, setHistoryLoading] = useState(false);
   const [historyError, setHistoryError] = useState<string | null>(null);
 
-  /* ---------- Fetchers ---------- */
   const fetchHometowns = async () => {
     try {
       setHometownLoading(true);
@@ -131,7 +129,6 @@ export default function AdminStatisticsPage() {
     }
   };
 
-  /* ---------- Initial load: load first active only ---------- */
   useEffect(() => {
     if (active === "hometown") fetchHometowns();
     if (active === "province") fetchProvinces();
@@ -139,7 +136,6 @@ export default function AdminStatisticsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  /* ---------- When active changes: set direction and load if needed ---------- */
   useEffect(() => {
     const prev = prevRef.current;
     if (prev !== active) {
@@ -161,7 +157,6 @@ export default function AdminStatisticsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active]);
 
-  /* ---------- When year changes and viewing courses ---------- */
   useEffect(() => {
     if (active === "courses") fetchCourses(courseYear);
     // eslint-disable-next-line react-hooks/exhaustive-deps

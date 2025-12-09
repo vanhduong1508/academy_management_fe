@@ -1,10 +1,6 @@
-// src/types/admin/admin-course.types.ts
 import type { PageResponse } from "../shared/pagination.types";
-
-// ============= ENUM / STATUS =============
 export type CourseStatus = "ACTIVE" | "INACTIVE" | string;
 
-// ============= COURSE DTO (CourseResponse) =============
 export interface Course {
   id: number;
   code: string;
@@ -18,13 +14,9 @@ export interface Course {
   updatedAt: string;
 }
 
-// để hợp với cách bạn đang import
 export type CourseResponse = Course;
 
-// Page<Course>
 export type CoursePage = PageResponse<Course>;
-
-
 export interface CourseCreatePayload {
   title: string;
   startDate?: string | null;

@@ -6,11 +6,11 @@ import styles from "../../styles/AdminLayout.module.css";
 const AdminLayout: React.FC = () => {
   const menuItems = [
     { name: "Dashboard", path: "/admin" },
-    { name: "Khóa học", path: "/admin/courses" },
     { name: "Học viên", path: "/admin/students" },
+    { name: "Khóa học", path: "/admin/courses" },
     { name: "Quá trình học tập", path: "/admin/enrollments" },
     { name: "Lộ trình Khóa học", path: "/admin/course-structure" },
-    { name: "Đơn hàng", path: "/admin/orders" },
+    { name: "Thanh toán", path: "/admin/orders" },
     { name: "Chứng chỉ", path: "/admin/certificates" },
     { name: "Thống kê", path: "/admin/statistics" },
   ];

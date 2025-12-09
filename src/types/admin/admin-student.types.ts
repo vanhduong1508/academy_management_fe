@@ -4,10 +4,10 @@ export interface AdminStudent {
   id: number;
   studentCode: string;
   fullName: string;
-  dob: string | null;          // LocalDate
+  dob: string | null;      
   hometown: string | null;
   province: string | null;
-  status: string;              // ACTIVE / INACTIVE
+  status: string;            
   email: string | null;
   phone: string | null;
   createdAt: string;

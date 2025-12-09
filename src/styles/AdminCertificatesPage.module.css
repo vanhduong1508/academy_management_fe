@@ -1,95 +1,251 @@
-:root{
-  --bg: #f6fbfb;
+/* AdminCertificatesPage.module.css */
+
+:root {
+  --bg: #ffffff;
   --card: #ffffff;
   --muted: #6b7280;
   --text: #0b1220;
-  --primary: #0ea5a4;
-  --accent: #06b6d4;
+  --primary: #000000;
+  --accent: #333333;
   --info: #3b82f6;
   --warning: #f59e0b;
   --danger: #ef4444;
-  --shadow-sm: 0 6px 18px rgba(16,24,40,0.06);
-  --shadow-md: 0 18px 40px rgba(2,6,23,0.08);
-  --radius: 12px;
+  --shadow-sm: 0 4px 12px rgba(0,0,0,0.05);
+  --shadow-md: 0 12px 24px rgba(0,0,0,0.08);
+  --radius: 10px;
   --ui-font: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
 }
 
-.page{
-  max-width:1200px;
-  margin:28px auto;
-  padding:22px;
-  font-family:var(--ui-font);
-  color:var(--text);
-  background:linear-gradient(180deg,rgba(255,255,255,0.6),rgba(255,255,255,0.4));
+/* === Common Table & Layout === */
+.page {
+  max-width: 1200px;
+  margin: 28px auto;
+  padding: 22px;
+  font-family: var(--ui-font);
+  color: var(--text);
+  background: var(--bg);
 }
 
-.headerRow{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:12px;
-  margin-bottom:14px;
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
 }
-.title{font-size:20px;margin:0;font-weight:700}
-.subtitle{margin:0;color:var(--muted);font-size:13px}
-
-.refreshButton{
-  padding:9px 12px;border-radius:10px;border:1px solid rgba(15,23,42,0.06);background:var(--card);cursor:pointer;font-weight:600;
-}
-.refreshButton[disabled]{opacity:.6;cursor:not-allowed}
-
-.tableWrapper{margin-top:12px;background:transparent;border-radius:10px;padding:6px}
-.table{width:100%;border-collapse:collapse;background:transparent}
-.th,.td{padding:12px 12px;text-align:left;border-bottom:1px solid rgba(15,23,42,0.04);vertical-align:middle}
-.th{font-size:13px;color:var(--muted);font-weight:700}
-.thRight{text-align:right}
-.tdRight{text-align:right}
-.tr{transition:background .12s ease}
-.tr:hover{background:rgba(6,95,115,0.03)}
-
-.cellMain{display:flex;flex-direction:column}
-.cellTitle{font-weight:700}
-.cellSub{font-size:12px;color:var(--muted);margin-top:6px}
-
-.badge{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;font-weight:700;font-size:12px}
-.badgeNotEnough{background:rgba(107,114,128,0.10);color:#4b5563}
-.badgeEligible{background:rgba(34,197,94,0.12);color:#166534}
-
-.progressWrapper{display:flex;align-items:center;gap:10px}
-.progressBar{
-  flex:1;
-  background:rgba(15,23,42,0.08);
-  height:12px;
-  border-radius:999px;
-  overflow:hidden;
-  box-shadow:inset 0 -2px 6px rgba(2,6,23,0.03);
+.title {
+  font-size: 20px;
+  margin: 0;
+  font-weight: 500;
 }
 
-.progressInner{
-  height:100%;
+.tabGroup {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+.tabButton {
+  padding: 6px 16px;
+  border-radius: var(--radius);
+  border: 1px solid var(--text);
+  background: var(--card);
+  color: var(--text);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.tabButton:hover:not(.tabActive) {
+  background: #f3f3f3;
+}
+.tabActive {
+  background: var(--text);
+  color: var(--card);
+  border-color: var(--text);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* === Table Wrapper === */
+.tableWrapper {
+  margin-top: 12px;
+  border-radius: var(--radius);
+  overflow-x: auto;
+  background: var(--card);
+  padding: 8px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--card);
+}
+
+.th,
+.td {
+  padding: 12px 12px;
+  text-align: left;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  vertical-align: middle;
+}
+
+.th {
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.thRight {
+  text-align: right;
+}
+.tdRight {
+  text-align: right;
+}
+
+.tr {
+  transition: background 0.12s ease;
+}
+.tr:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.cellMain {
+  display: flex;
+  flex-direction: column;
+}
+.cellTitle {
+  font-weight: 500;
+}
+.cellSub {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 6px;
+}
+
+/* === Badges === */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 500;
+  font-size: 12px;
+}
+.badgeNotEnough {
+  background: rgba(107, 114, 128, 0.10);
+  color: #4b5563;
+}
+.badgeEligible {
+  background: rgba(0, 0, 0, 0.08);
+  color: #000;
+}
+
+/* === Progress Bar === */
+.progressWrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.progressBar {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.05);
+  height: 12px;
+  border-radius: 999px;
+  overflow: hidden;
+}
+.progressInner {
+  height: 100%;
   width: var(--progress, 0%);
-  background: hsl(calc(var(--progress-value) * 1.2), 82%, 46%);
-  transition: width .6s cubic-bezier(.2,.8,.2,1), background-color .4s ease;
-  box-shadow: inset 0 0 12px rgba(255,255,255,0.02);
+  background: rgba(0, 0, 0, 0.8);
+  transition: width 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-.progressInner[data-glow="true"]{
-  box-shadow: 0 8px 30px rgba(34,197,94,0.12), inset 0 0 12px rgba(255,255,255,0.03);
+.resultSelect {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  margin-right: 8px;
+  font-weight: 500;
+  background: var(--card);
+  color: var(--text);
 }
 
-.resultSelect{
-  padding:8px 10px;border-radius:8px;border:1px solid rgba(15,23,42,0.06);margin-right:8px;font-weight:700;background:var(--card);
+.actionButton {
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  font-weight: 00;
+  background: var(--card);
+  color: var(--text);
 }
-.actionButton{padding:8px 10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06);cursor:pointer;font-weight:700}
-.actionIssue{background:linear-gradient(90deg,var(--primary),var(--accent));color:white;border:none;box-shadow:var(--shadow-sm)}
-.actionIssue[disabled]{opacity:.7;cursor:not-allowed}
+.actionIssue {
+  background: var(--text);
+  color: var(--card);
+  border: none;
+}
+.actionIssue[disabled] {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
 
-.progressText{font-size:13px;color:var(--muted);min-width:56px;text-align:right}
-.infoText{padding:28px;text-align:center;color:var(--muted)}
-.error{padding:12px;background:#fff5f5;color:var(--danger);border-left:4px solid rgba(239,68,68,0.12);border-radius:8px}
+/* === Filters for History Tab === */
+.filterRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.inputFilter,
+.selectFilter {
+  padding: 8px 10px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  font-size: 14px;
+  background: var(--card);
+  color: var(--text);
+}
 
-@media (max-width:920px){
-  .table{font-size:13px}
-  .progressText{display:none}
-  .th:nth-child(5), .td:nth-child(5) {display:none; }
+/* === Pagination === */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+.pagination button {
+  padding: 6px 12px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  background: var(--card);
+  color: var(--text);
+  cursor: pointer;
+}
+.pagination button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.infoText {
+  padding: 28px;
+  text-align: center;
+  color: var(--muted);
+}
+.error {
+  padding: 12px;
+  background: #fff;
+  color: var(--danger);
+  border-left: 4px solid rgba(239, 68, 68, 0.12);
+  border-radius: 8px;
+}
+
+/* === Responsive === */
+@media (max-width: 920px) {
+  .table {
+    font-size: 13px;
+  }
+  .th:nth-child(5),
+  .td:nth-child(5) {
+    display: none;
+  }
 }

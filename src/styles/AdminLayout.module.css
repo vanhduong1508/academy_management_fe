@@ -51,7 +51,7 @@
 /* Title */
 .sidebarTitle {
   font-size: 18px;
-  font-weight: 800;
+  font-weight: 500;
   color: var(--text);
   text-align: center;
   padding-bottom: 20px;
@@ -87,7 +87,7 @@
   padding: 12px 14px;
   border-radius: 10px;
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 500;
   transition: background 150ms ease, color 150ms ease, transform 80ms ease;
   display: flex;
   align-items: center;
@@ -118,7 +118,7 @@
 .active {
   background: var(--text);
   color: #ffffff !important;
-  font-weight: 700;
+  font-weight: 500;
   box-shadow: 0 6px 18px rgba(2,6,23,0.06);
 }
 
@@ -214,7 +214,7 @@
 /* small badge to show numeric counts beside link */
 .menuBadge {
   margin-left: auto;
-  font-weight:800;
+  font-weight:500;
   background: rgba(6,182,212,0.12);
   color: var(--accent-700);
   padding: 4px 8px;

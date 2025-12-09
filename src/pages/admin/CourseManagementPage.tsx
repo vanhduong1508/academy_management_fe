@@ -297,18 +297,12 @@ export default function CourseManagementPage() {
     return (
       <div key={chapter.id} className={styles.chapterBlock}>
         <div className={styles.chapterHeader}>
-          <span className={styles.chapterIndex}>
-            Chương {chapter.orderIndex}
-          </span>
           <span className={styles.chapterTitle}>{chapter.title}</span>
         </div>
         {lessons.length > 0 ? (
           <ul className={styles.lessonList}>
             {lessons.map((lesson) => (
               <li key={lesson.id} className={styles.lessonItem}>
-                <span className={styles.lessonIndex}>
-                  Bài {lesson.orderIndex}:
-                </span>
                 <span className={styles.lessonTitle}>{lesson.title}</span>
               </li>
             ))}

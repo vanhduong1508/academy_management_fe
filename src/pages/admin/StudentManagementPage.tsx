@@ -196,7 +196,9 @@ export default function StudentManagementPage() {
                 <tr>
                   <th className={styles.th}>Học viên</th>
                   <th className={styles.th}>Mã HV</th>
-                  <th className={`${styles.th} ${styles.thRight}`}>Thao tác</th>
+                  <th className={styles.th}>Số điện thoại</th>
+                  <th className={styles.th}>Email</th>
+                  <th className={`${styles.th}`}>Thao tác</th>
                 </tr>
               </thead>
               <tbody>
@@ -215,7 +217,9 @@ export default function StudentManagementPage() {
                         </div>
                       </td>
                       <td className={styles.td}>{studentCode}</td>
-                      <td className={`${styles.td} ${styles.tdRight}`}>
+                      <th className={styles.td}>{s.phone}</th>
+                      <th className={styles.td}>{s.email}</th>
+                      <td className={`${styles.td}`}>
                         <button
                           className={`${styles.actionButton} ${styles.actionView}`}
                           title="Xem chi tiết"
@@ -290,8 +294,12 @@ export default function StudentManagementPage() {
                   : "-"}
               </p>
               <p className={styles.detailField}>
-                <span className={styles.detailFieldLabel}>Quê quán: </span>
-                {detailStudent.hometown ?? "-"}
+                <span className={styles.detailFieldLabel}>Số điện thoại: </span>
+                {detailStudent.phone ?? "-"}
+              </p>
+              <p className={styles.detailField}>
+                <span className={styles.detailFieldLabel}>Email: </span>
+                {detailStudent.email ?? "-"}
               </p>
               <p className={styles.detailField}>
                 <span className={styles.detailFieldLabel}>
