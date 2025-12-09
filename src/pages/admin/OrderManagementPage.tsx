@@ -1,4 +1,3 @@
-// src/pages/admin/OrderManagementPage.tsx
 import { useEffect, useState } from "react";
 import {
   getPendingOrdersApi,
