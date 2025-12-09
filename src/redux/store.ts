@@ -1,5 +1,3 @@
-// /src/redux/store.ts (Cần phải có file này)
-
 import { configureStore } from '@reduxjs/toolkit';
 import authReducer from './slices/auth.slice';
 

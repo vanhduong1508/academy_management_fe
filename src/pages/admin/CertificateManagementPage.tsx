@@ -123,7 +123,7 @@ const handleIssue = async (enrollmentId: number) => {
       issuedAt: new Date().toISOString(),
       studentCode: "",
       courseCode: "",
-      certificateCode: ""
+      certificateCode: "",
     };
 
     // Nếu đang ở tab history và đang ở trang đầu tiên (page 0), thêm trực tiếp

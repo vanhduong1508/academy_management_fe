@@ -159,7 +159,7 @@ const AuthPage: React.FC = () => {
         });
       }, 1200);
     } catch (err: any) {
-      // lấy message chi tiết từ BE (nếu có)
+      // lấy message chi tiết từ BE 
       const errorMsg =
         err?.response?.data?.message || "Đăng ký thất bại. Vui lòng thử lại!";
       setRegError(errorMsg);

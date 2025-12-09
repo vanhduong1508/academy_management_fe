@@ -62,7 +62,7 @@ export default function EnrollmentAdminPage() {
     fetchData();
   }, []);
 
-  // create lookup set for certificate enrollmentIds for O(1) checks
+
   const certEnrollmentSet = useMemo(() => {
     const s = new Set<number>();
     for (const c of certificates) {
@@ -71,7 +71,6 @@ export default function EnrollmentAdminPage() {
     return s;
   }, [certificates]);
 
-  // enrich items with certificate status (memoized)
   const itemsWithCert = useMemo(() => {
     return items.map((it) => {
       const hasCertificate = certEnrollmentSet.has(it.enrollmentId);
@@ -80,7 +79,6 @@ export default function EnrollmentAdminPage() {
     });
   }, [items, certEnrollmentSet]);
 
-  // filtered by search + cert status
   const filtered = useMemo(() => {
     const q = debouncedSearch;
     return itemsWithCert.filter((it) => {
@@ -94,7 +92,6 @@ export default function EnrollmentAdminPage() {
     });
   }, [itemsWithCert, debouncedSearch, filterCertStatus]);
 
-  // pagination (client-side)
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   // clamp page
   useEffect(() => {

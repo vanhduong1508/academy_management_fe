@@ -8,7 +8,7 @@ import type { PageResponse } from "../../types/shared/pagination.types";
 
 export const getAdminCoursesPageApi = async (
   page = 0,
-  size = 10
+  size = 5
 ): Promise<PageResponse<Course>> => {
   const res = await axiosInstance.get<PageResponse<Course>>("/courses", {
     params: { page, size },
