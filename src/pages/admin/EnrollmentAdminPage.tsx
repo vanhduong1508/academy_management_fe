@@ -18,7 +18,6 @@ export default function EnrollmentAdminPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // SEARCH / FILTER / PAGINATION
   const [searchText, setSearchText] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [filterCertStatus, setFilterCertStatus] = useState<
@@ -93,7 +92,7 @@ export default function EnrollmentAdminPage() {
   }, [itemsWithCert, debouncedSearch, filterCertStatus]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
-  // clamp page
+
   useEffect(() => {
     if (page >= totalPages) setPage(Math.max(0, totalPages - 1));
     // eslint-disable-next-line react-hooks/exhaustive-deps
