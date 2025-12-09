@@ -1,24 +1,20 @@
-/* src/styles/AdminStatisticsPage.module.css
-   Giao diện admin statistics: smooth animations update
-*/
-
 :root {
-  --bg: #f8fafc;
-  --card-bg: #ffffff;
-  --muted: #6b7280;
-  --primary: #111827;
-  --accent: #2563eb;
-  --accent-2: #06b6d4;
-  --success: #10b981;
-  --danger: #ef4444;
-  --surface-border: #e6e9ef;
-  --soft-shadow: 0 8px 28px rgba(15, 23, 42, 0.06);
-  --glass: rgba(255,255,255,0.6);
+  --bg: #ffffff; /* Trắng */
+  --card-bg: #ffffff; /* Trắng */
+  --muted: #4b5563; /* Xám đậm (cho chữ phụ) */
+  --primary: #111827; /* Đen gần (cho chữ chính) */
+  --accent: #111827; /* Đen (thay thế màu xanh) */
+  --accent-2: #374151; /* Xám đậm hơn */
+  --success: #374151; /* Xám đậm (thay thế màu xanh lá) */
+  --danger: #4b5563; /* Xám (thay thế màu đỏ) */
+  --surface-border: #d1d5db; /* Xám nhạt (cho border) */
+  --soft-shadow: 0 4px 12px rgba(17, 24, 39, 0.1); /* Shadow đen nhạt */
+  --glass: rgba(255, 255, 255, 0.9);
   --radius-lg: 14px;
   --radius-pill: 999px;
   --gap: 12px;
   --anim-duration: 420ms;
-  --anim-ease: cubic-bezier(.22,.9,.32,1);
+  --anim-ease: cubic-bezier(.22, .9, .32, 1);
 }
 
 /* Page layout */
@@ -44,7 +40,7 @@
 .title {
   margin: 0;
   font-size: 1.45rem;
-  font-weight: 700;
+  font-weight: 500;
   letter-spacing: -0.2px;
 }
 
@@ -74,7 +70,7 @@
   border: 1px solid var(--surface-border);
   background: var(--card-bg);
   color: var(--primary);
-  font-weight: 600;
+  font-weight: 500;
   font-size: 0.88rem;
   cursor: pointer;
   transition:
@@ -93,21 +89,21 @@
 
 .navButton:hover,
 .button:hover {
-  box-shadow: 0 10px 28px rgba(16,24,40,0.08);
+  box-shadow: 0 10px 28px rgba(16, 24, 40, 0.08);
 }
 
 .navButtonActive {
   background: linear-gradient(180deg, var(--primary), #0f1724);
   color: white;
-  border-color: rgba(0,0,0,0.06);
-  box-shadow: 0 12px 30px rgba(17,24,39,0.14);
+  border-color: rgba(0, 0, 0, 0.06);
+  box-shadow: 0 12px 30px rgba(17, 24, 39, 0.14);
 }
 
 /* Primary variant for regular button */
 .button.primary {
   background: var(--accent);
   color: white;
-  border-color: rgba(0,0,0,0.05);
+  border-color: rgba(0, 0, 0, 0.05);
 }
 
 /* Error box */
@@ -153,7 +149,7 @@
 .sectionTitle {
   margin: 0;
   font-size: 1.02rem;
-  font-weight: 650;
+  font-weight: 500;
 }
 
 .sectionDescription {
@@ -168,7 +164,7 @@
   background: #f3f4f6;
   padding: 5px 10px;
   border-radius: 999px;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 /* Filters row inside header */
@@ -176,7 +172,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-weight: 600;
+  font-weight: 500;
   color: var(--muted);
   font-size: 0.88rem;
 }
@@ -197,92 +193,8 @@ input[type="number"] {
 .yearInput:focus,
 select:focus,
 input[type="number"]:focus {
-  box-shadow: 0 8px 20px rgba(37,99,235,0.08);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.08);
   border-color: var(--accent);
-}
-
-/* Table (kept for fallback but not used if charts-only) */
-.tableWrapper {
-  margin-top: 8px;
-  overflow-x: auto;
-  border-radius: 10px;
-}
-
-/* Table styles */
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.88rem;
-  min-width: 640px;
-  background: transparent;
-}
-
-.table thead th {
-  position: sticky;
-  top: 0;
-  z-index: 2;
-}
-
-.th,
-.thLeft,
-.thRight {
-  padding: 10px 12px;
-  text-align: center;
-  font-weight: 700;
-  color: #111827;
-  border-bottom: 1px solid var(--surface-border);
-  background: linear-gradient(180deg,#fbfdff,#f7f9fc);
-  white-space: nowrap;
-  font-size: 0.82rem;
-}
-
-.thLeft {
-  text-align: left;
-}
-
-.thRight {
-  text-align: right;
-}
-
-.tr {
-  transition: background 0.08s ease;
-}
-
-.tr:hover {
-  background: rgba(14,20,36,0.03);
-}
-
-.tr:nth-child(even) {
-  background: #fbfcff;
-}
-
-.trTotal {
-  background: linear-gradient(90deg,#eef2ff,#f8fbff);
-}
-
-.td,
-.tdLeft,
-.tdRight {
-  padding: 10px 12px;
-  border-bottom: 1px dashed rgba(15,23,42,0.04);
-  vertical-align: middle;
-  color: #111827;
-  font-size: 0.9rem;
-}
-
-.tdLeft {
-  text-align: left;
-}
-
-.tdRight {
-  text-align: right;
-}
-
-/* Small helper text */
-.infoText {
-  color: var(--muted);
-  font-size: 0.9rem;
-  margin: 8px 0;
 }
 
 /* Chart wrapper: ensure non-zero height and smooth reveal */
@@ -291,28 +203,141 @@ input[type="number"]:focus {
   height: 320px;
   margin-top: 14px;
   border-radius: 10px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.4));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.4));
   padding: 8px;
   box-sizing: border-box;
   transition: transform var(--anim-duration) var(--anim-ease), opacity var(--anim-duration) var(--anim-ease);
   will-change: transform, opacity;
 }
 
-/* Cell helpers */
-.cellMain {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+/* Table styles */
+.table {
+  width: 100%;
+  border-collapse: separate; /* Thay đổi để border-radius của wrapper hoạt động */
+  border-spacing: 0;
+  font-size: 0.88rem;
+  min-width: 640px; /* Đảm bảo cuộn ngang trên mobile */
+  background: transparent;
 }
 
-.cellTitle {
-  font-weight: 600;
-  color: #0f1724;
+.table thead th {
+  position: sticky; /* Sticky header cho bảng chi tiết */
+  top: 0;
+  z-index: 10;
+  padding: 12px 12px;
+  text-align: center;
+  font-weight: 500;
+  color: var(--primary);
+  /* Tăng độ tương phản cho tiêu đề bảng */
+  background: linear-gradient(180deg, #f4f6f9, #e9ecef); 
+  border-bottom: 2px solid var(--surface-border);
+  white-space: nowrap;
+  font-size: 0.85rem;
 }
 
-.cellSub {
-  font-size: 0.78rem;
+.table tbody tr {
+  transition: background 0.08s ease;
+}
+
+.table tbody tr:hover {
+  background: rgba(14, 20, 36, 0.03);
+}
+
+.table tbody tr:nth-child(even) {
+  background: #fbfcff;
+}
+.table tbody tr:nth-child(odd) {
+    background: #fcfdfe; /* Sáng hơn cho các dòng lẻ */
+}
+
+.table td {
+  padding: 10px 12px;
+  border-bottom: 1px dashed rgba(15, 23, 42, 0.04);
+  vertical-align: middle;
+  color: #111827;
+  font-size: 0.88rem;
+}
+
+/* Căn chỉnh riêng cho cột Kết quả và Tiến độ */
+.table td:nth-child(3) { /* Cột Kết quả */
+    text-align: center;
+    font-weight: 500;
+}
+.table td:nth-child(4) { /* Cột Tiến độ */
+    text-align: right;
+    font-weight: 500;
+}
+.table td:nth-child(5) { /* Cột Chứng chỉ */
+    text-align: center;
+}
+
+
+/* --- CẢI TIẾN PHẦN LỊCH SỬ HỌC TẬP --- */
+
+/* Lưới hiển thị các thống kê tổng quan của học viên */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  padding: 0; 
+  background: none;
+  border: none;
+  box-shadow: none;
+}
+
+.statsGrid > div {
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--card-bg); /* Nền trắng */
+  border: 1px solid var(--surface-border);
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.04);
+
+  font-size: 0.85rem;
+  font-weight: 500;
   color: var(--muted);
+  line-height: 1.4;
+  white-space: nowrap; 
+}
+
+.statsGrid b {
+  color: var(--primary);
+  font-weight: 500;
+  display: block;
+  font-size: 1.1rem;
+  margin-top: 4px;
+}
+
+/* Thêm màu sắc cho các chỉ số quan trọng */
+.statsGrid div:nth-child(4) b, /* Tổng đăng ký */
+.statsGrid div:nth-child(5) b { /* Đã hoàn thành */
+    color: var(--accent);
+}
+.statsGrid div:nth-child(6) b, /* Số chứng chỉ */
+.statsGrid div:nth-child(7) b { /* Đạt */
+    color: var(--success);
+}
+.statsGrid div:nth-child(8) b { /* Không đạt */
+    color: var(--danger);
+}
+
+
+/* Wrapper cho bảng lịch sử chi tiết (cho phép cuộn dọc/ngang) */
+.historyTableWrapper {
+  margin-top: 24px;
+  overflow-x: auto;
+  max-height: 480px; 
+  overflow-y: auto;
+  border-radius: 10px;
+  border: 1px solid var(--surface-border);
+  box-shadow: var(--soft-shadow);
+}
+.historyTableWrapper .table {
+    min-width: 680px; /* Đảm bảo bảng đủ rộng để cuộn ngang nếu cần */
+}
+/* Kích hoạt lại style cho tiêu đề bảng (th) trong wrapper */
+.historyTableWrapper .table thead th {
+    /* Đã định nghĩa ở trên, đảm bảo tính sticky và màu nền */
+    z-index: 10;
 }
 
 /* Responsive behavior */
@@ -337,25 +362,58 @@ input[type="number"]:focus {
   }
 }
 
-@media (max-width: 640px) {
-  .title { font-size: 1.15rem; }
-  .subtitle { font-size: 0.84rem; }
-  .navButton, .button { padding: 8px 10px; font-size: 0.85rem; }
-  .table { min-width: 420px; }
-  .chartWrapper { height: 240px; }
-  .th, .td { padding: 8px; }
+@media (max-width: 720px) {
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr); /* 2 cột trên màn hình vừa */
+  }
 }
 
+@media (max-width: 640px) {
+  .title {
+    font-size: 1.15rem;
+  }
+  .subtitle {
+    font-size: 0.84rem;
+  }
+  .navButton,
+  .button {
+    padding: 8px 10px;
+    font-size: 0.85rem;
+  }
+  .table {
+    min-width: 420px;
+  }
+  .chartWrapper {
+    height: 240px;
+  }
+  .table thead th, .table td {
+    padding: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .statsGrid {
+    grid-template-columns: 1fr; /* 1 cột trên màn hình nhỏ */
+  }
+  .yearInput[type="number"] {
+    min-width: 120px;
+  }
+}
+
+
 /* Accessibility focus */
-.navButton:focus, .button:focus, select:focus, input:focus {
+.navButton:focus,
+.button:focus,
+select:focus,
+input:focus {
   outline: none;
-  box-shadow: 0 6px 18px rgba(37,99,235,0.12);
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.12);
   border-color: var(--accent);
 }
 
 /* Tiny utility */
 .kv {
-  font-weight: 700;
+  font-weight: 500;
   color: var(--muted);
   font-size: 0.85rem;
 }
@@ -398,8 +456,12 @@ input[type="number"]:focus {
 }
 
 /* Slide offsets for direction */
-.sectionPane.fromRight { transform: translateX(24px) scale(0.99); }
-.sectionPane.fromLeft { transform: translateX(-24px) scale(0.99); }
+.sectionPane.fromRight {
+  transform: translateX(24px) scale(0.99);
+}
+.sectionPane.fromLeft {
+  transform: translateX(-24px) scale(0.99);
+}
 
 /* Remove offset when visible */
 .sectionPane.fromRight.visible,
@@ -414,14 +476,23 @@ input[type="number"]:focus {
 }
 
 /* Slight fade / slide for header and chart during pane transition */
-.sectionHeader, .chartWrapper {
+.sectionHeader,
+.chartWrapper {
   transition: transform calc(var(--anim-duration) - 120ms) var(--anim-ease), opacity calc(var(--anim-duration) - 120ms) var(--anim-ease);
 }
 
 /* reduce clutter on small screens */
 @media (max-width: 720px) {
-  .sectionPane { position: relative; max-height: none; padding: 0; transform: none; opacity: 1; }
-  .sectionPane.visible { transform: none; }
+  .sectionPane {
+    position: relative;
+    max-height: none;
+    padding: 0;
+    transform: none;
+    opacity: 1;
+  }
+  .sectionPane.visible {
+    transform: none;
+  }
 }
 
 /* Respect reduced motion */
@@ -434,4 +505,3 @@ input[type="number"]:focus {
     transition: none !important;
   }
 }
-
