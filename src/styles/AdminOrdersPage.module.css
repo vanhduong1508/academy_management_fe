@@ -1,181 +1,248 @@
-/* Vercel-like Admin Order Table (Ultra Clean & Compact) */
+/* src/styles/AdminOrdersPage.module.css
+   Giao diện quản lý đơn hàng: Grayscale (Trắng-Đen)
+*/
 
 :root {
-  --text: #111;
-  --subtle: #777;
-  --border: #e8e8e8;
-  --bgRow: #fafafa;
-  --white: #fff;
-
-  --success: #0c0;
-  --danger: #e00;
-  --warning: #ffb400;
-
-  --radius: 8px;
+  /* Biến Grayscale/Black/White */
+  --bg: #f8fafc; /* Nền trang xám nhạt */
+  --card-bg: #ffffff; /* Nền thẻ/bảng trắng */
+  --primary: #111827; /* Đen (Màu chính) */
+  --muted: #4b5563; /* Xám đậm (Màu phụ) */
+  --surface-border: #d1d5db; /* Xám nhạt (Border) */
+  --soft-shadow: 0 4px 12px rgba(17, 24, 39, 0.1);
+  
+  /* Thay thế màu sắc trạng thái bằng tông xám/đen */
+  --status-default: var(--primary); /* Đen */
+  --status-success: #111827; /* Đen đậm (PAID/APPROVED) */
+  --status-warning: #4b5563; /* Xám (PENDING) */
+  --status-danger: #6b7280; /* Xám nhạt hơn (FAILED/REJECTED) */
+  --status-border: #374151; /* Xám border */
+  
+  --radius-lg: 10px;
+  --anim-duration: 250ms;
 }
 
-/* src/styles/AdminOrdersPage.module.css */
-
+/* Page Layout */
 .page {
-  padding: 24px;
-  background-color: #fff;
-  color: #111;
-  font-family: "Inter", sans-serif;
-  font-weight: 500;
-  min-height: 100vh;
+  max-width: 1300px;
+  margin: 24px auto;
+  padding: 20px;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial;
+  color: var(--primary);
+  background: var(--bg);
 }
 
+/* Header */
 .headerRow {
   display: flex;
-  justify-content: space-between;
+  gap: 16px;
   align-items: center;
-  margin-bottom: 16px;
+  justify-content: space-between;
+  margin-bottom: 20px;
 }
 
 .title {
-  font-size: 20px;
+  margin: 0;
+  font-size: 1.45rem;
+  font-weight: 700;
+  letter-spacing: -0.2px;
 }
 
+/* Refresh Button */
 .refreshButton {
-  padding: 6px 14px;
-  background-color: #f0f0f0;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  padding: 8px 14px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--surface-border);
+  background: var(--card-bg);
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 0.88rem;
   cursor: pointer;
-  font-weight: 500;
-  transition: all 0.2s ease;
+  transition: all var(--anim-duration) ease-in-out;
 }
 
-.refreshButton:hover:not(:disabled) {
-  background-color: #111;
-  color: #fff;
+.refreshButton:hover {
+  background: #f3f4f6;
+  border-color: var(--muted);
 }
 
 .refreshButton:disabled {
+  opacity: 0.7;
   cursor: not-allowed;
-  opacity: 0.6;
+  background: #f9fafb;
 }
 
+/* Error and Info Text */
 .error {
-  color: #c00;
-  margin-bottom: 12px;
+  background: #fef2f2; /* Nền lỗi nhạt */
+  border: 1px solid #fecaca; /* Border lỗi */
+  color: #991b1b; /* Text lỗi */
+  padding: 10px 12px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  font-size: 0.9rem;
 }
 
 .infoText {
-  font-size: 14px;
-  color: #666;
+  color: var(--muted);
+  font-style: italic;
+  padding: 20px;
+  text-align: center;
 }
 
+/* Table */
 .tableWrapper {
   overflow-x: auto;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--soft-shadow);
+  border: 1px solid var(--surface-border);
+  background: var(--card-bg);
 }
 
 .table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
+  min-width: 1000px; 
 }
 
-.th,
-.td {
-  padding: 10px 12px;
+.th {
+  position: sticky;
+  top: 0;
+  padding: 12px 14px;
   text-align: left;
-  font-weight: 500;
-  border-bottom: 1px solid #eee;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--primary);
+  background: #f9fafb; /* Nền header xám nhạt */
+  border-bottom: 2px solid var(--surface-border);
+  white-space: nowrap;
 }
 
-.thRight,
-.tdRight {
+.thRight {
   text-align: right;
+  padding-right: 20px;
+}
+
+.tr:nth-child(even) {
+  background: #fcfdfe;
 }
 
 .tr:hover {
-  background-color: #f9f9f9;
+  background: #f3f4f6;
 }
 
+.td {
+  padding: 10px 14px;
+  border-bottom: 1px solid #f3f4f6;
+  font-size: 0.88rem;
+  color: var(--primary);
+  vertical-align: top;
+}
+
+.tdRight {
+  padding-right: 20px;
+  text-align: right;
+  white-space: nowrap; /* Giữ các nút hành động cùng một hàng */
+}
+
+/* Cell styles */
 .cellMain {
   display: flex;
   flex-direction: column;
 }
 
 .cellTitle {
-  font-weight: 500;
-  color: #111;
+  font-weight: 600;
+  color: var(--primary);
 }
 
 .cellSub {
-  font-size: 12px;
-  color: #666;
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-top: 2px;
 }
 
 .transferNote {
-  font-size: 13px;
-  color: #444;
+  max-width: 200px;
+  white-space: normal;
+  font-style: italic;
+  color: var(--muted);
+  font-size: 0.85rem;
 }
 
-.actionButton {
-  padding: 5px 12px;
-  margin-left: 4px;
-  border: 1px solid #ccc;
+/* Badges (Trạng thái) */
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
   border-radius: 4px;
-  font-weight: 500;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  border: 1px solid transparent; /* Base border */
+}
+
+/* PENDING - Warning (Xám) */
+.badgeWarning {
+  color: var(--status-warning);
+  background: #fef3c7; 
+  border-color: var(--status-warning);
+}
+
+/* PAID/APPROVED - Success (Đen) */
+.badgeSuccess {
+  color: var(--status-success);
+  background: #dbeafe; 
+  border-color: var(--status-success);
+}
+
+/* FAILED/REJECTED - Danger (Xám nhạt hơn) */
+.badgeDanger {
+  color: var(--status-danger);
+  background: #fee2e2; 
+  border-color: var(--status-danger);
+}
+
+/* Action Buttons */
+.actionButton {
+  margin-left: 8px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
   cursor: pointer;
-  background-color: #f9f9f9;
-  color: #111;
-  transition: all 0.2s ease;
+  transition: background 0.15s ease, opacity 0.15s ease;
+  min-width: 80px;
 }
 
 .actionButton:disabled {
-  cursor: not-allowed;
   opacity: 0.6;
+  cursor: not-allowed;
 }
 
-.actionButton:hover:not(:disabled) {
-  background-color: #111;
-  color: #fff;
-}
-
+/* Duyệt (Approve) - Màu Đen */
 .actionApprove {
-  border-color: #28a745;
-  color: #28a745;
+  background: var(--primary);
+  color: white;
+  border: 1px solid var(--primary);
 }
 
 .actionApprove:hover:not(:disabled) {
-  background-color: #28a745;
-  color: #fff;
+  background: #000000;
 }
 
+/* Từ chối (Reject) - Màu xám */
 .actionReject {
-  border-color: #dc3545;
-  color: #dc3545;
+  background: var(--card-bg);
+  color: var(--muted);
+  border: 1px solid var(--surface-border);
 }
 
 .actionReject:hover:not(:disabled) {
-  background-color: #dc3545;
-  color: #fff;
+  background: #e5e7eb;
+  color: var(--primary);
 }
 
-/* Badges */
-.badge {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 500;
-}
-
-.badgeWarning {
-  background-color: #ffc107;
-  color: #111;
-}
-
-.badgeSuccess {
-  background-color: #28a745;
-  color: #fff;
-}
-
-.badgeDanger {
-  background-color: #dc3545;
-  color: #fff;
-}

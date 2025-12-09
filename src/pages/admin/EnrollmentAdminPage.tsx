@@ -195,7 +195,7 @@ export default function EnrollmentAdminPage() {
       {loading && items.length === 0 ? (
         <p className={styles.infoText}>Đang tải dữ liệu...</p>
       ) : filtered.length === 0 ? (
-        <p className={styles.infoText}>Không tìm thấy enrollment phù hợp.</p>
+        <p className={styles.infoText}>Không tìm thấy học viên nào đang học.</p>
       ) : (
         <div className={styles.tableWrapper}>
           <table className={styles.table}>
