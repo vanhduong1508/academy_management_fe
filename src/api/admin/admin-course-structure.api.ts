@@ -9,9 +9,6 @@ import type {
   LessonUpdatePayload
 } from "../../types/admin/admin-course.types";
 
-/**
- * GET /api/admin/courses/{courseId}/structure
- */
 export const getCourseStructureApi = async (
   courseId: number
 ): Promise<CourseStructureResponse> => {
@@ -21,9 +18,6 @@ export const getCourseStructureApi = async (
   return res.data;
 };
 
-/**
- * POST /api/admin/courses/{courseId}/chapters
- */
 export const addChapterApi = async (
   courseId: number,
   payload: ChapterCreatePayload
@@ -35,10 +29,6 @@ export const addChapterApi = async (
   return res.data;
 };
 
-/**
- * POST /api/admin/chapters/{chapterId}/lessons
- * payload có urlVid (link video)
- */
 export const addLessonApi = async (
   chapterId: number,
   payload: LessonCreatePayload
@@ -55,7 +45,7 @@ export const updateChapterApi = async (
   payload: ChapterUpdatePayload
 ) => {
   const res = await axiosInstance.put<ChapterResponse>(
-    `/admin/chapters/${chapterId}`,
+    `/admin/courses/chapters/${chapterId}`,
     payload
   );
   return res.data;
@@ -64,7 +54,7 @@ export const updateChapterApi = async (
 export const deleteChapterApi = async (
   chapterId: number
 ): Promise<void> => {
-  await axiosInstance.delete(`/admin/chapters/${chapterId}`);
+  await axiosInstance.delete(`/admin/courses/chapters/${chapterId}`);
 };
 
 export const updateLessonApi = async (
@@ -72,7 +62,7 @@ export const updateLessonApi = async (
   payload: LessonUpdatePayload
 ) => {
   const res = await axiosInstance.put<LessonResponse>(
-    `/admin/lessons/${lessonId}`,
+    `/admin/chapters/lessons/${lessonId}`,
     payload
   );
   return res.data;
@@ -81,5 +71,5 @@ export const updateLessonApi = async (
 export const deleteLessonApi = async (
   lessonId: number
 ): Promise<void> => {
-  await axiosInstance.delete(`/admin/lessons/${lessonId}`);
+  await axiosInstance.delete(`/admin/chapters/lessons/${lessonId}`);
 };

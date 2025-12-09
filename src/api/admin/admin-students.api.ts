@@ -1,4 +1,3 @@
-// src/api/admin/admin-students.api.ts
 import { axiosInstance } from "../index";
 import type { PageResponse } from "../../types/shared/pagination.types";
 import type { AdminStudent } from "../../types/admin/admin-student.types";

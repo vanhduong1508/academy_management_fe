@@ -14,273 +14,277 @@ body {
   background-color: var(--bg);
 }
 
+/* Page wrapper */
 .page {
-  max-width: 1200px;
-  margin: 28px auto;
-  padding: 20px;
-  font-family: var(--ui-font);
-  color: var(--text);
+  padding: 24px;
+  font-family: "Inter", sans-serif;
+  color: #111;
+  background-color: #fff;
+  min-height: 100vh;
+  box-sizing: border-box;
+  font-weight: 500;
 }
 
-/* ========== Header ========= */
+/* Header row */
 .headerRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 14px;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .title {
-  font-size: 24px;
+  font-size: 1.75rem;
+  color: #111;
   margin: 0;
-  font-weight: 700;
-  color: var(--text);
 }
 
-.subtitle {
-  margin: 0;
-  color: var(--muted);
-  font-size: 14px;
-}
-
-/* ========== Search + Refresh ========= */
+/* Search input */
 .searchInput {
-  flex: 1;
-  padding: 10px 12px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: var(--card);
-  font-size: 14px;
-  transition: 0.15s;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+  color: #111;
+  font-weight: 500;
+  outline: none;
+  transition: border 0.2s;
 }
 
 .searchInput:focus {
-  outline: none;
-  border-color: #000;
+  border-color: #888;
 }
 
+/* Refresh button */
 .refreshButton {
-  padding: 10px 14px;
-  border-radius: var(--radius);
-  border: 1px solid #000;
-  background: #000;
-  color: #fff;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 6px;
+  background-color: #eee;
+  color: #111;
   cursor: pointer;
-  font-weight: 600;
-  transition: 0.2s;
+  font-weight: 500;
+  transition: background-color 0.2s;
 }
 
-.refreshButton:hover:not([disabled]) {
-  opacity: 0.85;
-}
-
-.refreshButton[disabled] {
-  opacity: 0.5;
+.refreshButton:disabled {
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
-/* ========== Table ========= */
+.refreshButton:hover:not(:disabled) {
+  background-color: #000;
+  color: #fff;
+}
+
+.error {
+  color: #d32f2f;
+  margin-bottom: 16px;
+}
+
+.infoText {
+  color: #666;
+  text-align: center;
+  padding: 16px 0;
+}
+
+/* Table */
 .tableWrapper {
-  margin-top: 16px;
-  background-color: var(--card);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  overflow: hidden;
+  overflow-x: auto;
 }
 
 .table {
   width: 100%;
   border-collapse: collapse;
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
-.th,
-.td {
-  padding: 14px 16px;
-  border-bottom: 1px solid var(--line);
-  vertical-align: middle;
+.th, .td {
+  padding: 12px 16px;
+  text-align: center;
+  color: #111;
+  font-weight: 500;
+  border-bottom: 1px solid #eee;
 }
 
-.th {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--muted);
-  background: #fafafa;
-  text-align: left;
+.tr {
+  transition: background 0.2s;
 }
 
 .tr:hover {
-  background: #f7f7f7;
+  background-color: #f5f5f5;
 }
 
+/* Cell content */
 .cellMain {
   display: flex;
   flex-direction: column;
 }
 
 .cellTitle {
-  font-weight: 600;
-  color: var(--text);
+  font-weight: 500;
+  color: #111;
 }
 
 .cellSub {
-  font-size: 12px;
-  color: var(--muted);
-  margin-top: 3px;
+  font-size: 0.85rem;
+  color: #888;
 }
 
-/* ========== Actions ========= */
+
 .actionButton {
-  margin-left: 6px;
-  padding: 7px 12px;
-  border-radius: 6px;
-  font-size: 13px;
+  font-weight: 500;
+  padding: 5px 20px;
+  margin: 5px;
+  border-radius: 5px;
+  border: none;
   cursor: pointer;
-  border: 1px solid var(--line);
-  background: #f7f7f7;
-  transition: 0.15s;
-}
-
-.actionButton:hover {
-  background: #e8e8e8;
+  transition: background 0.2s, color 0.2s;
 }
 
 .actionView {
-  color: #000;
+  background-color: #eee;
+  color: #111;
 }
 
+.actionView:hover {
+  background-color: #111; 
+  color: #fff;      
+}
+
+/* Delete button */
 .actionDelete {
+  background-color: #fff; 
   color: #000;
 }
 
-.actionButton[disabled] {
-  opacity: 0.5;
-  cursor: not-allowed;
+.actionDelete:hover {
+  background-color: #333; 
+  color: #fff;
 }
 
-/* ========== Pagination ========= */
+
+/* Pagination */
 .pagination {
   display: flex;
-  gap: 8px;
   justify-content: flex-end;
-  padding: 14px 16px;
-  border-top: 1px solid var(--line);
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
 }
 
 .pageButton {
-  padding: 7px 12px;
+  padding: 6px 12px;
   border-radius: 6px;
-  border: 1px solid var(--line);
-  background: var(--card);
+  border: none;
   cursor: pointer;
-  transition: 0.15s;
+  background-color: #eee;
+  color: #111;
+  font-weight: 500;
+  transition: background-color 0.2s;
 }
 
-.pageButton:hover:not([disabled]) {
-  background: #f1f1f1;
-}
-
-.pageButton[disabled] {
-  opacity: 0.5;
+.pageButton:disabled {
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
-/* ========== Info / Error ========= */
-.infoText {
-  padding: 28px;
-  text-align: center;
-  color: var(--muted);
+.pageButton:hover:not(:disabled) {
+  background-color: #ddd;
 }
 
-.error {
-  padding: 12px;
-  border-radius: var(--radius);
-  border-left: 4px solid #000;
-  background: #f2f2f2;
-  color: #000;
-  margin-bottom: 20px;
-}
-
-/* ========== Modal ========= */
+/* Modal overlay */
 .modalOverlay {
   position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.45);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.3);
   display: flex;
-  align-items: center;
   justify-content: center;
-  padding: 20px;
+  align-items: center;
   z-index: 1000;
 }
 
+/* Modal box */
 .modal {
-  width: 100%;
-  max-width: 780px;
-  background: var(--card);
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: var(--shadow);
+  background-color: #fff;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 700px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
+/* Modal header */
 .modalHeader {
   display: flex;
   justify-content: space-between;
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--line);
-  margin-bottom: 14px;
+  align-items: center;
+  padding: 16px 24px;
+  border-bottom: 1px solid #eee;
 }
 
 .detailTitle {
-  font-size: 20px;
-  font-weight: 700;
   margin: 0;
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #111;
 }
 
 .modalCloseButton {
-  background: transparent;
+  background: none;
   border: none;
-  font-size: 20px;
+  font-size: 1.2rem;
   cursor: pointer;
-  color: var(--muted);
+  color: #888;
+  transition: color 0.2s;
 }
 
 .modalCloseButton:hover {
-  color: var(--text);
+  color: #111;
 }
 
+/* Modal body */
 .modalBody {
-  max-height: 64vh;
+  padding: 16px 24px;
   overflow-y: auto;
-  padding-right: 8px;
+  flex-grow: 1;
 }
 
 .detailField {
-  margin: 8px 0;
-  font-size: 15px;
+  margin-bottom: 8px;
+  color: #111;
 }
 
 .detailFieldLabel {
-  font-weight: 600;
-  color: var(--muted);
-  margin-right: 6px;
+  font-weight: 500;
+  color: #555;
 }
 
+/* Section title inside modal */
 .detailSectionTitle {
-  margin: 20px 0 12px;
-  font-size: 16px;
-  padding-left: 10px;
-  border-left: 3px solid #000;
+  margin-top: 16px;
+  margin-bottom: 8px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #111;
 }
 
+/* Empty / loading state in modal */
 .detailEmpty {
-  color: var(--muted);
-  background: #f6f6f6;
-  padding: 10px;
-  border-radius: var(--radius);
-  text-align: center;
+  color: #888;
+  font-style: italic;
 }
 
-/* ========== Enrollment Cards ========= */
+/* Enrollment list */
 .detailEnrollList {
   display: flex;
   flex-direction: column;
@@ -288,85 +292,92 @@ body {
 }
 
 .enrollCard {
-  background: #f7f7f7;
-  padding: 14px;
-  border-radius: var(--radius);
-  border: 1px solid var(--line);
+  padding: 12px 16px;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+  border: 1px solid #eee;
 }
 
 .enrollTitle {
-  font-weight: 700;
-  margin: 0;
-  color: var(--text);
+  font-weight: 500;
+  color: #111;
+  margin: 0 0 4px 0;
 }
 
 .enrollSub {
-  font-size: 13px;
-  color: var(--muted);
-  margin: 6px 0;
+  font-size: 0.85rem;
+  color: #888;
+  margin: 0 0 8px 0;
 }
 
 .enrollMeta {
   display: flex;
-  gap: 16px;
-  font-size: 13px;
-  flex-wrap: wrap;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 6px;
+}
+
+.enrollMeta span[data-eligible="true"] {
+  color: #2e7d32;
+}
+
+.enrollMeta span[data-eligible="false"] {
+  color: #d32f2f;
 }
 
 /* Progress bar */
 .enrollProgressBar {
-  background: #e3e3e3;
-  height: 8px;
-  border-radius: 999px;
+  height: 6px;
+  background-color: #eee;
+  border-radius: 3px;
   overflow: hidden;
 }
 
 .enrollProgressInner {
   height: 100%;
-  background: #000;
-  transition: width 0.4s ease;
+  background-color: #2e7d32;
+  border-radius: 3px;
+  transition: width 0.3s;
 }
 
-/* ========== Modal Footer ========= */
+/* Modal footer */
 .modalFooter {
+  padding: 12px 24px;
   display: flex;
   justify-content: flex-end;
-  border-top: 1px solid var(--line);
-  padding-top: 12px;
+  border-top: 1px solid #eee;
 }
 
 .buttonSecondary {
-  padding: 9px 14px;
-  border: 1px solid var(--line);
-  background: #f7f7f7;
+  padding: 8px 16px;
   border-radius: 6px;
+  border: none;
+  background-color: #eee;
+  color: #111;
   cursor: pointer;
-  transition: 0.15s;
+  font-weight: 500;
+  transition: background-color 0.2s;
 }
 
 .buttonSecondary:hover {
-  background: #e8e8e8;
+  background-color: #ddd;
 }
 
-/* ========== Responsive ========= */
-@media (max-width: 900px) {
+/* Responsive tweaks */
+@media (max-width: 768px) {
   .headerRow {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
   }
 
+  .table th, .table td {
+    padding: 8px 12px;
+  }
+
   .modal {
-    max-width: 96%;
-  }
-
-  .pagination {
-    justify-content: center;
-  }
-
-  /* 1 cột khi mobile */
-  .th:not(:first-child),
-  .td:not(:first-child) {
-    display: none;
+    width: 95%;
+    max-height: 95vh;
   }
 }

@@ -1,4 +1,3 @@
-// src/api/index.ts
 import axios, { AxiosInstance } from "axios";
 import { logout } from "../redux/slices/auth.slice";
 
@@ -17,8 +16,6 @@ export const axiosInstance: AxiosInstance = axios.create({
 });
 
 let storeRef: AppStore | null = null;
-
-// Gọi hàm này trong main.tsx sau khi tạo store
 export const setupAxiosInterceptors = (store: AppStore) => {
   storeRef = store;
 

@@ -62,7 +62,7 @@ export default function CourseStructureAdminPage() {
   const initialCourseId = Number(searchParams.get("courseId"));
 
   const [page, setPage] = useState(0);
-  const [size] = useState(10);
+  const [size] = useState(5);
   const [coursesPage, setCoursesPage] =
     useState<PageResponse<CourseResponse> | null>(null);
 
@@ -95,19 +95,15 @@ export default function CourseStructureAdminPage() {
   >({});
 
   const [collapsedChapters, setCollapsedChapters] = useState<
-    Record<number, boolean>
-  >({});
+    Record<number, boolean>>({});
   const [collapsedLessons, setCollapsedLessons] = useState<
-    Record<number, boolean>
-  >({});
+    Record<number, boolean>>({});
 
   const [savingLessonId, setSavingLessonId] = useState<number | null>(null);
 
-  // === Edit state for inline editing ===
   const [editingChapterId, setEditingChapterId] = useState<number | null>(null);
   const [editingChapterTitle, setEditingChapterTitle] = useState<string>("");
 
-  // lessonEditForms keyed by lesson.id
   const [lessonEditForms, setLessonEditForms] = useState<
     Record<
       number,
@@ -376,7 +372,6 @@ export default function CourseStructureAdminPage() {
       return;
     }
     try {
-      // Call api
       const updated = await updateChapterApi(chapter.id, { title: trimmed });
 
       setStructure((prev) =>
@@ -390,7 +385,6 @@ export default function CourseStructureAdminPage() {
           : prev
       );
 
-      // reset edit state
       setEditingChapterId(null);
       setEditingChapterTitle("");
     } catch (err: any) {
@@ -495,7 +489,6 @@ export default function CourseStructureAdminPage() {
           : prev
       );
 
-      // remove edit form for this lesson
       setLessonEditForms((prev) => {
         const copy = { ...prev };
         delete copy[lesson.id];
@@ -603,7 +596,6 @@ export default function CourseStructureAdminPage() {
       );
     }
 
-    // default (non-edit) rendering
     if (lesson.type === "VIDEO") {
       let videoId: string | null = null;
       if (lesson.urlVid) {
@@ -650,7 +642,6 @@ export default function CourseStructureAdminPage() {
       );
     }
 
-    // DOCUMENT
     return (
       <li key={lesson.id} className={styles.lessonItem}>
         <div className={styles.lessonHeader}>
@@ -693,7 +684,6 @@ export default function CourseStructureAdminPage() {
       {error && <p className={styles.error}>{error}</p>}
 
       <div className={styles.layout}>
-        {/* DANH SÁCH KHÓA HỌC BÊN TRÁI */}
         <div className={styles.tableWrapper}>
           {loadingCourses && !coursesPage ? (
             <p className={styles.infoText}>Đang tải danh sách khóa học...</p>

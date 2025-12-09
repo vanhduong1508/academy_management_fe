@@ -14,160 +14,161 @@
   --radius: 8px;
 }
 
-/* PAGE */
 .page {
-  max-width: 1200px;
-  margin: 20px auto;
-  padding: 24px;
-  background: var(--white);
-  font-family: system-ui, sans-serif;
-  color: var(--text);
+  padding: 20px;
+  background-color: #fff; /* nền trắng */
+  color: #111;
+  font-family: "Inter", sans-serif;
+  font-weight: 500;
 }
 
-/* HEADER */
 .headerRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 14px; /* ↓ gần hơn */
+  margin-bottom: 16px;
 }
 
 .title {
-  font-size: 21px;
-  font-weight: 700;
-  margin-bottom: 2px;
-}
-
-.subtitle {
-  font-size: 13px;
-  color: var(--subtle);
+  font-size: 22px;
+  font-weight: 500;
+  color: #111;
 }
 
 .refreshButton {
-  padding: 6px 12px;
-  font-size: 14px;
-  background: var(--white);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  padding: 6px 14px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  background-color: #f5f5f5;
+  color: #111;
   cursor: pointer;
-  font-weight: 550;
+  font-weight: 500;
+  transition: background 0.2s, color 0.2s;
 }
 
-/* TABLE WRAPPER */
+.refreshButton:hover:not(:disabled) {
+  background-color: #111;
+  color: #fff;
+}
+
+.refreshButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error {
+  color: #b71c1c;
+  margin-bottom: 10px;
+}
+
+.infoText {
+  color: #555;
+  font-size: 14px;
+  text-align: center;
+  margin: 20px 0;
+}
+
 .tableWrapper {
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  overflow: hidden;
+  overflow-x: auto;
 }
 
-/* TABLE */
 .table {
   width: 100%;
   border-collapse: collapse;
-  table-layout: fixed;
 }
 
-.th,
-.td {
-  padding: 6px 12px; /* ↓ Slim spacing */
-  border-bottom: 1px solid var(--border);
-  font-size: 14px;
-  vertical-align: middle;
-  white-space: normal;
-  word-break: break-word;
+.th, .td {
+  text-align: left;
+  padding: 12px 10px;
+  border-bottom: 1px solid #eee;
+  font-weight: 500;
 }
 
-.th {
-  color: var(--subtle);
-  font-weight: 600;
-}
-
-.tr {
-  background: var(--white);
+.thRight, .tdRight {
+  text-align: right;
 }
 
 .tr:hover {
-  background: var(--bgRow);
+  background-color: #fafafa;
 }
 
-/* Columns */
 .cellMain {
   display: flex;
   flex-direction: column;
 }
 
 .cellTitle {
-  font-weight: 600;
-  font-size: 14px;
+  font-weight: 500;
+  color: #111;
 }
 
 .cellSub {
-  font-size: 11px;
-  color: var(--subtle);
-  margin-top: 2px;
+  font-size: 12px;
+  color: #666;
 }
 
-/* BADGES – nhỏ gọn */
+/* Badges */
 .badge {
-  display: inline-block;
   padding: 2px 8px;
-  font-size: 11px;
-  font-weight: 600;
-  border-radius: 50px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  display: inline-block;
 }
 
 .badgeWarning {
-  background: #fff3d6;
-  color: #c98500;
+  background-color: #ffeb3b;
+  color: #111;
 }
+
 .badgeSuccess {
-  background: #e8ffe8;
-  color: var(--success);
+  background-color: #4caf50;
+  color: #fff;
 }
+
 .badgeDanger {
-  background: #ffe8e8;
-  color: var(--danger);
+  background-color: #f44336;
+  color: #fff;
 }
 
-/* ACTIONS */
-.tdRight {
-  white-space: nowrap;
-  text-align: right;
-}
-
+/* Action buttons */
 .actionButton {
-  padding: 6px 10px;
-  font-size: 13px;
-  font-weight: 600;
-  border-radius: 6px;
-  border: 1px solid var(--border);
-  background: var(--white);
-  margin-left: 6px;
-  cursor: pointer;
-}
-
-.actionApprove {
-  background: #000;
-  color: white;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 4px;
   border: none;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  margin-left: 6px;
 }
 
+/* Approve button */
+.actionApprove {
+  background-color: #4caf50;
+  color: #fff;
+}
+
+.actionApprove:hover:not(:disabled) {
+  background-color: #388e3c; /* xanh đậm khi hover */
+}
+
+/* Reject button */
 .actionReject {
-  border-color: var(--danger);
-  color: var(--danger);
+  background-color: #f44336;
+  color: #fff;
 }
 
-/* NOTE */
+.actionReject:hover:not(:disabled) {
+  background-color: #b71c1c; /* đỏ đậm khi hover */
+}
+
+.actionButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Chú thích chuyển khoản */
 .transferNote {
   font-size: 12px;
-  color: var(--subtle);
-}
-
-/* RESPONSIVE */
-@media (max-width: 900px) {
-  .headerRow {
-    flex-direction: column;
-    gap: 8px;
-    align-items: flex-start;
-  }
+  color: #666;
 }

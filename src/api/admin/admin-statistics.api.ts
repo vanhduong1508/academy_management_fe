@@ -1,10 +1,8 @@
 import { axiosInstance } from "../index";
-
 import type {
   LocationStat,
   CourseYearStatistic,
 } from "../../types/admin/admin-statistics.types";
-
 import type {
   StudentLearningHistory,
 } from "../../types/admin/admin-enrollment.types";

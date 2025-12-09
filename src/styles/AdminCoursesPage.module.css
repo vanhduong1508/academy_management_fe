@@ -59,7 +59,7 @@
 
 .title {
   font-size: 28px;
-  font-weight: 700;
+  font-weight: 500;
   margin: 0;
   color: var(--text);
   letter-spacing: -0.2px;
@@ -115,7 +115,7 @@
   align-items: center;
   font-size: 14px;
   color: var(--gray-700);
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .dateInput {
@@ -147,7 +147,7 @@
   padding: 14px 18px;
   background: var(--gray-100);
   color: var(--muted);
-  font-weight: 700;
+  font-weight: 500;
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.6px;
@@ -191,7 +191,7 @@
 }
 
 .cellTitle {
-  font-weight: 600;
+  font-weight: 500;
   font-size: 15px;
   color: var(--gray-800);
 }
@@ -211,7 +211,7 @@
   background: var(--white);
   border: 1px solid var(--gray-700);
   color: var(--gray-800);
-  font-weight: 700;
+  font-weight: 500;
   font-size: 14px;
   cursor: pointer;
   transition: background .12s, color .12s, transform .08s;
@@ -244,7 +244,7 @@
   background: transparent;
   border: 1px solid var(--border);
   color: var(--gray-700);
-  font-weight: 600;
+  font-weight: 500;
   font-size: 13px;
   margin-left: 8px;
   cursor: pointer;
@@ -328,7 +328,7 @@
 .modalTitle {
   padding: 18px 22px;
   font-size: 18px;
-  font-weight: 700;
+  font-weight: 500;
   border-bottom: 1px solid var(--border);
   background: linear-gradient(180deg, var(--gray-100), var(--card));
 }
@@ -354,7 +354,7 @@
 .modalLabel {
   display: block;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 500;
   color: var(--gray-700);
   margin-bottom: 8px;
   text-transform: uppercase;
@@ -418,13 +418,13 @@
 }
 
 .chapterIndex {
-  font-weight: 800;
+  font-weight: 500;
   color: var(--gray-800);
   font-size: 14px;
 }
 
 .chapterTitle {
-  font-weight: 700;
+  font-weight: 500;
   font-size: 15px;
 }
 
@@ -445,7 +445,7 @@
 
 .lessonIndex {
   color: var(--muted);
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .lessonTitle {
@@ -476,7 +476,7 @@
   color: var(--gray-700);
   border-radius: 8px;
   margin-bottom: 14px;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 /* ==========================
@@ -498,7 +498,7 @@
   border-radius: 8px;
   border: 1px solid var(--border);
   background: var(--white);
-  font-weight: 700;
+  font-weight: 500;
   cursor: pointer;
 }
 

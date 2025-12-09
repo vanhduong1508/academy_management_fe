@@ -1,4 +1,3 @@
-// src/api/auth/auth.api.ts
 import { axiosInstance } from "../index";
 import type {
   AuthResponse,

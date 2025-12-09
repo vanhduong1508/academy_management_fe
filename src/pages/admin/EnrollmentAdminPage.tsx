@@ -89,8 +89,6 @@ export default function EnrollmentAdminPage() {
       if (filterCertStatus === "none" && (it.hasCertificate || it.canIssueCertificate)) return false;
 
       if (!q) return true;
-
-      // search by student name, student code, course title, course code, enrollment id
       const hay = `${it.studentName ?? ""} ${it.studentCode ?? ""} ${it.courseTitle ?? ""} ${it.courseCode ?? ""} ${it.enrollmentId}`.toLowerCase();
       return hay.includes(q);
     });
