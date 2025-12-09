@@ -53,41 +53,48 @@ export default function Orders() {
   };
 
   const renderStatusBadge = (order: OrderResponse) => {
-    const paymentStatus = order.paymentStatus;
-    const approvalStatus = order.approvalStatus;
-
-    if (approvalStatus === "REJECTED") {
-      return (
-        <span className={`${styles.badge} ${styles.badgeRejected}`}>Đã từ chối</span>
-      );
-    }
-
-    if (approvalStatus === "APPROVED" && paymentStatus === "PAID") {
-      return (
-        <span className={`${styles.badge} ${styles.badgeSuccess}`}>Thanh toán thành công</span>
-      );
-    }
-
-    if (approvalStatus === "APPROVED" && paymentStatus !== "PAID") {
-      return (
-        <span className={`${styles.badge} ${styles.badgeInfo}`}>Đã duyệt - chờ xác nhận thanh toán</span>
-      );
-    }
-
-    if (paymentStatus === "FAILED") {
-      return (
-        <span className={`${styles.badge} ${styles.badgeFailed}`}>Thanh toán thất bại</span>
-      );
-    }
-
+  const { paymentStatus, approvalStatus } = order;
+  if (paymentStatus === "FAILED") {
     return (
-      <span className={`${styles.badge} ${styles.badgePending}`}>Đang chờ xác nhận </span>
+      <span className={`${styles.badge} ${styles.badgeFailed}`}>
+        Thanh toán thất bại
+      </span>
     );
-  };
+  }
+
+  if (approvalStatus === "REJECTED") {
+    return (
+      <span className={`${styles.badge} ${styles.badgeRejected}`}>
+        Đã từ chối
+      </span>
+    );
+  }
+
+  if (approvalStatus === "APPROVED" && paymentStatus === "PAID") {
+    return (
+      <span className={`${styles.badge} ${styles.badgeSuccess}`}>
+        Thanh toán thành công
+      </span>
+    );
+  }
+  if (approvalStatus === "APPROVED" && paymentStatus !== "PAID") {
+    return (
+      <span className={`${styles.badge} ${styles.badgeInfo}`}>
+        Thanh toán thành công
+      </span>
+    );
+  }
+  return (
+    <span className={`${styles.badge} ${styles.badgePending}`}>
+      Đang chờ xác nhận
+    </span>
+  );
+};
+
 
   const handleShowPaymentInfo = (order?: OrderResponse) => {
     if (order) setSelectedOrder(order);
-    else setSelectedOrder(null); // Reset nếu xem thông tin chung
+    else setSelectedOrder(null); 
     setShowPaymentModal(true);
   };
 
@@ -256,26 +263,25 @@ export default function Orders() {
             </div>
 
             <div className={styles.modalFooter}>
-              {/* Nút Xác nhận thanh toán (Mới thêm vào) */}
               {selectedOrder && selectedOrder.approvalStatus === "PENDING" && (
                 <button
                   onClick={() => handleRequestPaymentApproval(selectedOrder.id)}
                   disabled={perOrderLoadingId === selectedOrder.id}
                   style={{
-                    backgroundColor: "#28a745", // Màu xanh lá (hoặc thay bằng màu brand của bạn)
+                    backgroundColor: "#000", 
                     color: "white",
                     padding: "10px 20px",
                     border: "none",
                     borderRadius: "4px",
                     cursor: "pointer",
-                    marginRight: "10px", // Khoảng cách với nút Đóng
+                    marginRight: "10px", 
                     fontSize: "14px",
                     fontWeight: "500",
                     opacity: perOrderLoadingId === selectedOrder.id ? 0.7 : 1,
                     transition: "background 0.3s ease"
                   }}
-                  onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#218838")}
-                  onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#28a745")}
+                  onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "#000")}
+                  onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "#000")}
                 >
                   {perOrderLoadingId === selectedOrder.id ? "Đang xử lý..." : "Xác nhận đã chuyển khoản"}
                 </button>

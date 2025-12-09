@@ -1,15 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { getMyProfileApi, updateMyProfileApi } from "../../api/student/student.api";
 import type { StudentResponse, UpdateStudentPayload } from "../../types/student/student.types";
 import styles from "../../styles/user/UserProfile.module.css";
 
 export default function Profile() {
   const [profile, setProfile] = useState<StudentResponse | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
-
   const [form, setForm] = useState<UpdateStudentPayload>({
     fullName: "",
     dob: "",
@@ -17,21 +12,23 @@ export default function Profile() {
     province: "",
   });
 
-  useEffect(() => {
-    fetchProfile();
-  }, []);
-
-  const fetchProfile = async () => {
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const fetchProfile = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
+
       const data = await getMyProfileApi();
       setProfile(data);
+
       setForm({
-        fullName: data.fullName || "",
-        dob: data.dob ? data.dob.slice(0, 10) : "", // Format YYYY-MM-DD
-        hometown: data.hometown || "",
-        province: data.province || "",
+        fullName: data.fullName ?? "",
+        dob: data.dob ? data.dob.slice(0, 10) : "",
+        hometown: data.hometown ?? "",
+        province: data.province ?? "",
       });
     } catch (err: any) {
       console.error(err);
@@ -39,12 +36,17 @@ export default function Profile() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchProfile();
+  }, [fetchProfile]);
 
   const handleSave = async () => {
+    setSaving(true);
+    setError(null);
+
     try {
-      setSaving(true);
-      setError(null);
       const updated = await updateMyProfileApi(form);
       setProfile(updated);
       setIsEditing(false);
@@ -60,10 +62,10 @@ export default function Profile() {
   const handleCancel = () => {
     if (profile) {
       setForm({
-        fullName: profile.fullName || "",
+        fullName: profile.fullName ?? "",
         dob: profile.dob ? profile.dob.slice(0, 10) : "",
-        hometown: profile.hometown || "",
-        province: profile.province || "",
+        hometown: profile.hometown ?? "",
+        province: profile.province ?? "",
       });
     }
     setIsEditing(false);
@@ -81,12 +83,8 @@ export default function Profile() {
   if (!profile) {
     return (
       <div className={styles.page}>
-        <p className={styles.error}>
-          {error || "Không tìm thấy thông tin cá nhân."}
-        </p>
-        <button className={styles.button} onClick={fetchProfile}>
-          Tải lại
-        </button>
+        <p className={styles.error}>{error || "Không tìm thấy thông tin cá nhân."}</p>
+        <button className={styles.button} onClick={fetchProfile}>Tải lại</button>
       </div>
     );
   }
@@ -96,15 +94,11 @@ export default function Profile() {
       <div className={styles.headerRow}>
         <div>
           <h2 className={styles.title}>Hồ sơ cá nhân</h2>
-          <p className={styles.subtitle}>
-            Xem và cập nhật thông tin cá nhân của bạn.
-          </p>
+          <p className={styles.subtitle}>Xem và cập nhật thông tin cá nhân của bạn.</p>
         </div>
+
         {!isEditing && (
-          <button
-            className={styles.button}
-            onClick={() => setIsEditing(true)}
-          >
+          <button className={styles.button} onClick={() => setIsEditing(true)}>
             Chỉnh sửa
           </button>
         )}
@@ -115,114 +109,92 @@ export default function Profile() {
       <div className={styles.profileCard}>
         <div className={styles.avatarSection}>
           <div className={styles.avatarPlaceholder}>
-            {profile.fullName?.charAt(0).toUpperCase() || profile.studentCode?.charAt(0).toUpperCase() || "U"}
+            {(profile.fullName?.charAt(0) || profile.studentCode?.charAt(0) || "U").toUpperCase()}
           </div>
         </div>
 
         <div className={styles.formSection}>
-          <div className={styles.formField}>
-            <label className={styles.label}>Mã học viên</label>
-            <input
-              type="text"
-              className={styles.input}
-              value={profile.studentCode || ""}
-              disabled
-            />
-          </div>
+          <Field label="Mã học viên">
+            <input type="text" className={styles.input} value={profile.studentCode || ""} disabled />
+          </Field>
 
-          <div className={styles.formField}>
-            <label className={styles.label}>Họ và tên</label>
+          <Field label="Họ và tên">
             {isEditing ? (
               <input
                 type="text"
                 className={styles.input}
-                value={form.fullName || ""}
+                value={form.fullName}
                 onChange={(e) => setForm({ ...form, fullName: e.target.value })}
                 required
               />
             ) : (
               <p className={styles.value}>{profile.fullName || "-"}</p>
             )}
-          </div>
+          </Field>
 
-          <div className={styles.formField}>
-            <label className={styles.label}>Email</label>
-            <p className={styles.value}>{profile.email || "-"}</p>
-          </div>
+          <Field label="Email">
+            <p className={styles.value}>{profile.email}</p>
+          </Field>
 
-          <div className={styles.formField}>
-            <label className={styles.label}>Số điện thoại</label>
+          <Field label="Số điện thoại">
             <p className={styles.value}>{profile.phone || "-"}</p>
-          </div>
+          </Field>
 
-          <div className={styles.formField}>
-            <label className={styles.label}>Ngày sinh</label>
+          <Field label="Ngày sinh">
             {isEditing ? (
               <input
                 type="date"
                 className={styles.input}
-                value={form.dob || ""}
+                value={form.dob}
                 onChange={(e) => setForm({ ...form, dob: e.target.value })}
-                required
               />
             ) : (
               <p className={styles.value}>
-                {profile.dob
-                  ? new Date(profile.dob).toLocaleDateString("vi-VN")
-                  : "-"}
+                {profile.dob ? new Date(profile.dob).toLocaleDateString("vi-VN") : "-"}
               </p>
             )}
-          </div>
+          </Field>
 
-          <div className={styles.formField}>
-            <label className={styles.label}>Quê quán</label>
+          <Field label="Quê quán">
             {isEditing ? (
               <input
                 type="text"
                 className={styles.input}
-                value={form.hometown || ""}
+                value={form.hometown ?? ""}
                 onChange={(e) => setForm({ ...form, hometown: e.target.value })}
               />
+
             ) : (
               <p className={styles.value}>{profile.hometown || "-"}</p>
             )}
-          </div>
+          </Field>
 
-          <div className={styles.formField}>
-            <label className={styles.label}>Tỉnh/Thành phố</label>
+          <Field label="Tỉnh/Thành phố">
             {isEditing ? (
               <input
                 type="text"
                 className={styles.input}
-                value={form.province || ""}
+                value={form.province ?? ""}
                 onChange={(e) => setForm({ ...form, province: e.target.value })}
               />
+
             ) : (
               <p className={styles.value}>{profile.province || "-"}</p>
             )}
-          </div>
+          </Field>
 
-          <div className={styles.formField}>
-            <label className={styles.label}>Ngày tham gia</label>
+          <Field label="Ngày tham gia">
             <p className={styles.value}>
               {new Date(profile.createdAt).toLocaleDateString("vi-VN")}
             </p>
-          </div>
+          </Field>
 
           {isEditing && (
             <div className={styles.formActions}>
-              <button
-                className={styles.button}
-                onClick={handleCancel}
-                disabled={saving}
-              >
+              <button className={styles.button} onClick={handleCancel} disabled={saving}>
                 Hủy
               </button>
-              <button
-                className={`${styles.button} ${styles.buttonPrimary}`}
-                onClick={handleSave}
-                disabled={saving}
-              >
+              <button className={`${styles.button} ${styles.buttonPrimary}`} onClick={handleSave} disabled={saving}>
                 {saving ? "Đang lưu..." : "Lưu thay đổi"}
               </button>
             </div>
@@ -233,3 +205,11 @@ export default function Profile() {
   );
 }
 
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className={styles.formField}>
+      <label className={styles.label}>{label}</label>
+      {children}
+    </div>
+  );
+}

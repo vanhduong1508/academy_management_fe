@@ -6,7 +6,7 @@ export interface CertificateResponse {
   courseId: number;
   courseCode: string;
   courseTitle: string;
-  result: string; // "PASS" | "FAIL"
+  result: string; 
   certificateCode: string | null;
   issuedAt: string;
 }
