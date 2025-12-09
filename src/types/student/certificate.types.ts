@@ -9,4 +9,5 @@ export interface CertificateResponse {
   result: string; 
   certificateCode: string | null;
   issuedAt: string;
+    approvalStatus: "PENDING" | "APPROVED";
 }

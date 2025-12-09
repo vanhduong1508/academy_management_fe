@@ -1,9 +1,12 @@
 import { useEffect, useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { getMyProfileApi, updateMyProfileApi } from "../../api/student/student.api";
 import type { StudentResponse, UpdateStudentPayload } from "../../types/student/student.types";
 import styles from "../../styles/user/UserProfile.module.css";
 
 export default function Profile() {
+  const navigate = useNavigate();
+
   const [profile, setProfile] = useState<StudentResponse | null>(null);
   const [form, setForm] = useState<UpdateStudentPayload>({
     fullName: "",
@@ -16,6 +19,7 @@ export default function Profile() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+
   const fetchProfile = useCallback(async () => {
     try {
       setLoading(true);
@@ -72,6 +76,14 @@ export default function Profile() {
     setError(null);
   };
 
+  // ========================
+  // 🔥 LOGOUT
+  // ========================
+  const handleLogout = () => {
+    localStorage.removeItem("token"); // xóa token hoặc dữ liệu đăng nhập
+    navigate("/login");
+  };
+
   if (loading) {
     return (
       <div className={styles.page}>
@@ -97,11 +109,19 @@ export default function Profile() {
           <p className={styles.subtitle}>Xem và cập nhật thông tin cá nhân của bạn.</p>
         </div>
 
-        {!isEditing && (
-          <button className={styles.button} onClick={() => setIsEditing(true)}>
-            Chỉnh sửa
+        <div>
+          {!isEditing && (
+            <button className={styles.button} onClick={() => setIsEditing(true)}>
+              Chỉnh sửa
+            </button>
+          )}
+          <button
+            className={`${styles.button} ${styles.buttonLogout}`}
+            onClick={handleLogout}
+          >
+            Đăng xuất
           </button>
-        )}
+        </div>
       </div>
 
       {error && <p className={styles.error}>{error}</p>}
@@ -163,7 +183,6 @@ export default function Profile() {
                 value={form.hometown ?? ""}
                 onChange={(e) => setForm({ ...form, hometown: e.target.value })}
               />
-
             ) : (
               <p className={styles.value}>{profile.hometown || "-"}</p>
             )}
@@ -177,7 +196,6 @@ export default function Profile() {
                 value={form.province ?? ""}
                 onChange={(e) => setForm({ ...form, province: e.target.value })}
               />
-
             ) : (
               <p className={styles.value}>{profile.province || "-"}</p>
             )}
