@@ -26,12 +26,9 @@ import styles from "../../styles/AdminCourseStructurePage.module.css";
 function extractYoutubeId(url: string): string | null {
   if (!url) return null;
   const trimmed = url.trim();
-
-  // Nếu user nhập sẵn videoId (không có http) thì coi như không parse URL
   if (!trimmed.startsWith("http://") && !trimmed.startsWith("https://")) {
     return null;
   }
-
   try {
     const parsed = new URL(trimmed);
 

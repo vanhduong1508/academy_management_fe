@@ -188,7 +188,7 @@ export default function DashboardPage() {
                         <td>{order.price}</td>
                         <td>
                           {order.createdAt
-                            ? new Date(order.createdAt).toLocaleString()
+                            ? new Date(order.createdAt).toLocaleDateString()
                             : "-"}
                         </td>
                       </tr>
@@ -211,7 +211,7 @@ export default function DashboardPage() {
                 <table className={styles.table}>
                   <thead>
                     <tr>
-                      <th>Mã chứng chỉ</th>
+                      <th>Mã học viên</th>
                       <th>Học viên</th>
                       <th>Khóa học</th>
                       <th>Kết quả</th>
@@ -221,13 +221,13 @@ export default function DashboardPage() {
                   <tbody>
                     {recentCertificates.map((c) => (
                       <tr key={c.id}>
-                        <td>{c.certificateCode || c.id}</td>
+                        <td>{c.studentCode}</td>
                         <td>{c.studentName}</td>
                         <td>{c.courseTitle}</td>
                         <td>{renderResultVi(c.result)}</td>
                         <td>
                           {c.issuedAt
-                            ? new Date(c.issuedAt).toLocaleString()
+                            ? new Date(c.issuedAt).toLocaleDateString()
                             : "-"}
                         </td>
                       </tr>
