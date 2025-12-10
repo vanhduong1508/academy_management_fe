@@ -18,7 +18,6 @@ export default function EnrollmentAdminPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // SEARCH / FILTER / PAGINATION
   const [searchText, setSearchText] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [filterCertStatus, setFilterCertStatus] = useState<
@@ -62,7 +61,7 @@ export default function EnrollmentAdminPage() {
     fetchData();
   }, []);
 
-  // create lookup set for certificate enrollmentIds for O(1) checks
+
   const certEnrollmentSet = useMemo(() => {
     const s = new Set<number>();
     for (const c of certificates) {
@@ -71,7 +70,6 @@ export default function EnrollmentAdminPage() {
     return s;
   }, [certificates]);
 
-  // enrich items with certificate status (memoized)
   const itemsWithCert = useMemo(() => {
     return items.map((it) => {
       const hasCertificate = certEnrollmentSet.has(it.enrollmentId);
@@ -80,7 +78,6 @@ export default function EnrollmentAdminPage() {
     });
   }, [items, certEnrollmentSet]);
 
-  // filtered by search + cert status
   const filtered = useMemo(() => {
     const q = debouncedSearch;
     return itemsWithCert.filter((it) => {
@@ -94,9 +91,8 @@ export default function EnrollmentAdminPage() {
     });
   }, [itemsWithCert, debouncedSearch, filterCertStatus]);
 
-  // pagination (client-side)
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
-  // clamp page
+
   useEffect(() => {
     if (page >= totalPages) setPage(Math.max(0, totalPages - 1));
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -199,7 +195,7 @@ export default function EnrollmentAdminPage() {
       {loading && items.length === 0 ? (
         <p className={styles.infoText}>Đang tải dữ liệu...</p>
       ) : filtered.length === 0 ? (
-        <p className={styles.infoText}>Không tìm thấy enrollment phù hợp.</p>
+        <p className={styles.infoText}>Không tìm thấy học viên nào đang học.</p>
       ) : (
         <div className={styles.tableWrapper}>
           <table className={styles.table}>

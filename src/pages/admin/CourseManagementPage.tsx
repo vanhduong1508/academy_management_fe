@@ -1,4 +1,3 @@
-// src/pages/admin/CourseManagementPage.tsx
 import React, { useEffect, useMemo, useState } from "react";
 
 import {
@@ -43,7 +42,6 @@ const normalizeDateInput = (value?: string | null): string => {
 
 const parsePositiveNumber = (v: string): number | undefined => {
   if (v === "" || v == null) return undefined;
-  // remove non-numeric except dot and minus (defensive)
   const cleaned = String(v).replace(/[^0-9.-]/g, "");
   const parsed = Number(cleaned);
   if (!Number.isFinite(parsed)) return NaN;
@@ -57,7 +55,7 @@ const formatCurrency = (value?: number | null) => {
 
 export default function CourseManagementPage() {
   const [page, setPage] = useState(0);
-  const [size] = useState(10);
+  const [size] = useState(5);
   const [coursesPage, setCoursesPage] =
     useState<PageResponse<CourseResponse> | null>(null);
 
@@ -119,7 +117,6 @@ export default function CourseManagementPage() {
   const filteredCourses = useMemo(() => {
     const q = searchText.trim().toLowerCase();
     return courses.filter((c) => {
-      // search by title, code, id
       if (q) {
         const hay = `${c.title ?? ""} ${c.code ?? ""} ${String(c.id)}`.toLowerCase();
         if (!hay.includes(q)) return false;
