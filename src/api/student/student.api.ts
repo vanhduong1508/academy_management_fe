@@ -6,7 +6,7 @@ import type {
 
 export const getMyProfileApi = async (): Promise<StudentResponse> => {
   const res = await axiosInstance.get<StudentResponse>("/students/me");
-  return res.data;
+  return res.data; 
 };
 
 export const updateMyProfileApi = async (

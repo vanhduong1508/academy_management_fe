@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { getMyEnrollmentsApi } from "../../api/student/enrollment.api";
 import { getMyOrdersApi } from "../../api/student/order.api";
 import { getMyCertificatesApi } from "../../api/student/certificate.api";
-import { getMyProfileApi } from "../../api/student/student.api";
 
 import type { EnrollmentResponse } from "../../types/student/enrollment.types";
 import type { OrderResponse } from "../../types/student/order.types";

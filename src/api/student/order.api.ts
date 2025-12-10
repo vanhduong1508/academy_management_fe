@@ -16,7 +16,6 @@ export const getPaymentInfoApi = async (): Promise<PaymentInfoResponse> => {
   return res.data;
 };
 
-// Sends a request to admin to review this order/payment.
 export const requestPaymentApprovalApi = async (orderId: number): Promise<any> => {
   const res = await axiosInstance.post(`/orders/${orderId}/request-approval`);
   return res.data;

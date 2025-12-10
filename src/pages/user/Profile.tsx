@@ -76,9 +76,6 @@ export default function Profile() {
     setError(null);
   };
 
-  // ========================
-  // 🔥 LOGOUT
-  // ========================
   const handleLogout = () => {
     localStorage.removeItem("token"); // xóa token hoặc dữ liệu đăng nhập
     navigate("/login");
